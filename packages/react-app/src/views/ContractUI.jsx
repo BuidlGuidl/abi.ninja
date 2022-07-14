@@ -15,7 +15,8 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
 
-  const loadContract = async () => {
+  const loadedContractEtherscan = () => {};
+  const loadContractRaw = async () => {
     if (!validateAddress(contractAddress)) {
       message.error("Invalid Contract Address");
       return;
@@ -39,9 +40,15 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
     }
 
     const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
-
-    // ToDo. check if we are connected.
     setLoadedContract(contract);
+  };
+
+  const loadContract = () => {
+    if (etherscanUrl) {
+      loadedContractEtherscan();
+    } else {
+      loadContractRaw();
+    }
   };
 
   const reset = () => {
@@ -72,63 +79,66 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
 
   return (
     <div style={{ margin: "30px 0" }}>
-      <div style={{ margin: "0 auto", maxWidth: 600 }}>
-        <Space direction="vertical" style={{ width: "100%" }} size="large">
-          <h2>You are connected on: {networkSelect}</h2>
-          <div style={{ textAlign: "left" }}>
-            <strong style={{ fontSize: 18 }}>Contract Address:</strong>
-            <AddressInput
-              autoFocus
-              ensProvider={mainnetProvider}
-              placeholder="Contract Address"
-              size="large"
-              value={contractAddress}
-              onChange={setContractAddress}
-            />
-          </div>
-          <div style={{ textAlign: "left" }}>
-            <strong style={{ fontSize: 18 }}>Contract ABI (json format):</strong>
-            <TextArea
-              placeholder="Contract ABI (json format)"
-              style={{ height: 120 }}
-              value={contractAbi}
-              size="large"
-              onChange={e => {
-                setContractAbi(e.target.value);
-              }}
-            />
-          </div>
-          <Divider>OR</Divider>
-          <div style={{ textAlign: "left" }}>
-            <strong style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</strong>
-            <Input
-              placeholder="Verified Etherscan Contract URL"
-              value={etherscanUrl}
-              size="large"
-              onChange={e => {
-                setEtherscanUrl(e.target.value);
-              }}
-            />
-          </div>
-          <Divider />
-          <Button type="primary" size="large" onClick={loadContract}>
-            Load Contract
+      {loadedContract.address ? (
+        <>
+          <Button danger onClick={reset} style={{ marginBottom: 10 }}>
+            Reset
           </Button>
-          {loadedContract.address && (
-            <Button type="link" danger onClick={reset}>
-              Reset
+          <h2>
+            You are connected on: <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>
+          </h2>
+          <Contract
+            customContract={loadedContract}
+            signer={userSigner}
+            provider={localProvider}
+            blockExplorer={selectedNetwork.blockExplorer}
+          />
+        </>
+      ) : (
+        <div style={{ margin: "0 auto", maxWidth: 600 }}>
+          <Space direction="vertical" style={{ width: "100%" }} size="large">
+            <h2>You are connected on: {networkSelect}</h2>
+            <div style={{ textAlign: "left" }}>
+              <strong style={{ fontSize: 18 }}>Contract Address:</strong>
+              <AddressInput
+                autoFocus
+                ensProvider={mainnetProvider}
+                placeholder="Contract Address"
+                size="large"
+                value={contractAddress}
+                onChange={setContractAddress}
+              />
+            </div>
+            <div style={{ textAlign: "left" }}>
+              <strong style={{ fontSize: 18 }}>Contract ABI (json format):</strong>
+              <TextArea
+                placeholder="Contract ABI (json format)"
+                style={{ height: 120 }}
+                value={contractAbi}
+                size="large"
+                onChange={e => {
+                  setContractAbi(e.target.value);
+                }}
+              />
+            </div>
+            <Divider>OR</Divider>
+            <div style={{ textAlign: "left" }}>
+              <strong style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</strong>
+              <Input
+                placeholder="Verified Etherscan Contract URL"
+                value={etherscanUrl}
+                size="large"
+                onChange={e => {
+                  setEtherscanUrl(e.target.value);
+                }}
+              />
+            </div>
+            <Divider />
+            <Button type="primary" size="large" onClick={loadContract}>
+              Load Contract
             </Button>
-          )}
-        </Space>
-      </div>
-
-      {loadedContract.address && (
-        <Contract
-          customContract={loadedContract}
-          signer={userSigner}
-          provider={localProvider}
-          blockExplorer="https://etherscan.io/"
-        />
+          </Space>
+        </div>
       )}
     </div>
   );
