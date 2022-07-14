@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AddressInput, Contract } from "../components";
 import { ethers } from "ethers";
-import { Button, Space, message, Select } from "antd";
+import { Button, Space, message, Select, Divider, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 
@@ -10,6 +10,7 @@ const validateAddress = address => ethers.utils.isAddress(address);
 
 function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork, onUpdateNetwork }) {
   const [loadedContract, setLoadedContract] = useState({});
+  const [etherscanUrl, setEtherscanUrl] = useState("");
   const [contractAddress, setContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
@@ -74,21 +75,39 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
       <div style={{ margin: "0 auto", maxWidth: 600 }}>
         <Space direction="vertical" style={{ width: "100%" }} size="large">
           <h2>You are connected on: {networkSelect}</h2>
-          <AddressInput
-            autoFocus
-            ensProvider={mainnetProvider}
-            placeholder="Contract Address"
-            value={contractAddress}
-            onChange={setContractAddress}
-          />
-          <TextArea
-            placeholder="Contract ABI (json format)"
-            style={{ height: 120 }}
-            value={contractAbi}
-            onChange={e => {
-              setContractAbi(e.target.value);
-            }}
-          />
+          <div style={{ textAlign: "left" }}>
+            <strong>Contract Address</strong>
+            <AddressInput
+              autoFocus
+              ensProvider={mainnetProvider}
+              placeholder="Contract Address"
+              value={contractAddress}
+              onChange={setContractAddress}
+            />
+          </div>
+          <div style={{ textAlign: "left" }}>
+            <strong>Contract ABI (json format)</strong>
+            <TextArea
+              placeholder="Contract ABI (json format)"
+              style={{ height: 120 }}
+              value={contractAbi}
+              onChange={e => {
+                setContractAbi(e.target.value);
+              }}
+            />
+          </div>
+          <Divider>OR</Divider>
+          <div style={{ textAlign: "left" }}>
+            <strong>Verified Etherscan Contract URL</strong>
+            <Input
+              placeholder="Verified Etherscan Contract URL"
+              value={etherscanUrl}
+              onChange={e => {
+                setEtherscanUrl(e.target.value);
+              }}
+            />
+          </div>
+          <Divider />
           <Button type="primary" onClick={loadContract}>
             Load Contract
           </Button>
