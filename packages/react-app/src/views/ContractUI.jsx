@@ -5,8 +5,12 @@ import { Button, Space, message, Select, Divider, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 
+import { init as etherscanInit } from "etherscan-api";
+
 const validateAbi = abi => Array.isArray(abi) && abi.length > 0;
 const validateAddress = address => ethers.utils.isAddress(address);
+
+const ETHERSCAN_API = process.env.REACT_APP_ETHERSCAN_API;
 
 function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork, onUpdateNetwork }) {
   const [loadedContract, setLoadedContract] = useState({});
@@ -15,7 +19,47 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
 
-  const loadedContractEtherscan = () => {};
+  const loadedContractEtherscan = async () => {
+    let contractUrlObject;
+    try {
+      contractUrlObject = new URL(etherscanUrl);
+    } catch (e) {
+      message.error("Invalid URL");
+      return;
+    }
+    let network = contractUrlObject.host.split(".")[0];
+    if (network === "etherscan") {
+      // No subdomain.
+      network = "mainnet";
+    }
+
+    setSelectedNetwork(NETWORKS[network]);
+    onUpdateNetwork(network);
+
+    const contractAddress = contractUrlObject.pathname.replace("/address/", "");
+    const etherscanClient = etherscanInit(ETHERSCAN_API, network === "mainnet" ? "" : network, 10000);
+
+    let response;
+    try {
+      response = await etherscanClient.contract.getabi(contractAddress);
+    } catch (e) {
+      message.error(`From Etherscan API: ${e}`);
+      return;
+    }
+    console.log("contractAbi", response);
+
+    if (response.status !== "1") {
+      message.error("Can't fetch data from Etherscan. Ensure the contract is verified.");
+      return;
+    }
+
+    const contractAbi = response.result;
+
+    // ToDo. Need to fix this. User Signer might be pointing the previous selected network.
+    const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
+    setLoadedContract(contract);
+  };
+
   const loadContractRaw = async () => {
     if (!validateAddress(contractAddress)) {
       message.error("Invalid Contract Address");
@@ -55,6 +99,7 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
     setLoadedContract({});
     setContractAddress("");
     setContractAbi("");
+    setEtherscanUrl("");
   };
 
   const networkSelect = (
