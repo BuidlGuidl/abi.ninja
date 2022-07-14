@@ -255,9 +255,6 @@ function App(props) {
         <Menu.Item key="/">
           <Link to="/">Contract UI</Link>
         </Menu.Item>
-        <Menu.Item key="/debug">
-          <Link to="/debug">Debug Contracts</Link>
-        </Menu.Item>
       </Menu>
 
       <Switch>
@@ -269,17 +266,6 @@ function App(props) {
             mainnetProvider={mainnetProvider}
             targetNetwork={targetNetwork}
             onUpdateNetwork={setSelectedNetwork}
-          />
-        </Route>
-        <Route exact path="/debug">
-          <Contract
-            name="YourContract"
-            price={price}
-            signer={userSigner}
-            provider={localProvider}
-            address={address}
-            blockExplorer={blockExplorer}
-            contractConfig={contractConfig}
           />
         </Route>
       </Switch>
