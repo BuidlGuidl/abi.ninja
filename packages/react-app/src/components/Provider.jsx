@@ -46,7 +46,6 @@ export default function Provider(props) {
   ) {
     return (
       <Button
-        shape="round"
         size="large"
         onClick={() => {
           setShowMore(!showMore);
@@ -86,7 +85,6 @@ export default function Provider(props) {
 
   return (
     <Button
-      shape="round"
       size="large"
       onClick={() => {
         setShowMore(!showMore);

@@ -11,7 +11,7 @@ const isENS = (address = "") => address.endsWith(".eth") || address.endsWith(".x
 
 // probably we need to change value={toAddress} to address={toAddress}
 
-/** 
+/**
   ~ What it does? ~
 
   Displays an address input with QR scan option
@@ -112,6 +112,7 @@ export default function AddressInput(props) {
         autoFocus={props.autoFocus}
         placeholder={props.placeholder ? props.placeholder : "address"}
         prefix={<Blockie address={currentValue} size={8} scale={3} />}
+        size="large"
         value={ethers.utils.isAddress(currentValue) && !isENS(currentValue) && isENS(ens) ? ens : currentValue}
         addonAfter={
           <div

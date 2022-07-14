@@ -39,7 +39,6 @@ export default function Ramp(props) {
             style={{ color: props.networks[n].color }}
             type={type}
             size="large"
-            shape="round"
             onClick={() => {
               window.open(props.networks[n].faucet);
             }}
@@ -55,7 +54,6 @@ export default function Ramp(props) {
     <div>
       <Button
         size="large"
-        shape="round"
         onClick={() => {
           setModalUp("up");
         }}
@@ -84,7 +82,6 @@ export default function Ramp(props) {
           <Button
             type={type}
             size="large"
-            shape="round"
             onClick={() => {
               window.open("https://pay.sendwyre.com/purchase?destCurrency=ETH&sourceAmount=25&dest=" + props.address);
             }}
@@ -102,7 +99,6 @@ export default function Ramp(props) {
           <Button
             type={type}
             size="large"
-            shape="round"
             onClick={() => {
               new RampInstantSDK({
                 hostAppName: "scaffold-eth",
@@ -128,7 +124,6 @@ export default function Ramp(props) {
           <Button
             type={type}
             size="large"
-            shape="round"
             onClick={() => {
               window.open("https://www.coinbase.com/buy-ethereum");
             }}

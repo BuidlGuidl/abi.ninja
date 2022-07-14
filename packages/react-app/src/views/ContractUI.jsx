@@ -76,21 +76,23 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
         <Space direction="vertical" style={{ width: "100%" }} size="large">
           <h2>You are connected on: {networkSelect}</h2>
           <div style={{ textAlign: "left" }}>
-            <strong>Contract Address</strong>
+            <strong style={{ fontSize: 18 }}>Contract Address:</strong>
             <AddressInput
               autoFocus
               ensProvider={mainnetProvider}
               placeholder="Contract Address"
+              size="large"
               value={contractAddress}
               onChange={setContractAddress}
             />
           </div>
           <div style={{ textAlign: "left" }}>
-            <strong>Contract ABI (json format)</strong>
+            <strong style={{ fontSize: 18 }}>Contract ABI (json format):</strong>
             <TextArea
               placeholder="Contract ABI (json format)"
               style={{ height: 120 }}
               value={contractAbi}
+              size="large"
               onChange={e => {
                 setContractAbi(e.target.value);
               }}
@@ -98,17 +100,18 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
           </div>
           <Divider>OR</Divider>
           <div style={{ textAlign: "left" }}>
-            <strong>Verified Etherscan Contract URL</strong>
+            <strong style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</strong>
             <Input
               placeholder="Verified Etherscan Contract URL"
               value={etherscanUrl}
+              size="large"
               onChange={e => {
                 setEtherscanUrl(e.target.value);
               }}
             />
           </div>
           <Divider />
-          <Button type="primary" onClick={loadContract}>
+          <Button type="primary" size="large" onClick={loadContract}>
             Load Contract
           </Button>
           {loadedContract.address && (
