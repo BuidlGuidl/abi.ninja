@@ -268,6 +268,7 @@ function App(props) {
             userSigner={userSigner}
             mainnetProvider={mainnetProvider}
             targetNetwork={targetNetwork}
+            onUpdateNetwork={setSelectedNetwork}
           />
         </Route>
         <Route exact path="/debug">
