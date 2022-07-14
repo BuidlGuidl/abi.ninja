@@ -1,122 +1,86 @@
-import { useContractReader } from "eth-hooks";
+import React, { useState } from "react";
+import { AddressInput, Contract } from "../components";
 import { ethers } from "ethers";
-import React from "react";
-import { Link } from "react-router-dom";
+import { Button, Input, Space, message } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
-/**
- * web3 props can be passed from '../App.jsx' into your local view component for use
- * @param {*} yourLocalBalance balance on current network
- * @param {*} readContracts contracts from current chain already pre-loaded using ethers contract module. More here https://docs.ethers.io/v5/api/contract/contract/
- * @returns react component
- **/
-function ContractUI({ yourLocalBalance, readContracts }) {
-  // you can also use hooks locally in your component of choice
-  // in this case, let's keep track of 'purpose' variable from our contract
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+const validateAbi = abi => Array.isArray(abi) && abi.length > 0;
+const validateAddress = address => ethers.utils.isAddress(address);
+
+function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork }) {
+  const [loadedContract, setLoadedContract] = useState({});
+  const [contractAddress, setContractAddress] = useState("");
+  const [contractAbi, setContractAbi] = useState("");
+
+  const loadContract = () => {
+    if (!validateAddress(contractAddress)) {
+      message.error("Invalid Contract Address");
+      return;
+    }
+    try {
+      if (!validateAbi(JSON.parse(contractAbi))) {
+        message.error("Invalid Contract ABI");
+        return;
+      }
+    } catch (e) {
+      // JSON parse error
+      message.error("Invalid Contract ABI");
+      return;
+    }
+
+    const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
+
+    // ToDo. check if we are connected.
+    setLoadedContract(contract);
+  };
+
+  const reset = () => {
+    setLoadedContract({});
+    setContractAddress("");
+    setContractAbi("");
+  };
 
   return (
-    <div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>📝</span>
-        This Is Your App Home. You can start editing it in{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          packages/react-app/src/views/Home.jsx
-        </span>
+    <div style={{ margin: "30px 0" }}>
+      <div style={{ margin: "0 auto", maxWidth: 600 }}>
+        <Space direction="vertical" style={{ width: "100%" }} size="large">
+          <h2>
+            You are connected on: <strong style={{ color: targetNetwork.color }}>{targetNetwork.name}</strong>
+          </h2>
+          <AddressInput
+            autoFocus
+            ensProvider={mainnetProvider}
+            placeholder="Contract Address"
+            value={contractAddress}
+            onChange={setContractAddress}
+          />
+          <TextArea
+            placeholder="Contract ABI (json format)"
+            style={{ height: 120 }}
+            value={contractAbi}
+            onChange={e => {
+              setContractAbi(e.target.value);
+            }}
+          />
+          <Button type="primary" onClick={loadContract}>
+            Load Contract
+          </Button>
+          {loadedContract.address && (
+            <Button type="link" danger onClick={reset}>
+              Reset
+            </Button>
+          )}
+        </Space>
       </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>✏️</span>
-        Edit your smart contract{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          YourContract.sol
-        </span>{" "}
-        in{" "}
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          packages/hardhat/contracts
-        </span>
-      </div>
-      {!purpose ? (
-        <div style={{ margin: 32 }}>
-          <span style={{ marginRight: 8 }}>👷‍♀️</span>
-          You haven't deployed your contract yet, run
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
-            }}
-          >
-            yarn chain
-          </span>{" "}
-          and{" "}
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
-            }}
-          >
-            yarn deploy
-          </span>{" "}
-          to deploy your first contract!
-        </div>
-      ) : (
-        <div style={{ margin: 32 }}>
-          <span style={{ marginRight: 8 }}>🤓</span>
-          The "purpose" variable from your contract is{" "}
-          <span
-            className="highlight"
-            style={{
-              marginLeft: 4,
-              /* backgroundColor: "#f9f9f9", */ padding: 4,
-              borderRadius: 4,
-              fontWeight: "bolder",
-            }}
-          >
-            {purpose}
-          </span>
-        </div>
-      )}
 
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>🤖</span>
-        An example prop of your balance{" "}
-        <span style={{ fontWeight: "bold", color: "green" }}>({ethers.utils.formatEther(yourLocalBalance)})</span> was
-        passed into the
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          Home.jsx
-        </span>{" "}
-        component from
-        <span
-          className="highlight"
-          style={{ marginLeft: 4, /* backgroundColor: "#f9f9f9", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-        >
-          App.jsx
-        </span>
-      </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>💭</span>
-        Check out the <Link to="/hints">"Hints"</Link> tab for more tips.
-      </div>
-      <div style={{ margin: 32 }}>
-        <span style={{ marginRight: 8 }}>🛠</span>
-        Tinker with your smart contract using the <Link to="/debug">"Debug Contract"</Link> tab.
-      </div>
+      {loadedContract.address && (
+        <Contract
+          customContract={loadedContract}
+          signer={userSigner}
+          provider={localProvider}
+          blockExplorer="https://etherscan.io/"
+        />
+      )}
     </div>
   );
 }

@@ -263,7 +263,12 @@ function App(props) {
       <Switch>
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-          <ContractUI yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+          <ContractUI
+            localProvider={localProvider}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            targetNetwork={targetNetwork}
+          />
         </Route>
         <Route exact path="/debug">
           <Contract
