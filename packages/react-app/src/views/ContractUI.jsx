@@ -33,8 +33,10 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
       network = "mainnet";
     }
 
-    setSelectedNetwork(NETWORKS[network]);
-    onUpdateNetwork(network);
+    if (selectedNetwork.name !== network) {
+      message.error(`You need to switch to ${network}`);
+      return;
+    }
 
     const contractAddress = contractUrlObject.pathname.replace("/address/", "");
     const etherscanClient = etherscanInit(ETHERSCAN_API, network === "mainnet" ? "" : network, 10000);
