@@ -151,7 +151,7 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
             <p>{networkSelect}</p>
           </div>
 
-          <Collapse defaultActiveKey={["1"]} className="abi-ninja-options">
+          <Collapse defaultActiveKey={["1"]} className="abi-ninja-options" accordion>
             <Panel header="Address + ABI" key="1">
               <div className="form-item">
                 <label style={{ fontSize: 18 }}>Contract Address:</label>

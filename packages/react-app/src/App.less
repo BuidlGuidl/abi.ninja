@@ -3,7 +3,7 @@
 @ligthdark-color: #AE9EFF;
 @light-color: #EFEAFF;
 @medium-color: #D5C7FF;
-@light-grey: #f8f8f8;
+@light-grey: #696969;
 
 body {
   margin: 0;
@@ -14,6 +14,22 @@ body {
 .App {
   body & {
     color: white;
+  }
+
+  ::-webkit-input-placeholder {
+    color: @light-grey;
+  }
+
+  ::-moz-placeholder {
+    color: @light-grey;
+  }
+
+  :-ms-input-placeholder {
+    color: @light-grey;
+  }
+
+  :-moz-placeholder {
+    color: @light-grey;
   }
 
   .ant-btn {
@@ -34,6 +50,26 @@ body {
     color: @light-color;
     background-color: transparent;
     padding: 5px 20px;
+  }
+
+  .anticon-copy svg {
+    fill: @light-color;
+  }
+}
+
+// Eth Info faucet section
+.eth-info-faucet {
+  button, .ant-input-affix-wrapper, input {
+    background-color: @medium-color;
+  }
+
+  .ant-btn-circle {
+    background-color: @primary-color;
+    border-color: @primary-color;
+
+    svg {
+      fill: white;
+    }
   }
 }
 
@@ -127,22 +163,6 @@ body {
 
   input[type="text"], textarea, .ant-input-affix-wrapper {
     background-color: #D5C7FF;
-  }
-
-  ::-webkit-input-placeholder {
-    color: @light-grey;
-  }
-
-  ::-moz-placeholder {
-    color: @light-grey;
-  }
-
-  :-ms-input-placeholder {
-    color: @light-grey;
-  }
-
-  :-moz-placeholder {
-    color: @light-grey;
   }
 }
 

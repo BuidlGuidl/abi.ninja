@@ -88,7 +88,7 @@ export default function Faucet(props) {
               icon={<SendOutlined />}
             />
             <Wallet
-              color="#888888"
+              color="#551D98"
               provider={localProvider}
               ensProvider={ensProvider}
               price={price}

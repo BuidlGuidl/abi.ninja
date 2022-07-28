@@ -264,13 +264,16 @@ function App(props) {
       <ThemeSwitch />
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+      <div
+        className="eth-info-faucet"
+        style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}
+      >
         <Row align="middle" gutter={[4, 4]} style={{ marginBottom: "10px" }}>
           <Col>
             <Ramp price={price} address={address} networks={NETWORKS} />
           </Col>
 
-          <Col style={{ textAlign: "center", opacity: 0.8 }}>
+          <Col style={{ textAlign: "center" }}>
             <GasGauge gasPrice={gasPrice} />
           </Col>
         </Row>

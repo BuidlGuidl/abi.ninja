@@ -8,7 +8,7 @@ import { useLookupAddress } from "eth-hooks/dapps/ens";
 
 const { Text } = Typography;
 
-/** 
+/**
   ~ What it does? ~
 
   Displays an address with a blockie image and option to copy address
@@ -62,7 +62,7 @@ export default function Address(props) {
     return (
       <span style={{ verticalAlign: "middle" }}>
         <a
-          style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
+          style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
           target="_blank"
           href={etherscanLink}
           rel="noopener noreferrer"
@@ -82,7 +82,7 @@ export default function Address(props) {
         {props.onChange ? (
           <Text editable={{ onChange: props.onChange }} copyable={{ text: address }}>
             <a
-              style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
+              style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
               target="_blank"
               href={etherscanLink}
               rel="noopener noreferrer"
@@ -93,7 +93,7 @@ export default function Address(props) {
         ) : (
           <Text copyable={{ text: address }}>
             <a
-              style={{ color: currentTheme === "light" ? "#222222" : "#ddd" }}
+              style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
               target="_blank"
               href={etherscanLink}
               rel="noopener noreferrer"

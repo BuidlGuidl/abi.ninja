@@ -3,7 +3,7 @@ import { useBalance } from "eth-hooks";
 
 const { utils } = require("ethers");
 
-/** 
+/**
   ~ What it does? ~
 
   Displays a balance of given address in ether & dollar
@@ -58,7 +58,7 @@ export default function Balance(props) {
       style={{
         verticalAlign: "middle",
         fontSize: props.size ? props.size : 24,
-        padding: 8,
+        padding: props.padding ?? 8,
         cursor: "pointer",
       }}
       onClick={() => {
