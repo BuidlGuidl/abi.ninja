@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { AddressInput, Contract } from "../components";
 import { ethers } from "ethers";
-import { Button, Space, message, Select, Divider, Input } from "antd";
+import { Button, message, Select, Input, Collapse } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
-
 import { init as etherscanInit } from "etherscan-api";
+
+const { Panel } = Collapse;
 
 const validateAbi = abi => Array.isArray(abi) && abi.length > 0;
 const validateAddress = address => ethers.utils.isAddress(address);
@@ -142,49 +143,61 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
           />
         </>
       ) : (
-        <div style={{ margin: "0 auto", maxWidth: 600 }}>
-          <Space direction="vertical" style={{ width: "100%" }} size="large">
-            <h2>You are connected on: {networkSelect}</h2>
-            <div style={{ textAlign: "left" }}>
-              <strong style={{ fontSize: 18 }}>Contract Address:</strong>
-              <AddressInput
-                autoFocus
-                ensProvider={mainnetProvider}
-                placeholder="Contract Address"
-                size="large"
-                value={contractAddress}
-                onChange={setContractAddress}
-              />
-            </div>
-            <div style={{ textAlign: "left" }}>
-              <strong style={{ fontSize: 18 }}>Contract ABI (json format):</strong>
-              <TextArea
-                placeholder="Contract ABI (json format)"
-                style={{ height: 120 }}
-                value={contractAbi}
-                size="large"
-                onChange={e => {
-                  setContractAbi(e.target.value);
-                }}
-              />
-            </div>
-            <Divider>OR</Divider>
-            <div style={{ textAlign: "left" }}>
-              <strong style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</strong>
-              <Input
-                placeholder="Verified Etherscan Contract URL"
-                value={etherscanUrl}
-                size="large"
-                onChange={e => {
-                  setEtherscanUrl(e.target.value);
-                }}
-              />
-            </div>
-            <Divider />
-            <Button type="primary" size="large" onClick={loadContract}>
-              Load Contract
-            </Button>
-          </Space>
+        <div className="index-container">
+          <div className="logo">
+            <img src="/logo_inv.svg" alt="logo" />
+          </div>
+          <div className="network-select">
+            <p>{networkSelect}</p>
+          </div>
+
+          <Collapse defaultActiveKey={["1"]} className="abi-ninja-options">
+            <Panel header="Address + ABI" key="1">
+              <div className="form-item">
+                <label style={{ fontSize: 18 }}>Contract Address:</label>
+                <AddressInput
+                  autoFocus
+                  ensProvider={mainnetProvider}
+                  size="large"
+                  value={contractAddress}
+                  onChange={setContractAddress}
+                />
+              </div>
+              <div className="form-item">
+                <label style={{ fontSize: 18 }}>Contract ABI (json format):</label>
+                <TextArea
+                  style={{ height: 120 }}
+                  value={contractAbi}
+                  size="large"
+                  onChange={e => {
+                    setContractAbi(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="options-actions">
+                <Button type="primary" size="large" onClick={loadContract}>
+                  Load Contract
+                </Button>
+              </div>
+            </Panel>
+            <Panel header="Etherscan URL" key="2">
+              <div className="form-item">
+                <label style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</label>
+                <Input
+                  value={etherscanUrl}
+                  size="large"
+                  onChange={e => {
+                    setEtherscanUrl(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="options-actions">
+                <Button type="primary" size="large" onClick={loadContract}>
+                  Load Contract
+                </Button>
+              </div>
+            </Panel>
+          </Collapse>
         </div>
       )}
     </div>

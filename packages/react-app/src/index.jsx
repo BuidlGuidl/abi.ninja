@@ -4,11 +4,11 @@ import { ThemeSwitcherProvider } from "react-css-theme-switcher";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import App from "./App";
-import "./index.css";
+import "./App.less";
 
 const themes = {
-  dark: `${process.env.PUBLIC_URL}/dark-theme.css`,
-  light: `${process.env.PUBLIC_URL}/light-theme.css`,
+  dark: "",
+  light: "",
 };
 
 const prevTheme = window.localStorage.getItem("theme");
