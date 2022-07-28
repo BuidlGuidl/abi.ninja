@@ -1,29 +1,17 @@
 import React from "react";
-import { Typography } from "antd";
-const { Title, Text } = Typography;
+import { useLocation } from "react-router-dom";
 
 // displays a page header
 
 export default function Header({ link, title, subTitle, ...props }) {
+  const location = useLocation();
+  console.log("a", location.pathname);
   return (
     <div style={{ display: "flex", justifyContent: "space-between", padding: "1.2rem" }}>
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, alignItems: "start" }}>
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          <Title level={4} style={{ margin: "0 0.5rem 0 0" }}>
-            {title}
-          </Title>
-        </a>
-        <Text type="secondary" style={{ textAlign: "left" }}>
-          {subTitle}
-        </Text>
+      <div className="header-logo">
+        <img src="/logo.svg" alt="logo" style={{ display: location.pathname === "/" ? "none" : "block" }} />
       </div>
       {props.children}
     </div>
   );
 }
-
-Header.defaultProps = {
-  link: "https://github.com/austintgriffith/scaffold-eth",
-  title: "Contract Interface Tool",
-  subTitle: "Get a UI to interact with any contract",
-};

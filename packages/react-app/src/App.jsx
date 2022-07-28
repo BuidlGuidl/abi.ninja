@@ -211,7 +211,7 @@ function App(props) {
       {/* ✏️ Edit the header and change the title to your project name */}
       <Header>
         {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-        <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+        <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", flex: 1 }}>
             {USE_NETWORK_SELECTOR && (
               <div style={{ marginRight: 20 }}>

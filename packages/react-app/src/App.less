@@ -12,6 +12,10 @@ body {
 
 // ToDo. We should override antd styles with craco-antd plugin
 .App {
+  body & {
+    color: white;
+  }
+
   .ant-btn {
     border-radius: 8px;
     font-weight: bold;
@@ -20,6 +24,16 @@ body {
   .ant-btn-primary {
     background-color: @primary-color;
     border-color: @primary-color;
+  }
+}
+
+// Header
+.account-info {
+  .account-action-button {
+    border-color: @light-color;
+    color: @light-color;
+    background-color: transparent;
+    padding: 5px 20px;
   }
 }
 
@@ -33,9 +47,6 @@ body {
     margin-bottom: 50px;
   }
 
-  body & {
-    color: white;
-  }
 
   .network-select {
     text-align: center;
