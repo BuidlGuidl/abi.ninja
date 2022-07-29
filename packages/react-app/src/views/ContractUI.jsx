@@ -130,6 +130,9 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
       {loadedContract.address ? (
         <div className="contract-container">
           <div className="center">
+            <div className="logo">
+              <img src="/logo_inv.svg" alt="logo" />
+            </div>
             <Button danger onClick={reset} style={{ marginBottom: 10 }}>
               Reset
             </Button>
