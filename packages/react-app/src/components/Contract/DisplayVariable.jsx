@@ -1,4 +1,4 @@
-import { Button, Divider } from "antd";
+import { Button } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { tryToDisplay } from "./utils";
