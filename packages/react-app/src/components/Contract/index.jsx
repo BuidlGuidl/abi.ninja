@@ -1,10 +1,11 @@
-import { Card, Col, Row } from "antd";
+import { Button, Card, Checkbox, Col, Modal, Row } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useMemo, useState } from "react";
 import Address from "../Address";
 import Balance from "../Balance";
 import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
+import { SettingOutlined } from "@ant-design/icons";
 
 const noContractDisplay = (
   <div>
@@ -46,7 +47,6 @@ const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability =
 
 export default function Contract({
   customContract,
-  account,
   gasPrice,
   signer,
   provider,
@@ -57,6 +57,7 @@ export default function Contract({
   chainId,
   contractConfig,
 }) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const contracts = useContractLoader(provider, contractConfig, chainId);
   let contract;
   if (!customContract) {
@@ -77,6 +78,21 @@ export default function Contract({
     return results;
   }, [contract, show]);
 
+  const allMethodsNames = [];
+  displayedContractFunctions.forEach(contractFuncInfo => {
+    const contractFunc =
+      contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure"
+        ? contract[contractFuncInfo[0]]
+        : contract.connect(signer)[contractFuncInfo[0]];
+
+    if (typeof contractFunc === "function") {
+      if (!isQueryable(contractFuncInfo[1])) {
+        allMethodsNames.push(contractFuncInfo[1].name);
+      }
+    }
+  });
+
+  const [seletectedContractMethods, setSeletectedContractMethods] = useState(allMethodsNames);
   const [refreshRequired, triggerRefresh] = useState(false);
 
   const contractVariablesDisplay = [];
@@ -102,6 +118,10 @@ export default function Contract({
           />,
         );
       } else {
+        if (!seletectedContractMethods.includes(contractFuncInfo[1].name)) {
+          return null;
+        }
+
         contractMethodsDisplay.push(
           <FunctionForm
             key={"FF" + contractFuncInfo[0]}
@@ -117,10 +137,29 @@ export default function Contract({
     return null;
   });
 
+  const handleMethodChange = checkedValues => {
+    setSeletectedContractMethods(checkedValues);
+  };
+
   return (
     <div className="contract-component" style={{ margin: "auto", width: "70vw" }}>
       <Row gutter={16}>
         <Col span={14}>
+          <SettingOutlined style={{ fontSize: "26px", cursor: "pointer" }} onClick={() => setIsModalVisible(true)} />
+          <Modal
+            className="method-selection"
+            title="Method selection"
+            visible={isModalVisible}
+            onOk={() => setIsModalVisible(false)}
+            onCancel={() => setIsModalVisible(false)}
+            footer={null}
+          >
+            <div style={{ marginBottom: 10 }}>
+              <Button onClick={() => setSeletectedContractMethods(allMethodsNames)}>Select all</Button>
+              <Button onClick={() => setSeletectedContractMethods([])}>Remove all</Button>
+            </div>
+            <Checkbox.Group options={allMethodsNames} value={seletectedContractMethods} onChange={handleMethodChange} />
+          </Modal>
           <Card
             className="contract-methods-display"
             size="large"
@@ -130,7 +169,7 @@ export default function Contract({
             {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
           </Card>
         </Col>
-        <Col span={10}>
+        <Col span={10} style={{ marginTop: 30 }}>
           <Card
             title={
               <div style={{ fontSize: 24 }}>
