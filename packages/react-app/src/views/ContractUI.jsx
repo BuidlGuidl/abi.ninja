@@ -128,26 +128,28 @@ function ContractUI({ localProvider, userSigner, mainnetProvider, targetNetwork,
   return (
     <div style={{ margin: "30px 0" }}>
       {loadedContract.address ? (
-        <>
-          <Button danger onClick={reset} style={{ marginBottom: 10 }}>
-            Reset
-          </Button>
-          <h2>
-            You are connected on: <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>
-          </h2>
+        <div className="contract-container">
+          <div className="center">
+            <Button danger onClick={reset} style={{ marginBottom: 10 }}>
+              Reset
+            </Button>
+            <h2>
+              You are connected on: <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>
+            </h2>
+          </div>
           <Contract
             customContract={loadedContract}
             signer={userSigner}
             provider={localProvider}
             blockExplorer={selectedNetwork.blockExplorer}
           />
-        </>
+        </div>
       ) : (
         <div className="index-container">
           <div className="logo">
             <img src="/logo_inv.svg" alt="logo" />
           </div>
-          <div className="network-select">
+          <div className="center">
             <p>{networkSelect}</p>
           </div>
 

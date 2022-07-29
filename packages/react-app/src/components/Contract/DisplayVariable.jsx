@@ -21,7 +21,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
   }, [refresh, refreshRequired, contractFunction]);
 
   return (
-    <div>
+    <div className="contract-variable">
       <Row>
         <Col
           span={8}

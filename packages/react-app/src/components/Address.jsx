@@ -60,7 +60,7 @@ export default function Address(props) {
 
   if (props.minimized) {
     return (
-      <span style={{ verticalAlign: "middle" }}>
+      <span className="address-component address-component-minimezed" style={{ verticalAlign: "middle" }}>
         <a
           style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
           target="_blank"
@@ -74,7 +74,7 @@ export default function Address(props) {
   }
 
   return (
-    <span>
+    <span className="address-component">
       <span style={{ verticalAlign: "middle" }}>
         <Blockies seed={address.toLowerCase()} size={8} scale={props.fontSize ? props.fontSize / 7 : 4} />
       </span>
