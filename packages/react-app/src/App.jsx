@@ -1,5 +1,5 @@
 import { Col, Row } from "antd";
-import { useBalance, useContractLoader, useGasPrice, useUserProviderAndSigner } from "eth-hooks";
+import { useBalance, useGasPrice, useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
@@ -15,10 +15,7 @@ import {
   NetworkSwitch,
 } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
-import externalContracts from "./contracts/external_contracts";
 
-// contracts
-import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Web3ModalSetup } from "./helpers";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
@@ -58,7 +55,7 @@ const web3Modal = Web3ModalSetup();
 const providers = [
   "https://eth-mainnet.gateway.pokt.network/v1/lb/611156b4a585a20035148406",
   `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
-  "https://rpc.scaffoldeth.io:48544",
+  // "https://rpc.scaffoldeth.io:48544",
 ];
 
 function App(props) {
@@ -97,10 +94,10 @@ function App(props) {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider);
+  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, 60000);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
-  const gasPrice = useGasPrice(targetNetwork, "fast");
+  const gasPrice = useGasPrice(targetNetwork, "fast", 60000);
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
   const userSigner = userProviderAndSigner.signer;
@@ -121,60 +118,23 @@ function App(props) {
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address);
+  const yourLocalBalance = useBalance(localProvider, address, 60000);
 
   // Just plug in different 🛰 providers to get your balance on different chains:
-  const yourMainnetBalance = useBalance(mainnetProvider, address);
-
-  // const contractConfig = useContractConfig();
-
-  const contractConfig = { deployedContracts: deployedContracts || {}, externalContracts: externalContracts || {} };
-
-  // Load in your local 📝 contract and read a value from it:
-  const readContracts = useContractLoader(localProvider, contractConfig);
-
-  // If you want to make 🔐 write transactions to your contracts, use the userSigner:
-  const writeContracts = useContractLoader(userSigner, contractConfig, localChainId);
-
-  /*
-  const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
-  console.log("🏷 Resolved austingriffith.eth as:",addressFromENS)
-  */
+  const yourMainnetBalance = useBalance(mainnetProvider, address, 60000);
 
   //
   // 🧫 DEBUG 👨🏻‍🔬
   //
   useEffect(() => {
-    if (
-      DEBUG &&
-      mainnetProvider &&
-      address &&
-      selectedChainId &&
-      yourLocalBalance &&
-      yourMainnetBalance &&
-      readContracts &&
-      writeContracts
-    ) {
+    if (DEBUG && mainnetProvider && address && yourLocalBalance && yourMainnetBalance) {
       console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
       console.log("🌎 mainnetProvider", mainnetProvider);
-      console.log("🏠 localChainId", localChainId);
       console.log("👩‍💼 selected address:", address);
-      console.log("🕵🏻‍♂️ selectedChainId:", selectedChainId);
       console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
       console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-      console.log("📝 readContracts", readContracts);
-      console.log("🔐 writeContracts", writeContracts);
     }
-  }, [
-    mainnetProvider,
-    address,
-    selectedChainId,
-    yourLocalBalance,
-    yourMainnetBalance,
-    readContracts,
-    writeContracts,
-    localChainId,
-  ]);
+  }, [mainnetProvider, address, yourLocalBalance, yourMainnetBalance]);
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -250,7 +210,6 @@ function App(props) {
       />
       <Switch>
         <Route exact path="/">
-          {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
           <ContractUI
             localProvider={localProvider}
             userSigner={userSigner}
