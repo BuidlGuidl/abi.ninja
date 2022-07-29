@@ -22,27 +22,18 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
 
   return (
     <div className="contract-variable">
-      <Row>
-        <Col
-          span={8}
-          style={{
-            textAlign: "right",
-            opacity: 0.333,
-            paddingRight: 6,
-            fontSize: 24,
-          }}
-        >
-          {functionInfo.name}
-        </Col>
-        <Col span={14}>
-          <h2>{tryToDisplay(variable, false, blockExplorer)}</h2>
-        </Col>
-        <Col span={2}>
-          <h2>
-            <Button type="link" onClick={refresh} icon="🔄" />
-          </h2>
-        </Col>
-      </Row>
+      <div
+        style={{
+          paddingRight: 6,
+          color: "#b2b2b2",
+          fontSize: 24,
+        }}
+      >
+        {functionInfo.name} <Button type="link" onClick={refresh} icon="🔄" />
+      </div>
+      <div>
+        <p>{tryToDisplay(variable, false, blockExplorer)}</p>
+      </div>
       <Divider />
     </div>
   );

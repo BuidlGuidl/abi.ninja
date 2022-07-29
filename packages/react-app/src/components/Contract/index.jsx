@@ -1,4 +1,4 @@
-import { Card } from "antd";
+import { Card, Col, Row } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useMemo, useState } from "react";
 import Address from "../Address";
@@ -119,30 +119,36 @@ export default function Contract({
 
   return (
     <div className="contract-component" style={{ margin: "auto", width: "70vw" }}>
-      <Card
-        title={
-          <div style={{ fontSize: 24 }}>
-            {name}
-            <div style={{ float: "right" }}>
-              <Address value={address} blockExplorer={blockExplorer} />
-              <Balance address={address} provider={provider} price={price} />
-            </div>
-          </div>
-        }
-        size="large"
-        style={{ marginTop: 25, width: "100%" }}
-        loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
-      >
-        {contractIsDeployed ? contractVariablesDisplay : noContractDisplay}
-      </Card>
-      <Card
-        className="contract-methods-display"
-        size="large"
-        style={{ marginTop: 25, width: "100%" }}
-        loading={contractMethodsDisplay && contractMethodsDisplay.length <= 0}
-      >
-        {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
-      </Card>
+      <Row gutter={16}>
+        <Col span={14}>
+          <Card
+            className="contract-methods-display"
+            size="large"
+            style={{ marginTop: 25, width: "100%" }}
+            loading={contractMethodsDisplay && contractMethodsDisplay.length <= 0}
+          >
+            {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
+          </Card>
+        </Col>
+        <Col span={10}>
+          <Card
+            title={
+              <div style={{ fontSize: 24 }}>
+                {name}
+                <div style={{ float: "right" }}>
+                  <Address value={address} blockExplorer={blockExplorer} />
+                  <Balance address={address} provider={provider} price={price} />
+                </div>
+              </div>
+            }
+            size="large"
+            style={{ marginTop: 25, width: "100%" }}
+            loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
+          >
+            {contractIsDeployed ? contractVariablesDisplay : noContractDisplay}
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }
