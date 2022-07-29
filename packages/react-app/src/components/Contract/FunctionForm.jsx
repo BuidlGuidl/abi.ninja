@@ -239,7 +239,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
   );
 
   return (
-    <div>
+    <div className="contract-method">
       <Row>
         <Col
           span={8}

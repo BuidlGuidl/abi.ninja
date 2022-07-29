@@ -78,7 +78,11 @@ export default function Contract({
   }, [contract, show]);
 
   const [refreshRequired, triggerRefresh] = useState(false);
-  const contractDisplay = displayedContractFunctions.map(contractFuncInfo => {
+
+  const contractVariablesDisplay = [];
+  const contractMethodsDisplay = [];
+
+  displayedContractFunctions.forEach(contractFuncInfo => {
     const contractFunc =
       contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure"
         ? contract[contractFuncInfo[0]]
@@ -87,7 +91,7 @@ export default function Contract({
     if (typeof contractFunc === "function") {
       if (isQueryable(contractFuncInfo[1])) {
         // If there are no inputs, just display return value
-        return (
+        contractVariablesDisplay.push(
           <DisplayVariable
             key={contractFuncInfo[1].name}
             contractFunction={contractFunc}
@@ -95,21 +99,20 @@ export default function Contract({
             refreshRequired={refreshRequired}
             triggerRefresh={triggerRefresh}
             blockExplorer={blockExplorer}
-          />
+          />,
+        );
+      } else {
+        contractMethodsDisplay.push(
+          <FunctionForm
+            key={"FF" + contractFuncInfo[0]}
+            contractFunction={contractFunc}
+            functionInfo={contractFuncInfo[1]}
+            provider={provider}
+            gasPrice={gasPrice}
+            triggerRefresh={triggerRefresh}
+          />,
         );
       }
-
-      // If there are inputs, display a form to allow users to provide these
-      return (
-        <FunctionForm
-          key={"FF" + contractFuncInfo[0]}
-          contractFunction={contractFunc}
-          functionInfo={contractFuncInfo[1]}
-          provider={provider}
-          gasPrice={gasPrice}
-          triggerRefresh={triggerRefresh}
-        />
-      );
     }
     return null;
   });
@@ -128,9 +131,17 @@ export default function Contract({
         }
         size="large"
         style={{ marginTop: 25, width: "100%" }}
-        loading={contractDisplay && contractDisplay.length <= 0}
+        loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
       >
-        {contractIsDeployed ? contractDisplay : noContractDisplay}
+        {contractIsDeployed ? contractVariablesDisplay : noContractDisplay}
+      </Card>
+      <Card
+        className="contract-methods-display"
+        size="large"
+        style={{ marginTop: 25, width: "100%" }}
+        loading={contractMethodsDisplay && contractMethodsDisplay.length <= 0}
+      >
+        {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
       </Card>
     </div>
   );
