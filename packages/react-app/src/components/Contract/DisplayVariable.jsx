@@ -26,15 +26,16 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
         style={{
           paddingRight: 6,
           color: "#b2b2b2",
-          fontSize: 24,
+          fontSize: 18,
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        {functionInfo.name} <Button type="link" onClick={refresh} icon="🔄" />
+        {functionInfo.name} <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon="🔄" />
       </div>
       <div>
         <p>{tryToDisplay(variable, false, blockExplorer)}</p>
       </div>
-      <Divider />
     </div>
   );
 };
