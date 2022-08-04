@@ -95,7 +95,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
     }
 
     return (
-      <div style={{ margin: 2 }} key={key}>
+      <div className="contract-method-input" key={key}>
         <Input
           size="large"
           placeholder={input.name ? input.type + " " + input.name : input.type}
@@ -166,14 +166,19 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
     }
   };
 
-  const buttonIcon =
-    functionInfo.type === "call" ? (
-      <Button style={{ marginLeft: -32 }}>Read📡</Button>
-    ) : (
-      <Button style={{ marginLeft: -32 }}>Send💸</Button>
-    );
+  const isReadable = fn => fn.stateMutability === "view" || fn.stateMutability === "pure";
+
+  const buttonIcon = isReadable(functionInfo) ? (
+    <Button style={{ marginLeft: -32 }} className="contract-action-button">
+      Read 📡
+    </Button>
+  ) : (
+    <Button style={{ marginLeft: -32 }} className="contract-action-button">
+      Send 💸
+    </Button>
+  );
   inputs.push(
-    <div style={{ cursor: "pointer", margin: 2 }} key="goButton">
+    <div style={{ cursor: "pointer", margin: 4 }} key="goButton">
       <Input
         onChange={e => setReturnValue(e.target.value)}
         defaultValue=""
@@ -240,21 +245,10 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
 
   return (
     <div className="contract-method">
-      <Row>
-        <Col
-          span={8}
-          style={{
-            textAlign: "right",
-            opacity: 0.333,
-            paddingRight: 6,
-            fontSize: 24,
-          }}
-        >
-          {functionInfo.name}
-        </Col>
-        <Col span={16}>{inputs}</Col>
-      </Row>
-      <Divider />
+      <h2 id={`method-${functionInfo.name}`} className="contract-method-name">
+        {functionInfo.name}
+      </h2>
+      <div className="contract-method-inputs">{inputs}</div>
     </div>
   );
 }

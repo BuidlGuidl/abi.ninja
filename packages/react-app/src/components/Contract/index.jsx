@@ -178,6 +178,7 @@ export default function Contract({
         </Col>
         <Col span={10} style={{ marginTop: 30 }}>
           <Card
+            className="contract-variables-display"
             title={
               <div style={{ fontSize: 18 }}>
                 <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>

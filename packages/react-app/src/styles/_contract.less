@@ -53,5 +53,49 @@ body.path-contract {
       color: @dark-color !important;
     }
   }
+
+  .contract-methods-display,
+  .contract-variables-display {
+    background-color: @almost-white;
+  }
+
+  .contract-method-name {
+    border-bottom: 1px solid @primary-color;
+    color: @primary-color;
+    font-size: 16px;
+  }
+
+  .contract-method-inputs {
+    margin: 10px 0;
+
+    .contract-method-input {
+      margin-top: 4px;
+
+      .ant-input-suffix {
+        margin: 0 4px;
+      }
+
+      & > span {
+        background-color: @light-color;
+      }
+    }
+
+    .ant-input-affix-wrapper {
+      padding-right: 0;
+    }
+  }
+
+  input[type="text"] {
+    background-color: @light-color;
+    color: @primary-color;
+    font-size: 14px;
+  }
+
+  .contract-action-button {
+    background-color: @light-color;
+    color: @primary-color;
+    border: 1px solid @primary-color;
+    font-size: 14px;
+  }
 }
 
