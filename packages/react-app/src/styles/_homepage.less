@@ -1,0 +1,83 @@
+// Homepage
+.index-container {
+  width: 500px;
+  margin: 0 auto 100px;
+
+  .logo {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .abi-ninja-options {
+    background-color: @light-color;
+    border-radius: 25px;
+
+    .ant-collapse-content {
+      border: 0;
+      color: @primary-color;
+      background-color: @light-color;
+
+      & > .ant-collapse-content-box {
+        padding: 5px 26px 26px 26px
+      }
+    }
+
+    .ant-collapse-item {
+      border-bottom: 1px solid @primary-color;
+
+      &:last-child {
+        border: 0;
+      }
+
+      svg {
+        transform: rotate(90deg) !important;
+      }
+
+      &.ant-collapse-item-active svg {
+        transform: rotate(270deg) !important;
+      }
+    }
+
+    .ant-collapse-item-active svg {
+    }
+
+    .ant-collapse-header {
+      color: @primary-color;
+      font-size: 22px;
+      font-weight: bold;
+      position: relative;
+      padding: 20px 26px;
+
+      .ant-collapse-arrow {
+        position: absolute;
+        right: 26px;
+        margin: auto;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      svg {
+        width: 1.8em;
+        height: 1.8em;
+      }
+    }
+
+    .form-item {
+      margin-bottom: 20px;
+    }
+
+    .input-address {
+      .ant-input-group-addon {
+        background-color: @ligthdark-color;
+      }
+    }
+  }
+
+  .options-actions {
+    text-align: right;
+  }
+
+  input[type="text"], textarea, .ant-input-affix-wrapper {
+    background-color: #D5C7FF;
+  }
+}

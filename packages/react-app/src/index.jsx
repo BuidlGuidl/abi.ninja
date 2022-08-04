@@ -1,11 +1,10 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import React from "react";
 import { ThemeSwitcherProvider } from "react-css-theme-switcher";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "antd/dist/antd.css";
-import "./App.less";
+import "./styles/styles.less";
 
 const themes = {
   dark: "",
@@ -14,20 +13,11 @@ const themes = {
 
 const prevTheme = window.localStorage.getItem("theme");
 
-const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract";
-
-const client = new ApolloClient({
-  uri: subgraphUri,
-  cache: new InMemoryCache(),
-});
-
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <ThemeSwitcherProvider themeMap={themes} defaultTheme={prevTheme || "light"}>
-      <BrowserRouter>
-        <App subgraphUri={subgraphUri} />
-      </BrowserRouter>
-    </ThemeSwitcherProvider>
-  </ApolloProvider>,
+  <ThemeSwitcherProvider themeMap={themes} defaultTheme={prevTheme || "light"}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </ThemeSwitcherProvider>,
   document.getElementById("root"),
 );

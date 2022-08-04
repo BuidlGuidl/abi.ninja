@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
-    "@apollo/client": "^3.3.21",
     "@apollo/react-hooks": "^4.0.0",
     "@arbitrum/sdk": "^2.0.0",
     "@craco/craco": "^6.4.5",
@@ -62,7 +61,6 @@
     "web3modal": "^1.9.1"
   },
   "devDependencies": {
-    "@apollo/client": "^3.3.21",
     "@testing-library/dom": "^6.12.2",
     "@types/react": "^16.9.19",
     "autoprefixer": "^10.2.4",

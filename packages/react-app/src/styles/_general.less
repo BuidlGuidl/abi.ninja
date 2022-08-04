@@ -1,0 +1,51 @@
+// General & utils
+body {
+  margin: 0;
+  background-color: @dark-color;
+}
+
+// Utils
+.center {
+  text-align: center;
+}
+
+// ToDo. We should override antd styles with craco-antd plugin
+.App {
+  body & {
+    color: white;
+  }
+
+  ::-webkit-input-placeholder {
+    color: @light-grey;
+  }
+
+  ::-moz-placeholder {
+    color: @light-grey;
+  }
+
+  :-ms-input-placeholder {
+    color: @light-grey;
+  }
+
+  :-moz-placeholder {
+    color: @light-grey;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .ant-btn {
+    border-radius: 8px;
+    font-weight: bold;
+  }
+
+  .ant-btn-primary {
+    background-color: @primary-color;
+    border-color: @primary-color;
+  }
+
+  h1, h2, h3, h4, h5, h6, p {
+    color: white;
+  }
+}
