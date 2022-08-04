@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 import { useBalance, useGasPrice, useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
 import {
   Account,
   Faucet,
@@ -20,6 +20,7 @@ import { Web3ModalSetup } from "./helpers";
 import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
+import useBodyClass from "./hooks/useBodyClass";
 
 const { ethers } = require("ethers");
 /*
@@ -42,7 +43,7 @@ const { ethers } = require("ethers");
 */
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.mainnet; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = NETWORKS.mainnet;
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -59,7 +60,7 @@ const providers = [
   // "https://rpc.scaffoldeth.io:48544",
 ];
 
-function App(props) {
+function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
   const networkOptions = [initialNetwork.name, "mainnet", "rinkeby"];
@@ -69,6 +70,7 @@ function App(props) {
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
 
   const targetNetwork = NETWORKS[selectedNetwork];
+  const location = useLocation();
 
   // 🔭 block explorer URL
   const blockExplorer = targetNetwork.blockExplorer;
@@ -166,6 +168,9 @@ function App(props) {
   }, [loadWeb3Modal]);
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
+
+  const appClass = location.hash ? location.hash.replace("#", "") : "index";
+  useBodyClass(`path-${appClass}`);
 
   return (
     <div className="App">

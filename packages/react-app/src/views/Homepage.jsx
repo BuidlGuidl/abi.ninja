@@ -6,6 +6,7 @@ import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 import { init as etherscanInit } from "etherscan-api";
 import { ContractUI } from "./index";
+import { useHistory } from "react-router-dom";
 
 const { Panel } = Collapse;
 
@@ -20,6 +21,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
   const [contractAddress, setContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
+  const history = useHistory();
 
   const loadedContractEtherscan = async () => {
     let contractUrlObject;
@@ -62,6 +64,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     // ToDo. Need to fix this. User Signer might be pointing the previous selected network.
     const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
+    history.push({ hash: "#contract" });
   };
 
   const loadContractRaw = async () => {
@@ -104,6 +107,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     setContractAddress("");
     setContractAbi("");
     setEtherscanUrl("");
+    history.push({ hash: "" });
   };
 
   const networkSelect = (

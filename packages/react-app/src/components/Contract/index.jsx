@@ -5,7 +5,7 @@ import Address from "../Address";
 import Balance from "../Balance";
 import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
-import { SettingOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 
 const noContractDisplay = (
   <div>
@@ -56,6 +56,8 @@ export default function Contract({
   blockExplorer,
   chainId,
   contractConfig,
+  selectedNetwork,
+  reset,
 }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const contracts = useContractLoader(provider, contractConfig, chainId);
@@ -144,8 +146,7 @@ export default function Contract({
   return (
     <div className="contract-component" style={{ margin: "auto", width: "70vw" }}>
       <Row gutter={16}>
-        <Col span={14}>
-          <SettingOutlined style={{ fontSize: "26px", cursor: "pointer" }} onClick={() => setIsModalVisible(true)} />
+        <Col span={14} className="contract-column">
           <Modal
             className="method-selection"
             title="Method selection"
@@ -160,10 +161,16 @@ export default function Contract({
             </div>
             <Checkbox.Group options={allMethodsNames} value={seletectedContractMethods} onChange={handleMethodChange} />
           </Modal>
+          <div className="contract-top-controls">
+            <Button className="return-button" type="link" onClick={reset}>
+              <ArrowLeftOutlined style={{ fontSize: "16px", cursor: "pointer" }} /> Return
+            </Button>
+            <SettingOutlined style={{ fontSize: "20px", cursor: "pointer" }} onClick={() => setIsModalVisible(true)} />
+          </div>
           <Card
             className="contract-methods-display"
             size="large"
-            style={{ marginTop: 25, width: "100%" }}
+            style={{ marginTop: 15, width: "100%" }}
             loading={contractMethodsDisplay && contractMethodsDisplay.length <= 0}
           >
             {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
@@ -173,7 +180,7 @@ export default function Contract({
           <Card
             title={
               <div style={{ fontSize: 18 }}>
-                {name}
+                <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>
                 <div style={{ float: "right" }}>
                   <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
                   <Balance address={address} provider={provider} price={price} fontSize={18} />
