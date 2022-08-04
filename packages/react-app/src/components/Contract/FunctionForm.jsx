@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Input, Row, Tooltip } from "antd";
+import { Button, Col, Input, Row, Tooltip } from "antd";
 import React, { useState } from "react";
 import Blockies from "react-blockies";
 

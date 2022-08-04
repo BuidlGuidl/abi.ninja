@@ -1,6 +1,5 @@
 import React from "react";
 import { Contract } from "../components";
-import { Button } from "antd";
 
 function ContractUI({ customContract, signer, provider, blockExplorer, selectedNetwork, reset }) {
   return (
