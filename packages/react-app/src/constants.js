@@ -19,7 +19,7 @@ export const NETWORKS = {
     color: "#666666",
     chainId: 31337,
     blockExplorer: "",
-    rpcUrl: localRpcUrl,
+    rpcUrl: "http://127.0.0.1:8545/",
   },
   mainnet: {
     name: "mainnet",
