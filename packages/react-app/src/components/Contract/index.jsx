@@ -189,7 +189,7 @@ export default function Contract({
               </div>
             }
             size="large"
-            style={{ marginTop: 25, width: "100%" }}
+            style={{ marginTop: 18, width: "100%" }}
             loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
           >
             {contractIsDeployed ? contractVariablesDisplay : noContractDisplay}

@@ -22,6 +22,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
   const [contractAddress, setContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
+  const [isLoadingContract, setIsLoadingContract] = useState(false);
   const history = useHistory();
   const location = useLocation();
 
@@ -103,14 +104,17 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
 
     const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
+    history.push({ hash: "#contract" });
   };
 
-  const loadContract = () => {
+  const loadContract = async () => {
+    setIsLoadingContract(true);
     if (etherscanUrl) {
-      loadedContractEtherscan();
+      await loadedContractEtherscan();
     } else {
-      loadContractRaw();
+      await loadContractRaw();
     }
+    setIsLoadingContract(false);
   };
 
   const reset = () => {
@@ -187,7 +191,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract}>
+            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract}>
               Load Contract
             </Button>
           </div>
@@ -204,7 +208,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract}>
+            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract}>
               Load Contract
             </Button>
           </div>

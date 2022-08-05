@@ -59,6 +59,8 @@ const providers = [
   // "https://rpc.scaffoldeth.io:48544",
 ];
 
+const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 1500;
+
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
@@ -95,10 +97,10 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, 60000);
+  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, 3000);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
-  const gasPrice = useGasPrice(targetNetwork, "fast", 60000);
+  const gasPrice = useGasPrice(targetNetwork, "fast", refreshPollTime);
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
   const userSigner = userProviderAndSigner.signer;
@@ -119,10 +121,10 @@ function App() {
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
   // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address, 60000);
+  const yourLocalBalance = useBalance(localProvider, address, refreshPollTime);
 
   // Just plug in different 🛰 providers to get your balance on different chains:
-  const yourMainnetBalance = useBalance(mainnetProvider, address, 60000);
+  const yourMainnetBalance = useBalance(mainnetProvider, address, refreshPollTime);
 
   //
   // 🧫 DEBUG 👨🏻‍🔬

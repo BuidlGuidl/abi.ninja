@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { tryToDisplay } from "./utils";
@@ -20,21 +20,24 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
     refresh();
   }, [refresh, refreshRequired, contractFunction]);
 
+  const value = tryToDisplay(variable, false, blockExplorer);
+
   return (
     <div className="contract-variable">
       <div
+        className="contract-variable-name"
         style={{
           paddingRight: 6,
-          color: "#b2b2b2",
-          fontSize: 18,
           display: "flex",
           alignItems: "center",
         }}
       >
         {functionInfo.name} <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon="🔄" />
       </div>
-      <div>
-        <p>{tryToDisplay(variable, false, blockExplorer)}</p>
+      <div className="contract-variable-value">
+        <Tooltip title={value} placement="bottomLeft">
+          <p>{value}</p>
+        </Tooltip>
       </div>
     </div>
   );

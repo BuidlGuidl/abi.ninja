@@ -29,17 +29,20 @@
       &:last-child {
         border: 0;
       }
+    }
 
+    .ant-collapse-header {
       svg {
         transform: rotate(90deg) !important;
       }
-
-      &.ant-collapse-item-active svg {
-        transform: rotate(270deg) !important;
-      }
     }
 
-    .ant-collapse-item-active svg {
+    .ant-collapse-item-active {
+      .ant-collapse-header {
+        svg {
+          transform: rotate(270deg) !important;
+        }
+      }
     }
 
     .ant-collapse-header {

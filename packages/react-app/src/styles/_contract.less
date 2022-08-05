@@ -61,6 +61,28 @@ body.path-contract {
     background-color: @almost-white;
   }
 
+  .contract-variable-name {
+    font-weight: bold;
+    color: @primary-color;
+    font-size: 16px;
+  }
+
+  .contract-variable-value {
+    p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .contract-result-action {
+    input {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
   .contract-method-name {
     border-bottom: 1px solid @primary-color;
     color: @primary-color;
