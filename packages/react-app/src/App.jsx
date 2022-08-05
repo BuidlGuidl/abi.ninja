@@ -20,7 +20,6 @@ import { Web3ModalSetup } from "./helpers";
 import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
-import useBodyClass from "./hooks/useBodyClass";
 
 const { ethers } = require("ethers");
 /*
@@ -168,9 +167,6 @@ function App() {
   }, [loadWeb3Modal]);
 
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
-
-  const appClass = location.hash ? location.hash.replace("#", "") : "index";
-  useBodyClass(`path-${appClass}`);
 
   return (
     <div className="App">

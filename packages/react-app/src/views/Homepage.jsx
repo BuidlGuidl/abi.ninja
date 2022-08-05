@@ -6,7 +6,8 @@ import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 import { init as etherscanInit } from "etherscan-api";
 import { ContractUI } from "./index";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import useBodyClass from "../hooks/useBodyClass";
 
 const { Panel } = Collapse;
 
@@ -22,6 +23,16 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const history = useHistory();
+  const location = useLocation();
+
+  // ToDo. Handle this in a better way (react-router)
+  const currentHash = location.hash.replace("#", "");
+  if (!loadedContract.address && currentHash.length > 0) {
+    history.push("/");
+  }
+
+  const appClass = loadedContract.address ? currentHash : "index";
+  useBodyClass(`path-${appClass}`);
 
   const loadedContractEtherscan = async () => {
     let contractUrlObject;
