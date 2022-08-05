@@ -9,10 +9,32 @@
     color: @light-color;
     background-color: transparent;
     padding: 5px 20px;
+
+    .path-contract & {
+      background-color: @light-color;
+      color: @primary-color;
+      border: 1px solid @primary-color;
+    }
   }
 
   .anticon-copy svg {
     fill: @light-color;
+
+    .path-contract & {
+      fill: @primary-color;
+    }
+  }
+
+  .path-contract & {
+    color: @primary-color;
+  }
+
+  .address-display a {
+    color: white;
+
+    .path-contract & {
+      color: @primary-color;
+    }
   }
 }
 

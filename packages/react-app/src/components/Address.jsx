@@ -1,6 +1,5 @@
 import { Skeleton, Typography } from "antd";
 import React from "react";
-import { useThemeSwitcher } from "react-css-theme-switcher";
 import Blockies from "react-blockies";
 import { useLookupAddress } from "eth-hooks/dapps/ens";
 
@@ -34,7 +33,6 @@ const { Text } = Typography;
 const blockExplorerLink = (address, blockExplorer) => `${blockExplorer || "https://etherscan.io/"}address/${address}`;
 
 export default function Address(props) {
-  const { currentTheme } = useThemeSwitcher();
   const address = props.value || props.address;
   const ens = useLookupAddress(props.ensProvider, address);
   const ensSplit = ens && ens.split(".");
@@ -61,12 +59,7 @@ export default function Address(props) {
   if (props.minimized) {
     return (
       <span className="address-component address-component-minimezed" style={{ verticalAlign: "middle" }}>
-        <a
-          style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
-          target="_blank"
-          href={etherscanLink}
-          rel="noopener noreferrer"
-        >
+        <a target="_blank" href={etherscanLink} rel="noopener noreferrer">
           <Blockies seed={address.toLowerCase()} size={8} scale={2} />
         </a>
       </span>
@@ -80,24 +73,14 @@ export default function Address(props) {
       </span>
       <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>
         {props.onChange ? (
-          <Text editable={{ onChange: props.onChange }} copyable={{ text: address }}>
-            <a
-              style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
-              target="_blank"
-              href={etherscanLink}
-              rel="noopener noreferrer"
-            >
+          <Text editable={{ onChange: props.onChange }} copyable={{ text: address }} className="address-display">
+            <a target="_blank" href={etherscanLink} rel="noopener noreferrer">
               {displayAddress}
             </a>
           </Text>
         ) : (
-          <Text copyable={{ text: address }}>
-            <a
-              style={{ color: currentTheme === "light" ? "#EFEAFF" : "#EFEAFF" }}
-              target="_blank"
-              href={etherscanLink}
-              rel="noopener noreferrer"
-            >
+          <Text copyable={{ text: address }} className="address-display">
+            <a target="_blank" href={etherscanLink} rel="noopener noreferrer">
               {displayAddress}
             </a>
           </Text>

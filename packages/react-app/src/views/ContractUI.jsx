@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Contract } from "../components";
 
 function ContractUI({ customContract, signer, provider, blockExplorer, selectedNetwork, reset }) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="contract-container">
       <Contract

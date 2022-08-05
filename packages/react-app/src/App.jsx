@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 import { useBalance, useGasPrice, useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
-import { Route, Switch, useLocation } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import {
   Account,
   Faucet,
@@ -69,7 +69,6 @@ function App() {
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
 
   const targetNetwork = NETWORKS[selectedNetwork];
-  const location = useLocation();
 
   // 🔭 block explorer URL
   const blockExplorer = targetNetwork.blockExplorer;
