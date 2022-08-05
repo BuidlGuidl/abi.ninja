@@ -1,10 +1,12 @@
-import { Button, Tooltip } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
+import { Button, Tooltip } from "antd";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { tryToDisplay } from "./utils";
 
 const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, triggerRefresh, blockExplorer }) => {
   const [variable, setVariable] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -21,6 +23,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
   }, [refresh, refreshRequired, contractFunction]);
 
   const value = tryToDisplay(variable, false, blockExplorer);
+  const valueAsText = tryToDisplay(variable, true, blockExplorer);
 
   return (
     <div className="contract-variable">
@@ -35,8 +38,18 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
         {functionInfo.name} <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon="🔄" />
       </div>
       <div className="contract-variable-value">
-        <Tooltip title={value} placement="bottomLeft">
-          <p>{value}</p>
+        <Tooltip title="copied!" placement="topLeft" visible={isCopied}>
+          <CopyToClipboard
+            text={valueAsText}
+            onCopy={() => {
+              setIsCopied(true);
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 500);
+            }}
+          >
+            <p>{value}</p>
+          </CopyToClipboard>
         </Tooltip>
       </div>
     </div>

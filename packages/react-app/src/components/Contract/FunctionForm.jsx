@@ -175,73 +175,65 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
   );
   inputs.push(
     <div style={{ cursor: "pointer", margin: 4 }} key="goButton" className="contract-result-action">
-      <Tooltip title="co">
-        <Input
-          onChange={e => setReturnValue(e.target.value)}
-          defaultValue=""
-          bordered={false}
-          disabled
-          value={returnValue}
-          suffix={
-            <div
-              onClick={async () => {
-                const args = functionInfo.inputs.map((input, inputIndex) => {
-                  const key = getFunctionInputKey(functionInfo, input, inputIndex);
-                  let value = form[key];
-                  if (["array", "tuple"].includes(input.baseType)) {
-                    value = JSON.parse(value);
-                  } else if (input.type === "bool") {
-                    if (
-                      value === "true" ||
-                      value === "1" ||
-                      value === "0x1" ||
-                      value === "0x01" ||
-                      value === "0x0001"
-                    ) {
-                      value = 1;
-                    } else {
-                      value = 0;
-                    }
+      <Input
+        onChange={e => setReturnValue(e.target.value)}
+        defaultValue=""
+        bordered={false}
+        disabled
+        value={returnValue}
+        suffix={
+          <div
+            onClick={async () => {
+              const args = functionInfo.inputs.map((input, inputIndex) => {
+                const key = getFunctionInputKey(functionInfo, input, inputIndex);
+                let value = form[key];
+                if (["array", "tuple"].includes(input.baseType)) {
+                  value = JSON.parse(value);
+                } else if (input.type === "bool") {
+                  if (value === "true" || value === "1" || value === "0x1" || value === "0x01" || value === "0x0001") {
+                    value = 1;
+                  } else {
+                    value = 0;
                   }
-                  return value;
-                });
-
-                let result;
-                if (functionInfo.stateMutability === "view" || functionInfo.stateMutability === "pure") {
-                  try {
-                    const returned = await contractFunction(...args);
-                    handleForm(returned);
-                    result = tryToDisplayAsText(returned);
-                  } catch (err) {
-                    console.error(err);
-                  }
-                } else {
-                  const overrides = {};
-                  if (txValue) {
-                    overrides.value = txValue; // ethers.utils.parseEther()
-                  }
-                  if (gasPrice) {
-                    overrides.gasPrice = gasPrice;
-                  }
-                  // Uncomment this if you want to skip the gas estimation for each transaction
-                  // overrides.gasLimit = hexlify(1200000);
-
-                  // console.log("Running with extras",extras)
-                  const returned = await tx(contractFunction(...args, overrides));
-                  handleForm(returned);
-                  result = tryToDisplay(returned);
                 }
+                return value;
+              });
 
-                console.log("SETTING RESULT:", result);
-                setReturnValue(result);
-                triggerRefresh(true);
-              }}
-            >
-              {buttonIcon}
-            </div>
-          }
-        />
-      </Tooltip>
+              let result;
+              if (functionInfo.stateMutability === "view" || functionInfo.stateMutability === "pure") {
+                try {
+                  const returned = await contractFunction(...args);
+                  handleForm(returned);
+                  result = tryToDisplayAsText(returned);
+                } catch (err) {
+                  console.error(err);
+                }
+              } else {
+                const overrides = {};
+                if (txValue) {
+                  overrides.value = txValue; // ethers.utils.parseEther()
+                }
+                if (gasPrice) {
+                  overrides.gasPrice = gasPrice;
+                }
+                // Uncomment this if you want to skip the gas estimation for each transaction
+                // overrides.gasLimit = hexlify(1200000);
+
+                // console.log("Running with extras",extras)
+                const returned = await tx(contractFunction(...args, overrides));
+                handleForm(returned);
+                result = tryToDisplay(returned);
+              }
+
+              console.log("SETTING RESULT:", result);
+              setReturnValue(result);
+              triggerRefresh(true);
+            }}
+          >
+            {buttonIcon}
+          </div>
+        }
+      />
     </div>,
   );
 

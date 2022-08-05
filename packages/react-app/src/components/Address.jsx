@@ -73,13 +73,17 @@ export default function Address(props) {
       </span>
       <span style={{ verticalAlign: "middle", paddingLeft: 5, fontSize: props.fontSize ? props.fontSize : 28 }}>
         {props.onChange ? (
-          <Text editable={{ onChange: props.onChange }} copyable={{ text: address }} className="address-display">
+          <Text
+            editable={{ onChange: props.onChange }}
+            copyable={{ text: address, tooltips: props.showTooltip ?? true }}
+            className="address-display"
+          >
             <a target="_blank" href={etherscanLink} rel="noopener noreferrer">
               {displayAddress}
             </a>
           </Text>
         ) : (
-          <Text copyable={{ text: address }} className="address-display">
+          <Text copyable={{ text: address, tooltips: props.showTooltip }} className="address-display">
             <a target="_blank" href={etherscanLink} rel="noopener noreferrer">
               {displayAddress}
             </a>

@@ -68,10 +68,18 @@ body.path-contract {
   }
 
   .contract-variable-value {
+    cursor: copy;
+
     p {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      word-break: break-all;
+    }
+  }
+
+  .contract-variables-display {
+    .address-display {
+      svg {
+        color: @primary-color;
+      }
     }
   }
 

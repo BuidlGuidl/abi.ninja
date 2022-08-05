@@ -56,7 +56,7 @@ const web3Modal = Web3ModalSetup();
 const providers = [
   "https://eth-mainnet.gateway.pokt.network/v1/lb/611156b4a585a20035148406",
   `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
-  // "https://rpc.scaffoldeth.io:48544",
+  "https://rpc.scaffoldeth.io:48544",
 ];
 
 const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 1500;
@@ -97,7 +97,7 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, 3000);
+  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, refreshPollTime);
 
   /* 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation */
   const gasPrice = useGasPrice(targetNetwork, "fast", refreshPollTime);
