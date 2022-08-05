@@ -18,6 +18,8 @@ yarn install
 yarn chain
 ```
 
+Copy `packages/react-app/.sample.env` to `packages/react-app/.env` and set the env vars.
+
 > in a second terminal window, start your 📱 frontend:
 
 ```bash
