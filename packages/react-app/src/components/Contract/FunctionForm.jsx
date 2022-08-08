@@ -1,6 +1,8 @@
-import { Button, Col, Input, Row, Tooltip } from "antd";
+import { Button, Input, Tooltip } from "antd";
 import React, { useState } from "react";
 import Blockies from "react-blockies";
+import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
+import { ReactComponent as PoundSVG } from "../../assets/pound.svg";
 
 import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
@@ -35,7 +37,7 @@ export default function FunctionForm({
       buttons = (
         <Tooltip placement="right" title="to bytes32">
           <div
-            type="dashed"
+            className="helper-button-contract-input"
             style={{ cursor: "pointer" }}
             onClick={async () => {
               if (utils.isHexString(form[key])) {
@@ -49,7 +51,7 @@ export default function FunctionForm({
               }
             }}
           >
-            #️⃣
+            <PoundSVG />
           </div>
         </Tooltip>
       );
@@ -57,7 +59,7 @@ export default function FunctionForm({
       buttons = (
         <Tooltip placement="right" title="to hex">
           <div
-            type="dashed"
+            className="helper-button-contract-input"
             style={{ cursor: "pointer" }}
             onClick={async () => {
               if (utils.isHexString(form[key])) {
@@ -71,7 +73,7 @@ export default function FunctionForm({
               }
             }}
           >
-            #️⃣
+            <PoundSVG />
           </div>
         </Tooltip>
       );
@@ -79,7 +81,7 @@ export default function FunctionForm({
       buttons = (
         <Tooltip placement="right" title="* 10 ** 18">
           <div
-            type="dashed"
+            className="helper-button-contract-input"
             style={{ cursor: "pointer" }}
             onClick={async () => {
               const formUpdate = { ...form };
@@ -87,7 +89,7 @@ export default function FunctionForm({
               setForm(formUpdate);
             }}
           >
-            ✴️
+            <AsteriskSVG />
           </div>
         </Tooltip>
       );
@@ -138,42 +140,37 @@ export default function FunctionForm({
   });
 
   const txValueInput = (
-    <div style={{ margin: 2 }} key="txValueInput">
+    <div className="contract-method-input" key="txValueInput">
       <Input
         placeholder="transaction value"
         onChange={e => setTxValue(e.target.value)}
         value={txValue}
-        addonAfter={
-          <div>
-            <Row>
-              <Col span={16}>
-                <Tooltip placement="right" title=" * 10^18 ">
-                  <div
-                    type="dashed"
-                    style={{ cursor: "pointer" }}
-                    onClick={async () => {
-                      const floatValue = parseFloat(txValue);
-                      if (floatValue) setTxValue("" + floatValue * 10 ** 18);
-                    }}
-                  >
-                    ✳️
-                  </div>
-                </Tooltip>
-              </Col>
-              <Col span={16}>
-                <Tooltip placement="right" title="number to hex">
-                  <div
-                    type="dashed"
-                    style={{ cursor: "pointer" }}
-                    onClick={async () => {
-                      setTxValue(BigNumber.from(txValue).toHexString());
-                    }}
-                  >
-                    #️⃣
-                  </div>
-                </Tooltip>
-              </Col>
-            </Row>
+        size="large"
+        suffix={
+          <div className="helper-buttons-contract-inputs">
+            <Tooltip placement="right" title=" * 10^18 ">
+              <div
+                className="helper-button-contract-input"
+                style={{ cursor: "pointer" }}
+                onClick={async () => {
+                  const floatValue = parseFloat(txValue);
+                  if (floatValue) setTxValue("" + floatValue * 10 ** 18);
+                }}
+              >
+                <AsteriskSVG />
+              </div>
+            </Tooltip>
+            <Tooltip placement="right" title="number to hex">
+              <div
+                className="helper-button-contract-input"
+                style={{ cursor: "pointer" }}
+                onClick={async () => {
+                  setTxValue(BigNumber.from(txValue).toHexString());
+                }}
+              >
+                <PoundSVG />
+              </div>
+            </Tooltip>
           </div>
         }
       />
