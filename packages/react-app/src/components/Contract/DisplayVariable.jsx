@@ -3,6 +3,7 @@ import { Button, Tooltip } from "antd";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { tryToDisplay } from "./utils";
+import { RetweetOutlined } from "@ant-design/icons";
 
 const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, triggerRefresh, blockExplorer }) => {
   const [variable, setVariable] = useState("");
@@ -35,10 +36,13 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
           alignItems: "center",
         }}
       >
-        {functionInfo.name} <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon="🔄" />
+        {functionInfo.name}{" "}
+        <Tooltip title="Refresh">
+          <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon={<RetweetOutlined />} />
+        </Tooltip>
       </div>
       <div className="contract-variable-value">
-        <Tooltip title="copied!" placement="topLeft" visible={isCopied}>
+        <Tooltip title="Copied!" placement="topLeft" visible={isCopied}>
           <CopyToClipboard
             text={valueAsText}
             onCopy={() => {
