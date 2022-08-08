@@ -24,6 +24,8 @@ export default function FunctionForm({
   triggerRefresh,
 }) {
   const [form, setForm] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
   const [txValue, setTxValue] = useState();
   const [returnValue, setReturnValue] = useState();
 
@@ -190,9 +192,13 @@ export default function FunctionForm({
   const isReadable = fn => fn.stateMutability === "view" || fn.stateMutability === "pure";
 
   const buttonIcon = isReadable(functionInfo) ? (
-    <Button className="contract-action-button">Read 📡</Button>
+    <Button className="contract-action-button" loading={isLoading}>
+      Read 📡
+    </Button>
   ) : (
-    <Button className="contract-action-button">Send 💸</Button>
+    <Button className="contract-action-button" loading={isLoading}>
+      Send 💸
+    </Button>
   );
   inputs.push(
     <div style={{ cursor: "pointer", margin: 4 }} key="goButton" className="contract-result-action">
@@ -205,6 +211,7 @@ export default function FunctionForm({
         suffix={
           <div
             onClick={async () => {
+              setIsLoading(true);
               const args = functionInfo.inputs.map((input, inputIndex) => {
                 const key = getFunctionInputKey(functionInfo, input, inputIndex);
                 let value = form[key];
@@ -247,6 +254,7 @@ export default function FunctionForm({
               }
 
               console.log("SETTING RESULT:", result);
+              setIsLoading(false);
               setReturnValue(result);
               triggerRefresh(true);
             }}
