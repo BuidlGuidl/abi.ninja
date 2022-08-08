@@ -6,6 +6,7 @@ import Balance from "../Balance";
 import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
+import ContractNavigation from "./ContractNavigation";
 
 const noContractDisplay = (
   <div>
@@ -150,9 +151,12 @@ export default function Contract({
   };
 
   return (
-    <div className="contract-component" style={{ margin: "auto", width: "70vw" }}>
+    <div className="contract-component" style={{ margin: "auto", width: "80%" }}>
       <Row gutter={16}>
-        <Col span={14} className="contract-column">
+        <Col span={4} className="contract-navigation">
+          <ContractNavigation contractMethods={seletectedContractMethods} />
+        </Col>
+        <Col span={12} className="contract-column">
           <Modal
             className="method-selection"
             title="Method selection"
@@ -182,7 +186,7 @@ export default function Contract({
             {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
           </Card>
         </Col>
-        <Col span={10} style={{ marginTop: 30 }}>
+        <Col span={8} style={{ marginTop: 30 }}>
           <Card
             className="contract-variables-display"
             title={
