@@ -5,7 +5,7 @@ import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
 import { ReactComponent as PoundSVG } from "../../assets/pound.svg";
 
 import { Transactor } from "../../helpers";
-import { tryToDisplay, tryToDisplayAsText } from "./utils";
+import { isPositiveInteger, tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
 
 const { utils, BigNumber } = require("ethers");
@@ -86,6 +86,8 @@ export default function FunctionForm({
             className="helper-button-contract-input"
             style={{ cursor: "pointer" }}
             onClick={async () => {
+              if (!form[key] || !isPositiveInteger(form[key])) return;
+
               const formUpdate = { ...form };
               formUpdate[key] = utils.parseEther(form[key]);
               setForm(formUpdate);
@@ -155,6 +157,8 @@ export default function FunctionForm({
                 className="helper-button-contract-input"
                 style={{ cursor: "pointer" }}
                 onClick={async () => {
+                  if (!txValue) return;
+
                   const floatValue = parseFloat(txValue);
                   if (floatValue) setTxValue("" + floatValue * 10 ** 18);
                 }}

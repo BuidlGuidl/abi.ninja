@@ -30,4 +30,14 @@ const tryToDisplay = (thing, asText = false, blockExplorer) => {
 
 const tryToDisplayAsText = thing => tryToDisplay(thing, true);
 
-export { tryToDisplay, tryToDisplayAsText };
+const isPositiveInteger = str => {
+  if (typeof str !== "string") {
+    return false;
+  }
+
+  const num = Number(str);
+
+  return Number.isInteger(num) && num > 0;
+};
+
+export { tryToDisplay, tryToDisplayAsText, isPositiveInteger };
