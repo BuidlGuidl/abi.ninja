@@ -1,6 +1,6 @@
 import { Button, Card, Checkbox, Col, Modal, Row } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
 import Balance from "../Balance";
 import DisplayVariable from "./DisplayVariable";
@@ -50,6 +50,7 @@ export default function Contract({
   gasPrice,
   signer,
   provider,
+  mainnetProvider,
   name,
   show,
   price,
@@ -70,6 +71,10 @@ export default function Contract({
 
   const address = contract ? contract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [contractIsDeployed]);
 
   const displayedContractFunctions = useMemo(() => {
     const results = contract
@@ -130,6 +135,7 @@ export default function Contract({
             contractFunction={contractFunc}
             functionInfo={contractFuncInfo[1]}
             provider={provider}
+            mainnetProvider={mainnetProvider}
             gasPrice={gasPrice}
             triggerRefresh={triggerRefresh}
           />,

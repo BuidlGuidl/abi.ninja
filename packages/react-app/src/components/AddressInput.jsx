@@ -41,7 +41,7 @@ export default function AddressInput(props) {
   const [scan, setScan] = useState(false);
 
   const currentValue = typeof props.value !== "undefined" ? props.value : value;
-  const ens = useLookupAddress(props.ensProvider, currentValue);
+  const retrievedEns = useLookupAddress(props.ensProvider, currentValue);
 
   const updateAddress = useCallback(
     async newValue => {
@@ -56,6 +56,7 @@ export default function AddressInput(props) {
             // eslint-disable-next-line no-empty
           } catch (e) {}
         }
+        console.log("Setting", address);
         setValue(address);
         if (typeof onChange === "function") {
           onChange(address);
@@ -66,7 +67,7 @@ export default function AddressInput(props) {
   );
 
   return (
-    <div>
+    <>
       {scan ? (
         <div
           style={{
@@ -106,15 +107,18 @@ export default function AddressInput(props) {
         ""
       )}
       <Input
-        id="0xAddress" // name it something other than address for auto fill doxxing
-        name="0xAddress" // name it something other than address for auto fill doxxing
+        name={props.name ?? "0xAddress"}
         className="input-address"
         autoComplete="off"
         autoFocus={props.autoFocus}
         placeholder={props.placeholder ? props.placeholder : ""}
         prefix={<Blockie address={currentValue} size={8} scale={3} />}
         size="large"
-        value={ethers.utils.isAddress(currentValue) && !isENS(currentValue) && isENS(ens) ? ens : currentValue}
+        value={
+          ethers.utils.isAddress(currentValue) && !isENS(currentValue) && isENS(retrievedEns)
+            ? retrievedEns
+            : currentValue
+        }
         addonAfter={
           <div
             style={{ marginTop: 4, cursor: "pointer" }}
@@ -132,6 +136,6 @@ export default function AddressInput(props) {
           updateAddress(e.target.value);
         }}
       />
-    </div>
+    </>
   );
 }

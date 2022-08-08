@@ -151,6 +151,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
         customContract={loadedContract}
         signer={userSigner}
         provider={localProvider}
+        mainnetProvider={mainnetProvider}
         blockExplorer={selectedNetwork.blockExplorer}
         selectedNetwork={selectedNetwork}
         reset={reset}

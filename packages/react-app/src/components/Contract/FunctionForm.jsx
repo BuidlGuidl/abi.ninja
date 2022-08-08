@@ -4,6 +4,7 @@ import Blockies from "react-blockies";
 
 import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
+import AddressInput from "../AddressInput";
 
 const { utils, BigNumber } = require("ethers");
 
@@ -12,7 +13,14 @@ const getFunctionInputKey = (functionInfo, input, inputIndex) => {
   return functionInfo.name + "_" + name + "_" + input.type;
 };
 
-export default function FunctionForm({ contractFunction, functionInfo, provider, gasPrice, triggerRefresh }) {
+export default function FunctionForm({
+  contractFunction,
+  functionInfo,
+  provider,
+  mainnetProvider,
+  gasPrice,
+  triggerRefresh,
+}) {
   const [form, setForm] = useState({});
   const [txValue, setTxValue] = useState();
   const [returnValue, setReturnValue] = useState();
@@ -96,19 +104,35 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
 
     return (
       <div className="contract-method-input" key={key}>
-        <Input
-          size="large"
-          placeholder={input.name ? input.type + " " + input.name : input.type}
-          autoComplete="off"
-          value={form[key]}
-          name={key}
-          onChange={event => {
-            const formUpdate = { ...form };
-            formUpdate[event.target.name] = event.target.value;
-            setForm(formUpdate);
-          }}
-          suffix={buttons}
-        />
+        {input.type === "address" ? (
+          <AddressInput
+            autoFocus
+            name={key}
+            ensProvider={mainnetProvider}
+            placeholder={input.name ? input.type + " " + input.name : input.type}
+            value={form[key]}
+            onChange={address => {
+              const formUpdate = { ...form };
+              formUpdate[key] = address;
+              setForm(formUpdate);
+            }}
+            suffix={buttons}
+          />
+        ) : (
+          <Input
+            size="large"
+            placeholder={input.name ? input.type + " " + input.name : input.type}
+            autoComplete="off"
+            value={form[key]}
+            name={key}
+            onChange={event => {
+              const formUpdate = { ...form };
+              formUpdate[event.target.name] = event.target.value;
+              setForm(formUpdate);
+            }}
+            suffix={buttons}
+          />
+        )}
       </div>
     );
   });

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Contract } from "../components";
 
-function ContractUI({ customContract, signer, provider, blockExplorer, selectedNetwork, reset }) {
+function ContractUI({ customContract, signer, provider, blockExplorer, selectedNetwork, reset, mainnetProvider }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -12,6 +12,7 @@ function ContractUI({ customContract, signer, provider, blockExplorer, selectedN
         customContract={customContract}
         signer={signer}
         provider={provider}
+        mainnetProvider={mainnetProvider}
         blockExplorer={blockExplorer}
         selectedNetwork={selectedNetwork}
         reset={reset}
