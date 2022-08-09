@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import ContractNavigationMarker from "./ContractNavigationMarker";
 
 export default function ContractNavigation({ contractMethods }) {
   const history = useHistory();
@@ -12,14 +13,22 @@ export default function ContractNavigation({ contractMethods }) {
   }, [history.location]);
 
   return (
-    <ul>
-      {contractMethods.map(method => {
-        return (
-          <li>
-            <span onClick={() => history.push({ hash: "contract", search: `method-${method}` })}>{method}</span>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="contract-navigation-content">
+      <ul>
+        {contractMethods.map(method => {
+          return (
+            <li key={method}>
+              <span
+                data-target={`method-${method}`}
+                onClick={() => history.push({ hash: "contract", search: `method-${method}` })}
+              >
+                {method}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      <ContractNavigationMarker />
+    </div>
   );
 }

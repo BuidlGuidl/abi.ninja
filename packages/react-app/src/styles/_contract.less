@@ -168,15 +168,23 @@ body.path-contract {
 
   .contract-navigation li {
     color: @primary-color;
+    margin-left: 10px;
 
-    a {
-      color: @primary-color;
+    span {
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 }
 
 .contract-navigation {
   ul {
+    list-style: none;
+    padding-left: 15px;
+  }
+
+  .contract-navigation-content {
     position: sticky;
     padding-top: 50px;
     top: 0;
@@ -184,5 +192,18 @@ body.path-contract {
 
   span {
     cursor: pointer;
+  }
+}
+
+.navigation-marker {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+
+  path {
+    transition: all 0.2s ease;
   }
 }
