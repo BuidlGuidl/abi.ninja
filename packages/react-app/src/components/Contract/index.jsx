@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Col, Modal, Row } from "antd";
+import { Button, Card, Checkbox, Col, Modal, Row, Skeleton } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
@@ -7,42 +7,6 @@ import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import ContractNavigation from "./ContractNavigation";
-
-const noContractDisplay = (
-  <div>
-    Loading...{" "}
-    <div style={{ padding: 32 }}>
-      You need to run{" "}
-      <span
-        className="highlight"
-        style={{ marginLeft: 4, /* backgroundColor: "#f1f1f1", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-      >
-        yarn run chain
-      </span>{" "}
-      and{" "}
-      <span
-        className="highlight"
-        style={{ marginLeft: 4, /* backgroundColor: "#f1f1f1", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-      >
-        yarn run deploy
-      </span>{" "}
-      to see your contract here.
-    </div>
-    <div style={{ padding: 32 }}>
-      <span style={{ marginRight: 4 }} role="img" aria-label="warning">
-        ☢️
-      </span>
-      Warning: You might need to run
-      <span
-        className="highlight"
-        style={{ marginLeft: 4, /* backgroundColor: "#f1f1f1", */ padding: 4, borderRadius: 4, fontWeight: "bolder" }}
-      >
-        yarn run deploy
-      </span>{" "}
-      <i>again</i> after the frontend comes up!
-    </div>
-  </div>
-);
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
 
@@ -154,7 +118,7 @@ export default function Contract({
     <div className="contract-component" style={{ margin: "auto", width: "80%" }}>
       <Row gutter={16}>
         <Col span={4} className="contract-navigation">
-          <ContractNavigation contractMethods={seletectedContractMethods} />
+          <ContractNavigation contractMethods={seletectedContractMethods} contractIsDeployed={contractIsDeployed} />
         </Col>
         <Col span={12} className="contract-column">
           <Modal
@@ -183,7 +147,7 @@ export default function Contract({
             style={{ marginTop: 15, width: "100%" }}
             loading={contractMethodsDisplay && contractMethodsDisplay.length <= 0}
           >
-            {contractIsDeployed ? contractMethodsDisplay : noContractDisplay}
+            {contractIsDeployed ? contractMethodsDisplay : <Skeleton active />}
           </Card>
         </Col>
         <Col span={8} style={{ marginTop: 30 }}>
@@ -202,7 +166,7 @@ export default function Contract({
             style={{ marginTop: 18, width: "100%" }}
             loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
           >
-            {contractIsDeployed ? contractVariablesDisplay : noContractDisplay}
+            {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
           </Card>
         </Col>
       </Row>

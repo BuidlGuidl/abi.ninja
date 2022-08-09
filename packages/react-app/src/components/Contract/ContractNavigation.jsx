@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import ContractNavigationMarker from "./ContractNavigationMarker";
 
-export default function ContractNavigation({ contractMethods }) {
+export default function ContractNavigation({ contractMethods, contractIsDeployed }) {
   const history = useHistory();
 
   useEffect(() => {
@@ -11,6 +11,8 @@ export default function ContractNavigation({ contractMethods }) {
     const selectedMethod = history.location.search.substring(1);
     document.getElementById(selectedMethod).scrollIntoView({ behavior: "smooth" });
   }, [history.location]);
+
+  if (!contractIsDeployed) return null;
 
   return (
     <div className="contract-navigation-content">
