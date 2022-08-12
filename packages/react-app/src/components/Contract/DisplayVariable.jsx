@@ -7,8 +7,10 @@ import Text from "antd/es/typography/Text";
 
 const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, triggerRefresh, blockExplorer }) => {
   const [variable, setVariable] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refresh = useCallback(async () => {
+    setIsRefreshing(true);
     try {
       const funcResponse = await contractFunction();
       setVariable(funcResponse);
@@ -16,6 +18,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
     } catch (e) {
       console.log(e);
     }
+    setIsRefreshing(false);
   }, [setVariable, contractFunction, triggerRefresh]);
 
   useEffect(() => {
@@ -37,7 +40,13 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
       >
         {functionInfo.name}{" "}
         <Tooltip title="Refresh">
-          <Button style={{ fontSize: 12 }} type="link" onClick={refresh} icon={<RetweetOutlined />} />
+          <Button
+            style={{ fontSize: 12 }}
+            type="link"
+            onClick={refresh}
+            icon={<RetweetOutlined />}
+            loading={isRefreshing}
+          />
         </Tooltip>
       </div>
       <div className="contract-variable-value">
