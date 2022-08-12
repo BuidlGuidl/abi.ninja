@@ -14,7 +14,7 @@ const tryToDisplay = (thing, asText = false, blockExplorer) => {
     }
   }
   if (thing && thing.indexOf && thing.indexOf("0x") === 0 && thing.length === 42) {
-    return asText ? thing : <Address address={thing} fontSize={14} blockExplorer={blockExplorer} showTooltip={false} />;
+    return asText ? thing : <Address address={thing} fontSize={14} blockExplorer={blockExplorer} />;
   }
   if (thing && thing.constructor && thing.constructor.name === "Array") {
     const mostReadable = v => (["number", "boolean"].includes(typeof v) ? v : tryToDisplayAsText(v));

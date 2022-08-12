@@ -61,6 +61,10 @@ body.path-contract {
     background-color: @almost-white;
   }
 
+  .contract-variable {
+    margin-bottom: 5px;
+  }
+
   .contract-variable-name {
     font-weight: bold;
     color: @primary-color;
@@ -72,10 +76,13 @@ body.path-contract {
   }
 
   .contract-variable-value {
-    cursor: copy;
-
-    p {
+    span {
       word-break: break-all;
+      margin-right: 5px;
+    }
+
+    svg {
+      color: @primary-color;
     }
   }
 
