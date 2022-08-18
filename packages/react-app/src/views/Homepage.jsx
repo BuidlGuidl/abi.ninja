@@ -18,8 +18,8 @@ const ETHERSCAN_API = process.env.REACT_APP_ETHERSCAN_API;
 
 function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, onUpdateNetwork }) {
   const [loadedContract, setLoadedContract] = useState({});
-  const [etherscanUrl, setEtherscanUrl] = useState("");
-  const [contractAddress, setContractAddress] = useState("");
+  const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
+  const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const [isLoadingContract, setIsLoadingContract] = useState(false);
@@ -36,30 +36,15 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
   useBodyClass(`path-${appClass}`);
 
   const loadedContractEtherscan = async () => {
-    let contractUrlObject;
-    try {
-      contractUrlObject = new URL(etherscanUrl);
-    } catch (e) {
-      message.error("Invalid URL");
+    if (!ethers.utils.isAddress(verifiedContractAddress)) {
+      message.error("Invalid Contract Address");
       return;
     }
-    let network = contractUrlObject.host.split(".")[0];
-    if (network === "etherscan") {
-      // No subdomain.
-      network = "mainnet";
-    }
-
-    if (selectedNetwork.name !== network) {
-      message.error(`You need to switch to ${network}`);
-      return;
-    }
-
-    const contractAddress = contractUrlObject.pathname.replace("/address/", "");
-    const etherscanClient = etherscanInit(ETHERSCAN_API, network === "mainnet" ? "" : network, 10000);
+    const etherscanClient = etherscanInit(ETHERSCAN_API, selectedNetwork.name, 10000);
 
     let response;
     try {
-      response = await etherscanClient.contract.getabi(contractAddress);
+      response = await etherscanClient.contract.getabi(verifiedContractAddress);
     } catch (e) {
       message.error(`From Etherscan API: ${e}`);
       return;
@@ -74,18 +59,18 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     const contractAbi = response.result;
 
     // ToDo. Need to fix this. User Signer might be pointing the previous selected network.
-    const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
+    const contract = new ethers.Contract(verifiedContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
     history.push({ hash: "#contract" });
   };
 
   const loadContractRaw = async () => {
-    if (!validateAddress(contractAddress)) {
+    if (!validateAddress(abiContractAddress)) {
       message.error("Invalid Contract Address");
       return;
     }
 
-    const bytecode = await userSigner.provider.getCode(contractAddress);
+    const bytecode = await userSigner.provider.getCode(abiContractAddress);
     if (bytecode === "0x") {
       message.error(`There is no Contract Deployed at that address on ${selectedNetwork.name}`);
       return;
@@ -102,14 +87,14 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
       return;
     }
 
-    const contract = new ethers.Contract(contractAddress, contractAbi, userSigner);
+    const contract = new ethers.Contract(abiContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
     history.push({ hash: "#contract" });
   };
 
   const loadContract = async () => {
     setIsLoadingContract(true);
-    if (etherscanUrl) {
+    if (verifiedContractAddress) {
       await loadedContractEtherscan();
     } else {
       await loadContractRaw();
@@ -119,9 +104,9 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
 
   const reset = () => {
     setLoadedContract({});
-    setContractAddress("");
+    setAbiContractAddress("");
     setContractAbi("");
-    setEtherscanUrl("");
+    setVerifiedContractAddress("");
     history.push({ hash: "" });
   };
 
@@ -164,52 +149,55 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
       <div className="logo">
         <img src="/logo_inv.svg" alt="logo" />
       </div>
-      <div className="center">
+      <div className="lead-text">
+        <p>Interact with any contract on Ethereum.</p>
+      </div>
+      <div className="network-selector center">
         <p>{networkSelect}</p>
       </div>
 
       <Collapse defaultActiveKey={["1"]} className="abi-ninja-options" accordion>
-        <Panel header="Address + ABI" key="1">
+        <Panel header="Verified Contract Address" key="1">
           <div className="form-item">
-            <label style={{ fontSize: 18 }}>Contract Address:</label>
+            <Input
+              value={verifiedContractAddress}
+              placeholder={`Verified contract address on ${selectedNetwork.name}`}
+              size="large"
+              onChange={e => {
+                setVerifiedContractAddress(e.target.value);
+              }}
+            />
+          </div>
+          <div className="options-actions">
+            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract} block>
+              Load Contract
+            </Button>
+          </div>
+        </Panel>
+        <Panel header="Address + ABI" key="2">
+          <div className="form-item">
             <AddressInput
               autoFocus
               ensProvider={mainnetProvider}
               size="large"
-              value={contractAddress}
-              onChange={setContractAddress}
+              value={abiContractAddress}
+              onChange={setAbiContractAddress}
+              placeholder={`Contract address on ${selectedNetwork.name}`}
             />
           </div>
           <div className="form-item">
-            <label style={{ fontSize: 18 }}>Contract ABI (json format):</label>
             <TextArea
               style={{ height: 120 }}
               value={contractAbi}
               size="large"
+              placeholder="Contract ABI (json format)"
               onChange={e => {
                 setContractAbi(e.target.value);
               }}
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract}>
-              Load Contract
-            </Button>
-          </div>
-        </Panel>
-        <Panel header="Etherscan URL" key="2">
-          <div className="form-item">
-            <label style={{ fontSize: 18 }}>Verified Etherscan Contract URL:</label>
-            <Input
-              value={etherscanUrl}
-              size="large"
-              onChange={e => {
-                setEtherscanUrl(e.target.value);
-              }}
-            />
-          </div>
-          <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract}>
+            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract} block>
               Load Contract
             </Button>
           </div>
