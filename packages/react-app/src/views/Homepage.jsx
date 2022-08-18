@@ -16,6 +16,21 @@ const validateAddress = address => ethers.utils.isAddress(address);
 
 const ETHERSCAN_API = process.env.REACT_APP_ETHERSCAN_API;
 
+const quickAccessContracts = [
+  {
+    name: "DAI",
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
+  },
+  {
+    name: "Gitcoin",
+    address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+  },
+  {
+    name: "Opensea Seaport",
+    address: "0x00000000006c3852cbef3e08e8df289169ede581",
+  },
+];
+
 function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, onUpdateNetwork }) {
   const [loadedContract, setLoadedContract] = useState({});
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
@@ -35,8 +50,9 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
   const appClass = loadedContract.address ? currentHash : "index";
   useBodyClass(`path-${appClass}`);
 
-  const loadedContractEtherscan = async () => {
-    if (!ethers.utils.isAddress(verifiedContractAddress)) {
+  const loadedContractEtherscan = async (address = null) => {
+    const queryContractAddress = address ?? verifiedContractAddress;
+    if (!ethers.utils.isAddress(queryContractAddress)) {
       message.error("Invalid Contract Address");
       return;
     }
@@ -44,7 +60,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
 
     let response;
     try {
-      response = await etherscanClient.contract.getabi(verifiedContractAddress);
+      response = await etherscanClient.contract.getabi(queryContractAddress);
     } catch (e) {
       message.error(`From Etherscan API: ${e}`);
       return;
@@ -59,7 +75,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     const contractAbi = response.result;
 
     // ToDo. Need to fix this. User Signer might be pointing the previous selected network.
-    const contract = new ethers.Contract(verifiedContractAddress, contractAbi, userSigner);
+    const contract = new ethers.Contract(queryContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
     history.push({ hash: "#contract" });
   };
@@ -92,9 +108,12 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     history.push({ hash: "#contract" });
   };
 
-  const loadContract = async () => {
+  const loadContract = async (address = null) => {
     setIsLoadingContract(true);
-    if (verifiedContractAddress) {
+
+    if (address) {
+      await loadedContractEtherscan(address);
+    } else if (verifiedContractAddress) {
       await loadedContractEtherscan();
     } else {
       await loadContractRaw();
@@ -169,7 +188,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract} block>
+            <Button type="primary" size="large" onClick={() => loadContract()} loading={isLoadingContract} block>
               Load Contract
             </Button>
           </div>
@@ -197,12 +216,22 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={loadContract} loading={isLoadingContract} block>
+            <Button type="primary" size="large" onClick={() => loadContract()} loading={isLoadingContract} block>
               Load Contract
             </Button>
           </div>
         </Panel>
       </Collapse>
+      {selectedNetwork.chainId === 1 && (
+        <div className="quick-access">
+          <h3>Quick Access</h3>
+          <ul>
+            {quickAccessContracts.map(item => {
+              return <li onClick={() => loadContract(item.address)}>{item.name}</li>;
+            })}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

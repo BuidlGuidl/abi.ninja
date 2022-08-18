@@ -102,4 +102,27 @@
   input[type="text"], textarea, .ant-input-affix-wrapper {
     background-color: @light-color;
   }
+
+  .quick-access {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+
+    h3 {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+
+      li {
+        cursor: pointer;
+        color: @light-color;
+        text-decoration: underline;
+      }
+    }
+  }
 }
