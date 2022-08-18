@@ -20,6 +20,21 @@ body.path-contract {
     color: @primary-color;
   }
 
+  @media (max-width: 720px) {
+    .contract-top-controls {
+      display: none;
+    }
+  }
+}
+
+.contract-variables {
+  .contract-top-controls {
+    display: none;
+
+    @media (max-width: 720px) {
+      display: block;
+    }
+  }
 }
 
 .contract-container {
@@ -46,6 +61,20 @@ body.path-contract {
 }
 
 .contract-component {
+  margin: auto;
+  width: 1220px;
+  max-width: 95%;
+
+  @media (max-width: 720px) {
+    .contract-component-row {
+      flex-direction: column-reverse;
+
+      .ant-col {
+        margin-bottom: 25px;
+      }
+    }
+  }
+
   h1, h2, h3, h4, h5, h6, p {
     color: @dark-color;
   }

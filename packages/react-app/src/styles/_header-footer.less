@@ -1,6 +1,41 @@
 // Header & Footer
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.2rem;
+}
+
 .header-logo {
   max-width: 175px;
+  display: none;
+
+  .path-contract & {
+    display: block;
+  }
+
+  .logo-small {
+    display: none;
+    max-width: 50px;
+
+    @media (max-width: 720px) {
+      display: block;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .logo-small {
+      display: block;
+    }
+
+    .logo-big {
+      display: none;
+    }
+  }
+
+  .path-contract {
+    display: block;
+  }
 }
 
 .account-info {

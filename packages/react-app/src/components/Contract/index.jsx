@@ -115,12 +115,12 @@ export default function Contract({
   };
 
   return (
-    <div className="contract-component" style={{ margin: "auto", width: "80%" }}>
-      <Row gutter={16}>
-        <Col span={4} className="contract-navigation">
+    <div className="contract-component">
+      <Row gutter={16} className="contract-component-row">
+        <Col xs={0} md={4} className="contract-navigation">
           <ContractNavigation contractMethods={seletectedContractMethods} contractIsDeployed={contractIsDeployed} />
         </Col>
-        <Col span={12} className="contract-column">
+        <Col xs={24} md={12} className="contract-column">
           <Modal
             className="method-selection"
             title="Method selection"
@@ -150,7 +150,12 @@ export default function Contract({
             {contractIsDeployed ? contractMethodsDisplay : <Skeleton active />}
           </Card>
         </Col>
-        <Col span={8} style={{ marginTop: 30 }}>
+        <Col xs={24} md={8} style={{ marginTop: 30 }} className="contract-variables">
+          <div className="contract-top-controls">
+            <Button className="return-button" type="link" onClick={reset}>
+              <ArrowLeftOutlined style={{ fontSize: "16px", cursor: "pointer" }} /> Return
+            </Button>
+          </div>
           <Card
             className="contract-variables-display"
             title={
