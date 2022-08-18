@@ -195,7 +195,6 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
         <Panel header="Address + ABI" key="2">
           <div className="form-item">
             <AddressInput
-              autoFocus
               ensProvider={mainnetProvider}
               size="large"
               value={abiContractAddress}

@@ -247,7 +247,6 @@ export default function Wallet(props) {
       <div>
         <div style={inputStyle}>
           <AddressInput
-            autoFocus
             ensProvider={props.ensProvider}
             placeholder="to address"
             address={toAddress}

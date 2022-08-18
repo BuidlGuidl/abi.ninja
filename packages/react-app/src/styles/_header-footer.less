@@ -4,6 +4,10 @@
   display: flex;
   justify-content: space-between;
   padding: 1.2rem;
+
+  .path-index & {
+    justify-content: end;
+  }
 }
 
 .header-logo {
@@ -69,6 +73,12 @@
 
     .path-contract & {
       color: @primary-color;
+    }
+  }
+
+  .address-component {
+    @media (max-width: 720px) {
+      font-size: 17px !important;
     }
   }
 }

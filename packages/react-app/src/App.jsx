@@ -3,17 +3,7 @@ import { useBalance, useGasPrice, useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-import {
-  Account,
-  Faucet,
-  GasGauge,
-  Header,
-  Ramp,
-  ThemeSwitch,
-  NetworkDisplay,
-  FaucetHint,
-  NetworkSwitch,
-} from "./components";
+import { Account, Faucet, GasGauge, Header, Ramp, NetworkDisplay, FaucetHint, NetworkSwitch } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
 import { Web3ModalSetup } from "./helpers";
@@ -231,8 +221,6 @@ function App() {
           />
         </Route>
       </Switch>
-
-      <ThemeSwitch />
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
       <div

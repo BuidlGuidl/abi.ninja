@@ -112,7 +112,6 @@ export default function FunctionForm({
       <div className="contract-method-input" key={key}>
         {input.type === "address" ? (
           <AddressInput
-            autoFocus
             name={key}
             ensProvider={mainnetProvider}
             placeholder={input.name ? input.type + " " + input.name : input.type}
