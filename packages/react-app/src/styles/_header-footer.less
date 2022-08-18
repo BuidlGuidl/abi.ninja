@@ -40,6 +40,10 @@
 
 // Eth Info faucet section
 .eth-info-faucet {
+  @media (max-width: 720px) {
+    display: none;
+  }
+
   button, .ant-input-affix-wrapper, input {
     background-color: @medium-color;
   }
@@ -50,6 +54,18 @@
 
     svg {
       fill: white;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .account-info {
+    .address-balance {
+      display: none;
+
+      & + span {
+        display: none;
+      }
     }
   }
 }

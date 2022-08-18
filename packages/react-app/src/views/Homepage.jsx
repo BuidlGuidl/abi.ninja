@@ -131,7 +131,6 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
 
   const networkSelect = (
     <Select
-      size="large"
       defaultValue={selectedNetwork.name}
       style={{ textAlign: "left", width: 170, fontSize: 30 }}
       onChange={value => {
@@ -143,7 +142,7 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
     >
       {Object.entries(NETWORKS).map(([name, network]) => (
         <Select.Option key={name} value={name}>
-          <span style={{ color: network.color, fontSize: 24 }}>{name}</span>
+          <span style={{ color: network.color }}>{name}</span>
         </Select.Option>
       ))}
     </Select>
