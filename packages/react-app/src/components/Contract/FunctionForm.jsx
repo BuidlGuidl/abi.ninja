@@ -87,7 +87,7 @@ export default function FunctionForm({
             className="helper-button-contract-input"
             style={{ cursor: "pointer" }}
             onClick={async () => {
-              if (!form[key] || !isPositiveInteger(form[key])) return;
+              if (!form[key]) return;
 
               const formUpdate = { ...form };
               formUpdate[key] = utils.parseEther(form[key]);
