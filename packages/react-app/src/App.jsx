@@ -157,6 +157,7 @@ function App() {
     }
   }, [loadWeb3Modal]);
 
+  const [loadedContract, setLoadedContract] = useState(null);
   const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
   return (
@@ -209,15 +210,19 @@ function App() {
             mainnetProvider={mainnetProvider}
             targetNetwork={targetNetwork}
             onUpdateNetwork={setSelectedNetwork}
+            setLoadedContract={setLoadedContract}
           />
         </Route>
-        <Route exact path="/contract">
+        <Route exact path="/:contractAddress/:network?">
           <ContractUI
-            localProvider={localProvider}
-            userSigner={userSigner}
+            customContract={loadedContract}
+            signer={userSigner}
+            provider={localProvider}
             mainnetProvider={mainnetProvider}
-            targetNetwork={targetNetwork}
-            onUpdateNetwork={setSelectedNetwork}
+            blockExplorer={targetNetwork.blockExplorer}
+            selectedNetwork={targetNetwork}
+            setLoadedContract={setLoadedContract}
+            setSelectedNetwork={setSelectedNetwork}
           />
         </Route>
       </Switch>

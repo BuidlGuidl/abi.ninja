@@ -4,17 +4,14 @@ import { ethers } from "ethers";
 import { Button, message, Select, Input, Collapse } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
-import { init as etherscanInit } from "etherscan-api";
-import { ContractUI } from "./index";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import useBodyClass from "../hooks/useBodyClass";
+import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 
 const { Panel } = Collapse;
 
 const validateAbi = abi => Array.isArray(abi) && abi.length > 0;
 const validateAddress = address => ethers.utils.isAddress(address);
-
-const ETHERSCAN_API = process.env.REACT_APP_ETHERSCAN_API;
 
 const quickAccessContracts = [
   {
@@ -31,53 +28,29 @@ const quickAccessContracts = [
   },
 ];
 
-function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, onUpdateNetwork }) {
-  const [loadedContract, setLoadedContract] = useState({});
+function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork, setLoadedContract }) {
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const [isLoadingContract, setIsLoadingContract] = useState(false);
   const history = useHistory();
-  const location = useLocation();
 
-  // ToDo. Handle this in a better way (react-router)
-  const currentHash = location.hash.replace("#", "");
-  if (!loadedContract.address && currentHash.length > 0) {
-    history.push("/");
-  }
+  useBodyClass(`path-index`);
 
-  const appClass = loadedContract.address ? currentHash : "index";
-  useBodyClass(`path-${appClass}`);
-
-  const loadedContractEtherscan = async (address = null) => {
+  const loadVerifiedContract = async (address = null) => {
     const queryContractAddress = address ?? verifiedContractAddress;
-    if (!ethers.utils.isAddress(queryContractAddress)) {
-      message.error("Invalid Contract Address");
-      return;
-    }
-    const etherscanClient = etherscanInit(ETHERSCAN_API, selectedNetwork.name, 10000);
 
-    let response;
+    let contract;
     try {
-      response = await etherscanClient.contract.getabi(queryContractAddress);
+      contract = await loadContractEtherscan(queryContractAddress, selectedNetwork, userSigner);
     } catch (e) {
-      message.error(`From Etherscan API: ${e}`);
-      return;
-    }
-    console.log("contractAbi", response);
-
-    if (response.status !== "1") {
-      message.error("Can't fetch data from Etherscan. Ensure the contract is verified.");
+      message.error(e.message);
       return;
     }
 
-    const contractAbi = response.result;
-
-    // ToDo. Need to fix this. User Signer might be pointing the previous selected network.
-    const contract = new ethers.Contract(queryContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
-    history.push({ hash: "#contract" });
+    return contract.address;
   };
 
   const loadContractRaw = async () => {
@@ -105,28 +78,25 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
 
     const contract = new ethers.Contract(abiContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
-    history.push({ hash: "#contract" });
+    return abiContractAddress;
   };
 
   const loadContract = async (address = null) => {
     setIsLoadingContract(true);
 
+    let contractAddress;
     if (address) {
-      await loadedContractEtherscan(address);
+      contractAddress = await loadVerifiedContract(address);
     } else if (verifiedContractAddress) {
-      await loadedContractEtherscan();
+      contractAddress = await loadVerifiedContract();
     } else {
-      await loadContractRaw();
+      contractAddress = await loadContractRaw();
     }
     setIsLoadingContract(false);
-  };
 
-  const reset = () => {
-    setLoadedContract({});
-    setAbiContractAddress("");
-    setContractAbi("");
-    setVerifiedContractAddress("");
-    history.push({ hash: "" });
+    if (contractAddress) {
+      history.push(`/${contractAddress}/${selectedNetwork.name}`);
+    }
   };
 
   const networkSelect = (
@@ -147,20 +117,6 @@ function Homepage({ localProvider, userSigner, mainnetProvider, targetNetwork, o
       ))}
     </Select>
   );
-
-  if (loadedContract.address) {
-    return (
-      <ContractUI
-        customContract={loadedContract}
-        signer={userSigner}
-        provider={localProvider}
-        mainnetProvider={mainnetProvider}
-        blockExplorer={selectedNetwork.blockExplorer}
-        selectedNetwork={selectedNetwork}
-        reset={reset}
-      />
-    );
-  }
 
   return (
     <div className="index-container">
