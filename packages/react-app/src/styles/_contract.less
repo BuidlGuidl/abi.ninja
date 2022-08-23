@@ -200,6 +200,12 @@ body.path-contract {
     color: @primary-color;
     border: 1px solid @primary-color;
     font-size: 14px;
+
+    &[disabled] {
+      background-color: inherit;
+      border-color: inherit;
+      color: inherit;
+    }
   }
 
   .contract-navigation li {

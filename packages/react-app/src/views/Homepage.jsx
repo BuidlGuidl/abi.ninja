@@ -28,7 +28,7 @@ const quickAccessContracts = [
   },
 ];
 
-function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork, setLoadedContract }) {
+function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork, setLoadedContract, localProvider }) {
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
@@ -43,7 +43,8 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
 
     let contract;
     try {
-      contract = await loadContractEtherscan(queryContractAddress, selectedNetwork, userSigner);
+      const providerOrSigner = userSigner ?? localProvider;
+      contract = await loadContractEtherscan(queryContractAddress, selectedNetwork, providerOrSigner);
     } catch (e) {
       message.error(e.message);
       return;

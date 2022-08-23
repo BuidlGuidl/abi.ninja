@@ -103,6 +103,7 @@ export default function Contract({
             mainnetProvider={mainnetProvider}
             gasPrice={gasPrice}
             triggerRefresh={triggerRefresh}
+            signer={signer}
           />,
         );
       }

@@ -10,6 +10,7 @@ import { NETWORKS } from "../constants";
 function ContractUI({
   customContract,
   signer,
+  localProvider,
   provider,
   blockExplorer,
   selectedNetwork,
@@ -27,7 +28,8 @@ function ContractUI({
     const loadContractFromUrl = async () => {
       let contract;
       try {
-        contract = await loadContractEtherscan(contractAddress, activeNetwork, signer);
+        const providerOrSigner = signer ?? localProvider;
+        contract = await loadContractEtherscan(contractAddress, activeNetwork, providerOrSigner);
       } catch (e) {
         message.error(e.message);
         setHasError(true);
@@ -37,7 +39,7 @@ function ContractUI({
       setLoadedContract(contract);
     };
 
-    if (!signer) return;
+    if (!signer && !localProvider) return;
     if (selectedNetwork.name !== activeNetwork.name) {
       setSelectedNetwork(activeNetwork.name);
       return;
@@ -48,7 +50,6 @@ function ContractUI({
     } else {
       loadContractFromUrl();
     }
-    // eslint-disable-next-line
   }, [
     contractAddress,
     customContract,
@@ -57,7 +58,8 @@ function ContractUI({
     setLoadedContract,
     activeNetwork,
     setSelectedNetwork,
-    // This won't work
+    localProvider,
+    // ToDo. This won't work
     // selectedNetwork.name,
   ]);
 

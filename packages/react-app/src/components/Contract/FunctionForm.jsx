@@ -22,6 +22,7 @@ export default function FunctionForm({
   mainnetProvider,
   gasPrice,
   triggerRefresh,
+  signer,
 }) {
   const [form, setForm] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -199,8 +200,8 @@ export default function FunctionForm({
       Read 📡
     </Button>
   ) : (
-    <Button className="contract-action-button" loading={isLoading}>
-      Send 💸
+    <Button className="contract-action-button" loading={isLoading} disabled={!!!signer}>
+      {signer ? <>Send 💸</> : <>Connect wallet</>}
     </Button>
   );
   inputs.push(
