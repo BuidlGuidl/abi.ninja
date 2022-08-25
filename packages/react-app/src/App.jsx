@@ -2,13 +2,14 @@ import { useBalance, useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Account, Header, NetworkDisplay, FaucetHint, NetworkSwitch } from "./components";
+import { Account, Header, NetworkDisplay, FaucetHint, NetworkSwitch, Faucet } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
 import { Web3ModalSetup } from "./helpers";
 import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
+import { Col, Row } from "antd";
 
 const { ethers } = require("ethers");
 /*
@@ -36,7 +37,7 @@ const initialNetwork = NETWORKS.mainnet;
 // 😬 Sorry for all the console logging
 const DEBUG = true;
 const NETWORKCHECK = true;
-const USE_BURNER_WALLET = false; // toggle burner wallet feature
+const USE_BURNER_WALLET = process.env.REACT_APP_BURNER_WALLET ?? false;
 const USE_NETWORK_SELECTOR = false;
 
 const web3Modal = Web3ModalSetup();
@@ -155,6 +156,7 @@ function App() {
   }, [loadWeb3Modal]);
 
   const [loadedContract, setLoadedContract] = useState(null);
+  const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
 
   return (
     <div className="App">
@@ -225,6 +227,20 @@ function App() {
           />
         </Route>
       </Switch>
+      <div
+        className="eth-info-faucet"
+        style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}
+      >
+        <Row align="middle" gutter={[4, 4]}>
+          <Col span={24}>
+            {faucetAvailable ? (
+              <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+            ) : (
+              ""
+            )}
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 }

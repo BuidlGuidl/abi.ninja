@@ -195,6 +195,38 @@ body.path-contract {
     font-size: 14px;
   }
 
+  .contract-actions-result {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .contract-result-output {
+    flex-grow: 1;
+
+    .ant-collapse-item {
+      border: 0;
+    }
+
+    .ant-collapse-header {
+      background-color: @almost-white;
+      padding: 7px;
+
+      .ant-collapse-arrow {
+        margin-right: 6px;
+      }
+    }
+
+    .ant-collapse-content-box {
+      padding: 0 !important;
+    }
+  }
+
+  .contract-actions {
+    text-align: right;
+  }
+
   .contract-action-button {
     background-color: @light-color;
     color: @primary-color;
@@ -205,6 +237,22 @@ body.path-contract {
       background-color: inherit;
       border-color: inherit;
       color: inherit;
+    }
+
+    .ant-btn-loading-icon {
+      margin-right: 5px;
+    }
+  }
+
+  .contract-json-output {
+    border: 1px solid;
+
+    &.output-tx,
+    pre {
+      word-break: break-all;
+      white-space: break-spaces;
+      padding: 10px;
+      margin: 0;
     }
   }
 
@@ -265,4 +313,37 @@ body.path-contract {
   a {
     color: @primary-color;
   }
+}
+
+
+// JSON Output
+.output-tx,
+.__json-pretty__ {
+  line-height: 1.3;
+  color: black;
+  background: @almost-white;
+  overflow: auto;
+}
+
+.__json-pretty__ .__json-key__ {
+  color: @primary-color;
+}
+
+.__json-pretty__ .__json-value__ {
+  color: #205c7c;
+}
+
+.__json-pretty__ .__json-string__ {
+  color: #b86606;
+}
+
+.__json-pretty__ .__json-boolean__ {
+  color: #205c7c;
+}
+
+.__json-pretty-error__ {
+  line-height: 1.3;
+  color: black;
+  background: @almost-white;
+  overflow: auto;
 }
