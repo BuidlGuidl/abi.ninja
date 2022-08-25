@@ -60,7 +60,8 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
       return;
     }
 
-    const bytecode = await userSigner.provider.getCode(abiContractAddress);
+    const provider = userSigner ? userSigner.provider : localProvider;
+    const bytecode = await provider.getCode(abiContractAddress);
     if (bytecode === "0x") {
       message.error(`There is no Contract Deployed at that address on ${selectedNetwork.name}`);
       return;
@@ -82,17 +83,25 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
     return abiContractAddress;
   };
 
-  const loadContract = async (address = null) => {
+  const loadContract = async (type, address = null) => {
     setIsLoadingContract(true);
 
     let contractAddress;
-    if (address) {
-      contractAddress = await loadVerifiedContract(address);
-    } else if (verifiedContractAddress) {
-      contractAddress = await loadVerifiedContract();
-    } else {
-      contractAddress = await loadContractRaw();
+    switch (type) {
+      case "abi":
+        contractAddress = await loadContractRaw();
+        break;
+      case "verified":
+        if (address) {
+          contractAddress = await loadVerifiedContract(address);
+        } else {
+          contractAddress = await loadVerifiedContract();
+        }
+        break;
+      default:
+        console.error("wrong type", type);
     }
+
     setIsLoadingContract(false);
 
     if (contractAddress) {
@@ -143,7 +152,13 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={() => loadContract()} loading={isLoadingContract} block>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => loadContract("verified")}
+              loading={isLoadingContract}
+              block
+            >
               Load Contract
             </Button>
           </div>
@@ -170,7 +185,7 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
             />
           </div>
           <div className="options-actions">
-            <Button type="primary" size="large" onClick={() => loadContract()} loading={isLoadingContract} block>
+            <Button type="primary" size="large" onClick={() => loadContract("abi")} loading={isLoadingContract} block>
               Load Contract
             </Button>
           </div>
@@ -181,7 +196,7 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
           <h3>Quick Access</h3>
           <ul>
             {quickAccessContracts.map(item => {
-              return <li onClick={() => loadContract(item.address)}>{item.name}</li>;
+              return <li onClick={() => loadContract("verified", item.address)}>{item.name}</li>;
             })}
           </ul>
         </div>
