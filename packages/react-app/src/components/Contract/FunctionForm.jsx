@@ -190,12 +190,6 @@ export default function FunctionForm({
     inputs.push(txValueInput);
   }
 
-  const handleForm = returned => {
-    if (returned) {
-      setForm({});
-    }
-  };
-
   const isReadable = fn => fn.stateMutability === "view" || fn.stateMutability === "pure";
 
   const buttonIcon = isReadable(functionInfo) ? (
@@ -250,7 +244,6 @@ export default function FunctionForm({
             try {
               const returned = await contractFunction(...args);
               console.log("returned", returned);
-              handleForm(returned);
               result = tryToDisplayAsText(returned);
             } catch (err) {
               console.error(err);
@@ -268,7 +261,6 @@ export default function FunctionForm({
 
             // console.log("Running with extras",extras)
             const returned = await tx(contractFunction(...args, overrides));
-            handleForm(returned);
             result = tryToDisplay(returned);
           }
 
