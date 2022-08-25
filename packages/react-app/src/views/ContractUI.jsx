@@ -50,6 +50,7 @@ function ContractUI({
     } else {
       loadContractFromUrl();
     }
+    // eslint-disable-next-line
   }, [
     contractAddress,
     customContract,

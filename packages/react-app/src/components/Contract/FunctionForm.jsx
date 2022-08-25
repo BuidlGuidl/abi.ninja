@@ -5,7 +5,7 @@ import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
 import { ReactComponent as PoundSVG } from "../../assets/pound.svg";
 
 import { Transactor } from "../../helpers";
-import { isPositiveInteger, tryToDisplay, tryToDisplayAsText } from "./utils";
+import { tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
 
 const { utils, BigNumber } = require("ethers");

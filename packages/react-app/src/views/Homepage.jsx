@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AddressInput } from "../components";
 import { ethers } from "ethers";
-import { Button, message, Select, Input, Collapse } from "antd";
+import { Button, message, Select, Collapse } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 import { useHistory } from "react-router-dom";
@@ -134,13 +134,12 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
       <Collapse defaultActiveKey={["1"]} className="abi-ninja-options" accordion>
         <Panel header="Verified Contract Address" key="1">
           <div className="form-item">
-            <Input
+            <AddressInput
               value={verifiedContractAddress}
               placeholder={`Verified contract address on ${selectedNetwork.name}`}
+              ensProvider={mainnetProvider}
               size="large"
-              onChange={e => {
-                setVerifiedContractAddress(e.target.value);
-              }}
+              onChange={setVerifiedContractAddress}
             />
           </div>
           <div className="options-actions">
@@ -152,11 +151,11 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
         <Panel header="Address + ABI" key="2">
           <div className="form-item">
             <AddressInput
+              value={abiContractAddress}
+              placeholder={`Contract address on ${selectedNetwork.name}`}
               ensProvider={mainnetProvider}
               size="large"
-              value={abiContractAddress}
               onChange={setAbiContractAddress}
-              placeholder={`Contract address on ${selectedNetwork.name}`}
             />
           </div>
           <div className="form-item">
