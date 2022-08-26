@@ -25,6 +25,8 @@ function ContractUI({
   const history = useHistory();
 
   useEffect(() => {
+    if (hasError) return;
+
     const loadContractFromUrl = async () => {
       let contract;
       try {
@@ -36,8 +38,15 @@ function ContractUI({
         return;
       }
 
+      setHasError(false);
       setLoadedContract(contract);
     };
+
+    if (network && !NETWORKS[network]) {
+      message.error(`${network} is not a valid network`);
+      setHasError(true);
+      return;
+    }
 
     if (!signer && !localProvider) return;
     if (selectedNetwork.name !== activeNetwork.name) {
@@ -73,7 +82,7 @@ function ContractUI({
       <Card className="contract-load-error" size="large">
         <p>
           There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
-          <strong>{activeNetwork.name}</strong>.
+          <strong>{network ?? activeNetwork.name}</strong>.
         </p>
         <p> Make sure the data is correct and the contract is verified.</p>
 
