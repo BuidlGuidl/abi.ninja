@@ -20,24 +20,27 @@ function ContractUI({
 }) {
   useBodyClass(`path-contract`);
   const [hasError, setHasError] = useState(false);
+  const [isLoadingContract, setIsLoadingContract] = useState(false);
   let { contractAddress, network } = useParams();
   const activeNetwork = NETWORKS[network] ?? NETWORKS.mainnet;
   const history = useHistory();
 
   useEffect(() => {
-    if (hasError) return;
+    if (hasError || isLoadingContract) return;
 
     const loadContractFromUrl = async () => {
       let contract;
       try {
         const providerOrSigner = signer ?? localProvider;
+        setIsLoadingContract(true);
         contract = await loadContractEtherscan(contractAddress, activeNetwork, providerOrSigner);
       } catch (e) {
         message.error(e.message);
         setHasError(true);
+        setIsLoadingContract(false);
         return;
       }
-
+      setIsLoadingContract(false);
       setHasError(false);
       setLoadedContract(contract);
     };
