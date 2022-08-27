@@ -1,8 +1,8 @@
 // MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
 export const INFURA_ID = process.env.REACT_APP_INFURA_KEY ?? "460f40a260564ac4a4f4b3fffb032dad";
 
-// MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
-export const ETHERSCAN_KEY = "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY;
+const POLYGONSCAN_API_KEY = process.env.REACT_APP_POLYGONSCAN_API_KEY;
 
 // BLOCKNATIVE ID FOR Notify.js:
 export const BLOCKNATIVE_DAPPID = "0b58206a-f3c0-4701-a62f-73c7243e8c77";
@@ -23,6 +23,8 @@ export const NETWORKS = {
     chainId: 1,
     rpcUrl: `https://mainnet.infura.io/v3/${INFURA_ID}`,
     blockExplorer: "https://etherscan.io/",
+    etherscanEndpoint: "https://api.etherscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
   kovan: {
     name: "kovan",
@@ -30,7 +32,9 @@ export const NETWORKS = {
     chainId: 42,
     rpcUrl: `https://kovan.infura.io/v3/${INFURA_ID}`,
     blockExplorer: "https://kovan.etherscan.io/",
-    faucet: "https://gitter.im/kovan-testnet/faucet", // https://faucet.kovan.network/
+    faucet: "https://gitter.im/kovan-testnet/faucet",
+    etherscanEndpoint: "https://api-kovan.etherscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
   rinkeby: {
     name: "rinkeby",
@@ -39,6 +43,8 @@ export const NETWORKS = {
     rpcUrl: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
     faucet: "https://faucet.rinkeby.io/",
     blockExplorer: "https://rinkeby.etherscan.io/",
+    etherscanEndpoint: "https://api-rinkeby.etherscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
   ropsten: {
     name: "ropsten",
@@ -47,15 +53,19 @@ export const NETWORKS = {
     faucet: "https://faucet.ropsten.be/",
     blockExplorer: "https://ropsten.etherscan.io/",
     rpcUrl: `https://ropsten.infura.io/v3/${INFURA_ID}`,
+    etherscanEndpoint: "https://api-ropsten.etherscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
-  // goerli: {
-  //   name: "goerli",
-  //   color: "#0975F6",
-  //   chainId: 5,
-  //   faucet: "https://goerli-faucet.slock.it/",
-  //   blockExplorer: "https://goerli.etherscan.io/",
-  //   rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`,
-  // },
+  goerli: {
+    name: "goerli",
+    color: "#0975F6",
+    chainId: 5,
+    faucet: "https://goerli-faucet.slock.it/",
+    blockExplorer: "https://goerli.etherscan.io/",
+    rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`,
+    etherscanEndpoint: "https://api-goerli.arbiscan.io",
+    apiKey: ETHERSCAN_API_KEY,
+  },
   // xdai: {
   //   name: "xdai",
   //   color: "#48a9a6",
@@ -66,25 +76,29 @@ export const NETWORKS = {
   //   faucet: "https://xdai-faucet.top/",
   //   blockExplorer: "https://blockscout.com/poa/xdai/",
   // },
-  // polygon: {
-  //   name: "polygon",
-  //   color: "#2bbdf7",
-  //   chainId: 137,
-  //   price: 1,
-  //   gasPrice: 1000000000,
-  //   rpcUrl: "https://polygon-rpc.com/",
-  //   blockExplorer: "https://polygonscan.com/",
-  // },
-  // mumbai: {
-  //   name: "mumbai",
-  //   color: "#92D9FA",
-  //   chainId: 80001,
-  //   price: 1,
-  //   gasPrice: 1000000000,
-  //   rpcUrl: "https://rpc-mumbai.maticvigil.com",
-  //   faucet: "https://faucet.polygon.technology/",
-  //   blockExplorer: "https://mumbai.polygonscan.com/",
-  // },
+  polygon: {
+    name: "polygon",
+    color: "#2bbdf7",
+    chainId: 137,
+    price: 1,
+    gasPrice: 1000000000,
+    rpcUrl: "https://polygon-rpc.com/",
+    blockExplorer: "https://polygonscan.com/",
+    etherscanEndpoint: "https://api.polygonscan.com",
+    apiKey: POLYGONSCAN_API_KEY,
+  },
+  mumbai: {
+    name: "mumbai",
+    color: "#92D9FA",
+    chainId: 80001,
+    price: 1,
+    gasPrice: 1000000000,
+    rpcUrl: "https://rpc-mumbai.maticvigil.com",
+    faucet: "https://faucet.polygon.technology/",
+    blockExplorer: "https://mumbai.polygonscan.com/",
+    etherscanEndpoint: "https://api-testnet.polygonscan.com",
+    apiKey: POLYGONSCAN_API_KEY,
+  },
   // localOptimismL1: {
   //   name: "localOptimismL1",
   //   color: "#f01a37",
@@ -121,6 +135,8 @@ export const NETWORKS = {
     chainId: 421611,
     blockExplorer: "https://testnet.arbiscan.io/",
     rpcUrl: "https://rinkeby.arbitrum.io/rpc",
+    etherscanEndpoint: "https://api-testnet.arbiscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
   arbitrum: {
     name: "arbitrum",
@@ -128,6 +144,8 @@ export const NETWORKS = {
     chainId: 42161,
     blockExplorer: "https://arbiscan.io/",
     rpcUrl: "https://arb1.arbitrum.io/rpc",
+    etherscanEndpoint: "https://api.arbiscan.io",
+    apiKey: ETHERSCAN_API_KEY,
   },
   // devnetArbitrum: {
   //   name: "devnetArbitrum",

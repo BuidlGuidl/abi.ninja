@@ -1,13 +1,23 @@
 import { ethers } from "ethers";
 import { init as etherscanInit } from "etherscan-api";
-
-const ETHERSCAN_API = process.env.REACT_APP_ETHERSCAN_API;
+import axios from "axios";
+import { NETWORKS } from "../constants";
 
 export const loadContractEtherscan = async (address, selectedNetwork, userSigner) => {
   if (!ethers.utils.isAddress(address)) {
     throw new Error("Invalid Contract Address");
   }
-  const etherscanClient = etherscanInit(ETHERSCAN_API, selectedNetwork.name, 10000);
+
+  if (!NETWORKS[selectedNetwork.name]?.etherscanEndpoint) {
+    throw new Error("Invalid Network");
+  }
+
+  const timeout = 10000;
+  const client = axios.create({
+    baseURL: NETWORKS[selectedNetwork.name]?.etherscanEndpoint,
+    timeout: timeout,
+  });
+  const etherscanClient = etherscanInit(NETWORKS[selectedNetwork.name].apiKey, selectedNetwork.name, timeout, client);
 
   let response;
   try {
