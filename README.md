@@ -1,6 +1,6 @@
 # Contract Interface Tool
 
-Interact with any contract by providing its ABI + address, or the Etherscan URL of a verified contract.
+Interact with any contract on Ethereum. Just need the Contract address (if it's verified) or its ABI + Contract address.
 
 ![image](.github/img/ui.png)
 ![image](.github/img/ui2.png)
