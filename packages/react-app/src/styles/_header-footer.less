@@ -103,6 +103,42 @@
   }
 }
 
+.site-footer {
+  padding: 10px 20px;
+
+  .footer-items {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    .anticon {
+      color: #e3a064;
+    }
+
+    a {
+      color: #e3a064;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .path-contract & {
+      p {
+        color: @primary-color;
+      }
+
+      .anticon {
+        color: black;
+      }
+
+      a {
+        color: black;
+      }
+    }
+  }
+}
+
 @media (max-width: 720px) {
   .account-info {
     .address-balance {

@@ -10,6 +10,7 @@ import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
+import { GithubFilled, HeartFilled } from "@ant-design/icons";
 
 const { ethers } = require("ethers");
 /*
@@ -227,6 +228,23 @@ function App() {
           />
         </Route>
       </Switch>
+      <div className="site-footer">
+        <div className="footer-items">
+          <p>
+            <GithubFilled />{" "}
+            <a href="https://github.com/carletex/abi.ninja" target="_blank" rel="noreferrer">
+              Fork me
+            </a>
+          </p>
+          <p>|</p>
+          <p>
+            Built with <HeartFilled /> at 🏰{" "}
+            <a href="https://buidlguidl.com/" target="_blank" rel="noreferrer">
+              BuidlGuidl
+            </a>
+          </p>
+        </div>
+      </div>
       <div
         className="eth-info-faucet"
         style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}
