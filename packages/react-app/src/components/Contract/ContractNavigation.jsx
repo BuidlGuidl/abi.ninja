@@ -6,10 +6,10 @@ export default function ContractNavigation({ contractMethods, contractIsDeployed
   const history = useHistory();
 
   useEffect(() => {
-    if (!history?.location?.search) return;
+    if (!history?.location?.state) return;
 
-    const selectedMethod = history.location.search.substring(1);
-    document.getElementById(selectedMethod).scrollIntoView({ behavior: "smooth" });
+    const selectedMethod = history.location.state.method;
+    document.getElementById(selectedMethod)?.scrollIntoView({ behavior: "smooth" });
   }, [history.location]);
 
   if (!contractIsDeployed) return null;
@@ -22,7 +22,7 @@ export default function ContractNavigation({ contractMethods, contractIsDeployed
             <li key={method}>
               <span
                 data-target={`method-${method}`}
-                onClick={() => history.push({ hash: "contract", search: `method-${method}` })}
+                onClick={() => history.push({ state: { method: `method-${method}` } })}
               >
                 {method}
               </span>
