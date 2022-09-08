@@ -7,6 +7,7 @@ import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import ContractNavigation from "./ContractNavigation";
+import { useHistory } from "react-router-dom";
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
 
@@ -27,6 +28,8 @@ export default function Contract({
 }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const contracts = useContractLoader(provider, contractConfig, chainId);
+  const history = useHistory();
+
   let contract;
   if (!customContract) {
     contract = contracts ? contracts[name] : "";
@@ -40,6 +43,40 @@ export default function Contract({
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [contractIsDeployed]);
+
+  useEffect(() => {
+    const rawQueryParams = history.location.search;
+    const queryParams = new URLSearchParams(rawQueryParams);
+    const rawFunctions = queryParams.get("functions");
+
+    if (rawFunctions) {
+      const parsedFunctions = rawFunctions.split(",");
+      setSeletectedContractMethods(parsedFunctions);
+    }
+    // Omitting the history dependency in purpose. Only want to run this on init.
+    // eslint-disable-next-line
+  }, []);
+
+  // Handle method selection on modal
+  const handleMethodChange = checkedValues => {
+    // Init with existing search.
+    const queryParams = new URLSearchParams(history?.location?.search);
+    const selectedMethods = checkedValues.toString();
+
+    if (selectedMethods) {
+      if (queryParams.has("functions")) {
+        queryParams.set("functions", selectedMethods);
+      } else {
+        queryParams.append("functions", selectedMethods);
+      }
+      history.push({ search: queryParams.toString() });
+    } else {
+      queryParams.delete("functions");
+      history.push({ search: queryParams.toString() });
+    }
+
+    setSeletectedContractMethods(checkedValues);
+  };
 
   const displayedContractFunctions = useMemo(() => {
     const results = contract
@@ -64,7 +101,7 @@ export default function Contract({
     }
   });
 
-  const [seletectedContractMethods, setSeletectedContractMethods] = useState(allMethodsNames);
+  const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
   const [refreshRequired, triggerRefresh] = useState(false);
 
   const contractVariablesDisplay = [];
@@ -90,7 +127,7 @@ export default function Contract({
           />,
         );
       } else {
-        if (!seletectedContractMethods.includes(contractFuncInfo[1].name)) {
+        if (seletectedContractMethods.length > 0 && !seletectedContractMethods.includes(contractFuncInfo[1].name)) {
           return null;
         }
 
@@ -111,26 +148,29 @@ export default function Contract({
     return null;
   });
 
-  const handleMethodChange = checkedValues => {
-    setSeletectedContractMethods(checkedValues);
-  };
-
   return (
     <div className="contract-component">
       <Row gutter={16} className="contract-component-row">
         <Col xs={0} md={4} className="contract-navigation">
-          <ContractNavigation contractMethods={seletectedContractMethods} contractIsDeployed={contractIsDeployed} />
+          <ContractNavigation
+            contractMethods={seletectedContractMethods.length > 0 ? seletectedContractMethods : allMethodsNames}
+            contractIsDeployed={contractIsDeployed}
+          />
         </Col>
         <Col xs={24} md={12} className="contract-column">
           <Modal
             className="method-selection"
-            title="Method selection"
+            title="Visible functions"
             visible={isModalVisible}
             onOk={() => setIsModalVisible(false)}
             onCancel={() => setIsModalVisible(false)}
             footer={null}
           >
-            <div style={{ marginBottom: 10 }}>
+            <p>
+              <strong>Select the contract functions you want to be visible.</strong>
+            </p>
+            <p>They will be appended to the URL so you can share it.</p>
+            <div style={{ display: "flex", gap: "10px", marginBottom: 10 }}>
               <Button onClick={() => setSeletectedContractMethods(allMethodsNames)}>Select all</Button>
               <Button onClick={() => setSeletectedContractMethods([])}>Remove all</Button>
             </div>

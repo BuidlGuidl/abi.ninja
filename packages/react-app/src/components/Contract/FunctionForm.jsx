@@ -8,7 +8,6 @@ import { ReactComponent as PoundSVG } from "../../assets/pound.svg";
 import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
-import { CaretRightOutlined } from "@ant-design/icons";
 
 const { utils, BigNumber } = require("ethers");
 const { Panel } = Collapse;
