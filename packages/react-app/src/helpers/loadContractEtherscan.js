@@ -23,7 +23,7 @@ export const loadContractEtherscan = async (address, selectedNetwork, userSigner
   try {
     response = await etherscanClient.contract.getabi(address);
   } catch (e) {
-    throw new Error(`From Etherscan API: ${e}`);
+    throw new Error(`Etherscan API: ${e}`);
   }
 
   if (response.status !== "1") {

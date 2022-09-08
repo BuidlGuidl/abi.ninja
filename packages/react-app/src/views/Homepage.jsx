@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { AddressInput } from "../components";
-import { ethers } from "ethers";
 import { Button, message, Select, Collapse } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 import { useHistory } from "react-router-dom";
 import useBodyClass from "../hooks/useBodyClass";
 import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
+import { loadContractRaw } from "../helpers/loadContractRaw";
 
 const { Panel } = Collapse;
-
-const validateAbi = abi => Array.isArray(abi) && abi.length > 0;
-const validateAddress = address => ethers.utils.isAddress(address);
 
 const quickAccessContracts = [
   {
@@ -28,7 +25,15 @@ const quickAccessContracts = [
   },
 ];
 
-function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork, setLoadedContract, localProvider }) {
+function Homepage({
+  userSigner,
+  mainnetProvider,
+  targetNetwork,
+  onUpdateNetwork,
+  setLoadedContract,
+  localProvider,
+  selectedChainId,
+}) {
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
@@ -54,42 +59,32 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
     return contract.address;
   };
 
-  const loadContractRaw = async () => {
-    if (!validateAddress(abiContractAddress)) {
-      message.error("Invalid Contract Address");
-      return;
-    }
-
-    const provider = userSigner ? userSigner.provider : localProvider;
-    const bytecode = await provider.getCode(abiContractAddress);
-    if (bytecode === "0x") {
-      message.error(`There is no Contract Deployed at that address on ${selectedNetwork.name}`);
-      return;
-    }
-
+  const loadContractAbi = async () => {
+    let contract;
     try {
-      if (!validateAbi(JSON.parse(contractAbi))) {
-        message.error("Invalid Contract ABI");
-        return;
-      }
+      const providerOrSigner = userSigner ?? localProvider;
+      contract = await loadContractRaw(abiContractAddress, contractAbi, selectedNetwork, providerOrSigner);
     } catch (e) {
-      // JSON parse error
-      message.error("Invalid Contract ABI");
+      message.error(e.message);
       return;
     }
 
-    const contract = new ethers.Contract(abiContractAddress, contractAbi, userSigner);
     setLoadedContract(contract);
-    return abiContractAddress;
+    return contract.address;
   };
 
   const loadContract = async (type, address = null) => {
+    if (selectedChainId && selectedNetwork.chainId !== selectedChainId) {
+      message.error(`Please switch your wallet to ${selectedNetwork.name}.`);
+      return;
+    }
+
     setIsLoadingContract(true);
 
     let contractAddress;
     switch (type) {
       case "abi":
-        contractAddress = await loadContractRaw();
+        contractAddress = await loadContractAbi();
         break;
       case "verified":
         if (address) {
@@ -105,7 +100,15 @@ function Homepage({ userSigner, mainnetProvider, targetNetwork, onUpdateNetwork,
     setIsLoadingContract(false);
 
     if (contractAddress) {
-      history.push(`/${contractAddress}/${selectedNetwork.name}`);
+      if (type === "abi") {
+        const queryParams = new URLSearchParams();
+        const minifiedAbi = contractAbi.replace(/\s+/g, "");
+        queryParams.append("abi", minifiedAbi);
+
+        history.push(`/${contractAddress}/${selectedNetwork.name}?${queryParams.toString()}`);
+      } else {
+        history.push(`/${contractAddress}/${selectedNetwork.name}`);
+      }
     }
   };
 

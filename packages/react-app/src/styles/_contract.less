@@ -301,13 +301,22 @@ body.path-contract {
   }
 }
 
+.contract-loading-spinner {
+  margin-bottom: 50px;
+}
+
 .contract-load-error {
   width: 95%;
   max-width: 500px;
-  margin: 50px auto 0;
+  margin: 50px auto;
 
-  p {
+  p, h3 {
     color: @dark-color;
+  }
+
+  h3 {
+    margin-bottom: 25px;
+    font-weight: bold;
   }
 
   a {

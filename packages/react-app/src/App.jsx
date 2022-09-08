@@ -36,7 +36,7 @@ const { ethers } = require("ethers");
 const initialNetwork = NETWORKS.mainnet;
 
 // 😬 Sorry for all the console logging
-const DEBUG = true;
+const DEBUG = false;
 const NETWORKCHECK = true;
 const USE_BURNER_WALLET = process.env.REACT_APP_BURNER_WALLET ?? false;
 const USE_NETWORK_SELECTOR = false;
@@ -70,6 +70,7 @@ function App() {
   const localProvider = useStaticJsonRPC([
     process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : targetNetwork.rpcUrl,
   ]);
+
   const mainnetProvider = useStaticJsonRPC(providers);
 
   if (DEBUG) console.log(`Using ${selectedNetwork} network`);
@@ -212,17 +213,16 @@ function App() {
             targetNetwork={targetNetwork}
             onUpdateNetwork={setSelectedNetwork}
             setLoadedContract={setLoadedContract}
+            selectedChainId={selectedChainId}
           />
         </Route>
-        <Route exact path="/:contractAddress/:network?">
+        <Route exact path="/:urlContractAddress/:urlNetworkName?">
           <ContractUI
             customContract={loadedContract}
+            userSigner={userSigner}
             localProvider={localProvider}
-            signer={userSigner}
-            provider={localProvider}
             mainnetProvider={mainnetProvider}
             blockExplorer={targetNetwork.blockExplorer}
-            selectedNetwork={targetNetwork}
             setLoadedContract={setLoadedContract}
             setSelectedNetwork={setSelectedNetwork}
           />

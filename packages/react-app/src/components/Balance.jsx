@@ -57,7 +57,7 @@ export default function Balance(props) {
 
   return (
     <span
-      class="address-balance"
+      className="address-balance"
       style={{
         verticalAlign: "middle",
         fontSize: props.fontSize ? props.fontSize : 24,

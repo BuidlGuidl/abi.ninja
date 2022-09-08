@@ -2,92 +2,80 @@ import React, { useEffect, useState } from "react";
 import { Contract } from "../components";
 import useBodyClass from "../hooks/useBodyClass";
 import { Link, useHistory, useParams } from "react-router-dom";
-import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
-import { Card, message, Spin } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Card, Spin } from "antd";
+import { ArrowLeftOutlined, LoadingOutlined, WarningOutlined } from "@ant-design/icons";
 import { NETWORKS } from "../constants";
+import { loadContractFromUrl } from "../helpers/loadContractFromUrl";
 
 function ContractUI({
   customContract,
-  signer,
+  userSigner,
   localProvider,
-  provider,
-  blockExplorer,
-  selectedNetwork,
   mainnetProvider,
+  blockExplorer,
   setLoadedContract,
   setSelectedNetwork,
 }) {
   useBodyClass(`path-contract`);
-  const [hasError, setHasError] = useState(false);
-  const [isLoadingContract, setIsLoadingContract] = useState(false);
-  let { contractAddress, network } = useParams();
-  const activeNetwork = NETWORKS[network] ?? NETWORKS.mainnet;
+  const [error, setError] = useState(null);
+  let { urlContractAddress, urlNetworkName } = useParams();
   const history = useHistory();
 
   useEffect(() => {
-    if (hasError || isLoadingContract) return;
+    if (customContract) {
+      // Contract already loaded. Coming from homepage UI.
+      window.scrollTo(0, 0);
+      return;
+    }
 
-    const loadContractFromUrl = async () => {
+    const loadContract = async () => {
       let contract;
       try {
-        const providerOrSigner = signer ?? localProvider;
-        setIsLoadingContract(true);
-        contract = await loadContractEtherscan(contractAddress, activeNetwork, providerOrSigner);
+        contract = await loadContractFromUrl(
+          urlContractAddress,
+          urlNetworkName,
+          setSelectedNetwork,
+          userSigner,
+          localProvider,
+          history.location.search,
+        );
       } catch (e) {
-        message.error(e.message);
-        setHasError(true);
-        setIsLoadingContract(false);
+        setError(e.message);
         return;
       }
-      setIsLoadingContract(false);
-      setHasError(false);
+
+      setError(null);
       setLoadedContract(contract);
     };
 
-    if (network && !NETWORKS[network]) {
-      message.error(`${network} is not a valid network`);
-      setHasError(true);
-      return;
-    }
-
-    if (!signer && !localProvider) return;
-    if (selectedNetwork.name !== activeNetwork.name) {
-      setSelectedNetwork(activeNetwork.name);
-      return;
-    }
-
-    if (customContract) {
-      window.scrollTo(0, 0);
-    } else {
-      loadContractFromUrl();
-    }
-    // eslint-disable-next-line
+    loadContract();
   }, [
-    contractAddress,
+    urlContractAddress,
+    urlNetworkName,
     customContract,
-    network,
-    signer,
+    userSigner,
     setLoadedContract,
-    activeNetwork,
     setSelectedNetwork,
     localProvider,
-    // ToDo. This won't work
-    // selectedNetwork.name,
+    history,
   ]);
 
   const reset = () => {
     history.push("/");
   };
 
-  if (hasError) {
+  if (error) {
     return (
       <Card className="contract-load-error" size="large">
-        <p>
-          There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
-          <strong>{network ?? activeNetwork.name}</strong>.
+        <p className="center">
+          <WarningOutlined style={{ fontSize: "45px", color: "#ff7474" }} />
         </p>
-        <p> Make sure the data is correct and the contract is verified.</p>
+        <h3 className="center">{error}</h3>
+        <p>
+          There was an error loading the contract <strong>{urlContractAddress}</strong> on{" "}
+          <strong>{urlNetworkName ?? "mainnet"}</strong>.
+        </p>
+        <p> Make sure the data is correct and you are connected to the right network.</p>
 
         <Link to="/">
           <ArrowLeftOutlined /> Go back to homepage
@@ -97,9 +85,10 @@ function ContractUI({
   }
 
   if (!customContract) {
+    // Still loading.
     return (
-      <div className="center">
-        <Spin />
+      <div className="contract-loading-spinner center">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 35, color: "#551D98" }} spin />} />
       </div>
     );
   }
@@ -108,11 +97,11 @@ function ContractUI({
     <div className="contract-container">
       <Contract
         customContract={customContract}
-        signer={signer}
-        provider={provider}
+        signer={userSigner}
+        provider={localProvider}
         mainnetProvider={mainnetProvider}
         blockExplorer={blockExplorer}
-        selectedNetwork={activeNetwork}
+        selectedNetwork={NETWORKS[urlNetworkName] ?? NETWORKS.mainnet}
         reset={reset}
       />
     </div>
