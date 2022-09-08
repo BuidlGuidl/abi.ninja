@@ -49,7 +49,7 @@ export const loadContractFromUrl = async (
     const queryParams = new URLSearchParams(rawQueryParams);
     const abiUrl = queryParams.get("abi");
     if (abiUrl) {
-      contract = await loadContractRaw(address, abiUrl, network, providerOrSigner);
+      contract = await loadContractRaw(address, decodeURIComponent(abiUrl), network, providerOrSigner);
     } else {
       contract = await loadContractEtherscan(address, network, providerOrSigner);
     }

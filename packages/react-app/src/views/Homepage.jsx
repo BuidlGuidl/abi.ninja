@@ -103,7 +103,7 @@ function Homepage({
       if (type === "abi") {
         const queryParams = new URLSearchParams();
         const minifiedAbi = contractAbi.replace(/\s+/g, "");
-        queryParams.append("abi", minifiedAbi);
+        queryParams.append("abi", encodeURIComponent(minifiedAbi));
 
         history.push(`/${contractAddress}/${selectedNetwork.name}?${queryParams.toString()}`);
       } else {
