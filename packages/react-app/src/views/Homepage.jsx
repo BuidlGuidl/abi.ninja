@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddressInput } from "../components";
 import { Button, message, Select, Collapse } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -42,6 +42,16 @@ function Homepage({
   const history = useHistory();
 
   useBodyClass(`path-index`);
+
+  useEffect(() => {
+    const storedNetwork = sessionStorage.getItem("selectedNetwork");
+    if (storedNetwork) {
+      setSelectedNetwork(NETWORKS[storedNetwork]);
+      onUpdateNetwork(storedNetwork);
+    }
+    // Dont want to re-run on selected network change.
+    // eslint-disable-next-line
+  }, [onUpdateNetwork]);
 
   const loadVerifiedContract = async (address = null) => {
     const queryContractAddress = address ?? verifiedContractAddress;
@@ -114,10 +124,11 @@ function Homepage({
 
   const networkSelect = (
     <Select
-      defaultValue={selectedNetwork.name}
+      value={selectedNetwork.name}
       style={{ textAlign: "left", width: 170, fontSize: 30 }}
       onChange={value => {
         if (selectedNetwork.chainId !== NETWORKS[value].chainId) {
+          sessionStorage.setItem("selectedNetwork", value);
           setSelectedNetwork(NETWORKS[value]);
           onUpdateNetwork(value);
         }

@@ -63,7 +63,7 @@ export const NETWORKS = {
     faucet: "https://goerli-faucet.slock.it/",
     blockExplorer: "https://goerli.etherscan.io/",
     rpcUrl: `https://goerli.infura.io/v3/${INFURA_ID}`,
-    etherscanEndpoint: "https://api-goerli.arbiscan.io",
+    etherscanEndpoint: "https://api-goerli.etherscan.io",
     apiKey: ETHERSCAN_API_KEY,
   },
   // xdai: {
