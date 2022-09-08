@@ -257,8 +257,8 @@ export default function FunctionForm({
           {buttonIcon}
         </div>
       </div>
-      <div key="goButton" className="contract-result-output">
-        {returnValue !== undefined && (
+      {returnValue !== undefined && (
+        <div key="goButton" className="contract-result-output">
           <Collapse defaultActiveKey={["1"]} bordered={false}>
             <Panel header="Result" key="1">
               {typeof returnValue === "string" ? (
@@ -268,8 +268,8 @@ export default function FunctionForm({
               )}
             </Panel>
           </Collapse>
-        )}
-      </div>
+        </div>
+      )}
     </div>,
   );
 
