@@ -203,13 +203,63 @@ export default function FunctionForm({
   );
   inputs.push(
     <div className="contract-actions-result">
+      <div className="contract-actions-wrapper">
+        <div
+          className="contract-actions"
+          onClick={async () => {
+            setIsLoading(true);
+            const args = functionInfo.inputs.map((input, inputIndex) => {
+              const key = getFunctionInputKey(functionInfo, input, inputIndex);
+              let value = form[key];
+              if (["array", "tuple"].includes(input.baseType)) {
+                value = JSON.parse(value);
+              } else if (input.type === "bool") {
+                if (value === "true" || value === "1" || value === "0x1" || value === "0x01" || value === "0x0001") {
+                  value = 1;
+                } else {
+                  value = 0;
+                }
+              }
+              return value;
+            });
+
+            let result;
+            if (functionInfo.stateMutability === "view" || functionInfo.stateMutability === "pure") {
+              try {
+                const returned = await contractFunction(...args);
+                console.log("returned", returned);
+                result = tryToDisplayAsText(returned);
+              } catch (err) {
+                console.error(err);
+              }
+            } else {
+              const overrides = {};
+              if (txValue) {
+                overrides.value = txValue; // ethers.utils.parseEther()
+              }
+              if (gasPrice) {
+                overrides.gasPrice = gasPrice;
+              }
+              // Uncomment this if you want to skip the gas estimation for each transaction
+              // overrides.gasLimit = hexlify(1200000);
+
+              // console.log("Running with extras",extras)
+              const returned = await tx(contractFunction(...args, overrides));
+              result = tryToDisplay(returned);
+            }
+
+            setIsLoading(false);
+            console.log("result", result);
+            setReturnValue(result);
+            triggerRefresh(true);
+          }}
+        >
+          {buttonIcon}
+        </div>
+      </div>
       <div key="goButton" className="contract-result-output">
         {returnValue !== undefined && (
-          <Collapse
-            defaultActiveKey={["1"]}
-            bordered={false}
-            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-          >
+          <Collapse defaultActiveKey={["1"]} bordered={false}>
             <Panel header="Result" key="1">
               {typeof returnValue === "string" ? (
                 <JSONPretty class="contract-json-output" data={returnValue} />
@@ -219,58 +269,6 @@ export default function FunctionForm({
             </Panel>
           </Collapse>
         )}
-      </div>
-      <div
-        className="contract-actions"
-        onClick={async () => {
-          setIsLoading(true);
-          const args = functionInfo.inputs.map((input, inputIndex) => {
-            const key = getFunctionInputKey(functionInfo, input, inputIndex);
-            let value = form[key];
-            if (["array", "tuple"].includes(input.baseType)) {
-              value = JSON.parse(value);
-            } else if (input.type === "bool") {
-              if (value === "true" || value === "1" || value === "0x1" || value === "0x01" || value === "0x0001") {
-                value = 1;
-              } else {
-                value = 0;
-              }
-            }
-            return value;
-          });
-
-          let result;
-          if (functionInfo.stateMutability === "view" || functionInfo.stateMutability === "pure") {
-            try {
-              const returned = await contractFunction(...args);
-              console.log("returned", returned);
-              result = tryToDisplayAsText(returned);
-            } catch (err) {
-              console.error(err);
-            }
-          } else {
-            const overrides = {};
-            if (txValue) {
-              overrides.value = txValue; // ethers.utils.parseEther()
-            }
-            if (gasPrice) {
-              overrides.gasPrice = gasPrice;
-            }
-            // Uncomment this if you want to skip the gas estimation for each transaction
-            // overrides.gasLimit = hexlify(1200000);
-
-            // console.log("Running with extras",extras)
-            const returned = await tx(contractFunction(...args, overrides));
-            result = tryToDisplay(returned);
-          }
-
-          setIsLoading(false);
-          console.log("result", result);
-          setReturnValue(result);
-          triggerRefresh(true);
-        }}
-      >
-        {buttonIcon}
       </div>
     </div>,
   );
