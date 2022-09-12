@@ -1,16 +1,17 @@
 import React from "react";
 
 import Address from "../Address";
+import { BigNumber } from "ethers";
 
 const { utils } = require("ethers");
 
 const tryToDisplay = (thing, asText = false, blockExplorer) => {
-  if (thing && thing.toNumber) {
-    try {
-      return thing.toNumber();
-    } catch (e) {
-      const displayable = "Ξ " + utils.formatUnits(thing, "ether");
-      return asText ? displayable : <span style={{ overflowWrap: "break-word", width: "100%" }}>{displayable}</span>;
+  if (thing && BigNumber.isBigNumber(thing)) {
+    if (thing.gt(utils.parseUnits("0.01"))) {
+      const displayable = `${thing.toString()} (Ξ ${utils.formatUnits(thing, "ether")})`;
+      return asText ? thing.toString() : displayable;
+    } else {
+      return thing.toString();
     }
   }
   if (thing && thing.indexOf && thing.indexOf("0x") === 0 && thing.length === 42) {

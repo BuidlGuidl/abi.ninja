@@ -50,7 +50,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
         </Tooltip>
       </div>
       <div className="contract-variable-value">
-        {value === valueAsText ? (
+        {value === valueAsText || typeof value === "string" ? (
           <Text copyable={{ text: valueAsText, tooltips: true }}>
             <span>{value}</span>
           </Text>

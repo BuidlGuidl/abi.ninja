@@ -29,7 +29,7 @@ const { utils } = require("ethers");
   - Provide price={price} of ether and get your balance converted to dollars
 **/
 
-const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 1500;
+const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 6000;
 
 export default function Balance(props) {
   const [dollarMode, setDollarMode] = useState(true);
