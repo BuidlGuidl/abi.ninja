@@ -225,6 +225,7 @@ function App() {
             blockExplorer={targetNetwork.blockExplorer}
             setLoadedContract={setLoadedContract}
             setSelectedNetwork={setSelectedNetwork}
+            loadWeb3Modal={loadWeb3Modal}
           />
         </Route>
       </Switch>

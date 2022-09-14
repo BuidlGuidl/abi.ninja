@@ -25,6 +25,7 @@ export default function FunctionForm({
   gasPrice,
   triggerRefresh,
   signer,
+  loadWeb3Modal,
 }) {
   const [form, setForm] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -196,7 +197,15 @@ export default function FunctionForm({
       Read 📡
     </Button>
   ) : (
-    <Button className="contract-action-button" loading={isLoading} disabled={!!!signer}>
+    <Button
+      className="contract-action-button"
+      loading={isLoading}
+      onClick={e => {
+        if (signer) return;
+        e.stopPropagation();
+        loadWeb3Modal();
+      }}
+    >
       {signer ? <>Send 💸</> : <>Connect wallet</>}
     </Button>
   );

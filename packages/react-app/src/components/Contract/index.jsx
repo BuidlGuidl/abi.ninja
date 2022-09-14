@@ -24,6 +24,7 @@ export default function Contract({
   chainId,
   contractConfig,
   selectedNetwork,
+  loadWeb3Modal,
   reset,
 }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -140,6 +141,7 @@ export default function Contract({
             mainnetProvider={mainnetProvider}
             gasPrice={gasPrice}
             triggerRefresh={triggerRefresh}
+            loadWeb3Modal={loadWeb3Modal}
             signer={signer}
           />,
         );
