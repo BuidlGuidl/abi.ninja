@@ -50,7 +50,7 @@ const providers = [
   "https://rpc.scaffoldeth.io:48544",
 ];
 
-const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 1500;
+const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 30000;
 
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]

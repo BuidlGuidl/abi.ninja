@@ -38,7 +38,7 @@
     "bnc-notify": "^1.5.0",
     "craco-less": "^2.0.0",
     "dotenv": "^8.2.0",
-    "eth-hooks": "2.3.16",
+    "eth-hooks": "2.3.18",
     "ethers": "^5.4.1",
     "etherscan-api": "^10.2.0",
     "fortmatic": "^2.2.1",
