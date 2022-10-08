@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "antd/dist/antd.css";
-import "./styles/styles.less";
+import "./styles/dashboard/styles.less";
 
 const themes = {
   dark: "",

@@ -1,16 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import Logo from "../assets/logo_inv-svg.png";
 export default function Header({ link, title, subTitle, ...props }) {
   return (
-    <div className="site-header">
+    <header className={"header"}>
       <div className="header-logo">
-        <Link to="/">
-          <img className="logo logo-big" src="/logo.svg" alt="logo" />
+        <Link to="/" className="logo-link">
+          <img width={50} src={Logo} alt="logo" />
+          <span className="logo-abi">
+            ABI <span className="logo-ninja">ninja</span>
+          </span>
         </Link>
-        <img className="logo logo-small" src="/logo_small.svg" alt="logo" />
       </div>
+
       {props.children}
-    </div>
+    </header>
   );
 }
