@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useBalance } from "eth-hooks";
+import { getRPCPollTime } from "../helpers";
 
 const { utils } = require("ethers");
 
@@ -29,12 +30,12 @@ const { utils } = require("ethers");
   - Provide price={price} of ether and get your balance converted to dollars
 **/
 
-const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 6000;
-
 export default function Balance(props) {
   const [dollarMode, setDollarMode] = useState(true);
 
-  const balance = useBalance(props.provider, props.address, refreshPollTime);
+  const localProviderPollingTime = getRPCPollTime(props.provider);
+  const balance = useBalance(props.provider, props.address, localProviderPollingTime);
+
   let floatBalance = parseFloat("0.00");
   let usingBalance = balance;
 

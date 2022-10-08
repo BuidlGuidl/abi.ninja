@@ -1,11 +1,11 @@
-import { useBalance, useUserProviderAndSigner } from "eth-hooks";
+import { useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
 import { Account, Header, NetworkDisplay, FaucetHint, NetworkSwitch, Faucet } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
-import { Web3ModalSetup } from "./helpers";
+import { getRPCPollTime, Web3ModalSetup } from "./helpers";
 import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
@@ -35,8 +35,6 @@ const { ethers } = require("ethers");
 /// 📡 What chain are your contracts deployed to?
 const initialNetwork = NETWORKS.mainnet;
 
-// 😬 Sorry for all the console logging
-const DEBUG = false;
 const NETWORKCHECK = true;
 const USE_BURNER_WALLET = process.env.REACT_APP_BURNER_WALLET ?? false;
 const USE_NETWORK_SELECTOR = false;
@@ -49,8 +47,6 @@ const providers = [
   `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,
   "https://rpc.scaffoldeth.io:48544",
 ];
-
-const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 30000;
 
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
@@ -73,10 +69,7 @@ function App() {
 
   const mainnetProvider = useStaticJsonRPC(providers);
 
-  if (DEBUG) console.log(`Using ${selectedNetwork} network`);
-
-  // 🛰 providers
-  if (DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
+  const mainnetProviderPollingTime = getRPCPollTime(mainnetProvider);
 
   const logoutOfWeb3Modal = async () => {
     await web3Modal.clearCachedProvider();
@@ -89,7 +82,7 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, refreshPollTime);
+  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, mainnetProviderPollingTime);
 
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
@@ -109,25 +102,6 @@ function App() {
   const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
   const selectedChainId =
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
-
-  // 🏗 scaffold-eth is full of handy hooks like this one to get your balance:
-  const yourLocalBalance = useBalance(localProvider, address, refreshPollTime);
-
-  // Just plug in different 🛰 providers to get your balance on different chains:
-  const yourMainnetBalance = useBalance(mainnetProvider, address, refreshPollTime);
-
-  //
-  // 🧫 DEBUG 👨🏻‍🔬
-  //
-  useEffect(() => {
-    if (DEBUG && mainnetProvider && address && yourLocalBalance && yourMainnetBalance) {
-      console.log("_____________________________________ 🏗 scaffold-eth _____________________________________");
-      console.log("🌎 mainnetProvider", mainnetProvider);
-      console.log("👩‍💼 selected address:", address);
-      console.log("💵 yourLocalBalance", yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : "...");
-      console.log("💵 yourMainnetBalance", yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : "...");
-    }
-  }, [mainnetProvider, address, yourLocalBalance, yourMainnetBalance]);
 
   const loadWeb3Modal = useCallback(async () => {
     const provider = await web3Modal.connect();
@@ -191,7 +165,7 @@ function App() {
           </div>
         </div>
       </Header>
-      {yourLocalBalance.lte(ethers.BigNumber.from("0")) && (
+      {localProvider?._network?.chainId === 31337 && (
         <FaucetHint localProvider={localProvider} targetNetwork={targetNetwork} address={address} />
       )}
       {userSigner && (
