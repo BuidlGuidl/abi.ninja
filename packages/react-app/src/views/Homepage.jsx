@@ -8,7 +8,7 @@ import useBodyClass from "../hooks/useBodyClass";
 import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 import { loadContractRaw } from "../helpers/loadContractRaw";
 import { GithubFilled, HeartFilled } from "@ant-design/icons";
-
+import { NetworkSelector } from "../components/Core/networkSelector";
 const { Panel } = Collapse;
 
 const quickAccessContracts = [
@@ -29,7 +29,7 @@ const quickAccessContracts = [
 function Homepage({
   userSigner,
   mainnetProvider,
-  targetNetwork,
+  selectedNetwork,
   onUpdateNetwork,
   setLoadedContract,
   localProvider,
@@ -38,22 +38,11 @@ function Homepage({
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
-  const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const [isLoadingContract, setIsLoadingContract] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const history = useHistory();
 
   useBodyClass(`path-index`);
-
-  useEffect(() => {
-    const storedNetwork = sessionStorage.getItem("selectedNetwork");
-    if (storedNetwork) {
-      setSelectedNetwork(NETWORKS[storedNetwork]);
-      onUpdateNetwork(storedNetwork);
-    }
-    // Dont want to re-run on selected network change.
-    // eslint-disable-next-line
-  }, [onUpdateNetwork]);
 
   const loadVerifiedContract = async (address = null) => {
     const queryContractAddress = address ?? verifiedContractAddress;
@@ -131,23 +120,11 @@ function Homepage({
           <img src="/logo_inv.svg" alt="logo" />
           <h1>ABI</h1>
           <h2>Ninja</h2>
-          <Select
-            value={selectedNetwork.name}
-            className="nework-selector"
-            onChange={value => {
-              if (selectedNetwork.chainId !== NETWORKS[value].chainId) {
-                sessionStorage.setItem("selectedNetwork", value);
-                setSelectedNetwork(NETWORKS[value]);
-                onUpdateNetwork(value);
-              }
-            }}
-          >
-            {Object.entries(NETWORKS).map(([name, network]) => (
-              <Select.Option key={name} value={name}>
-                <span>{`${name[0].toUpperCase()}${name.substring(1, name.length)}`}</span>
-              </Select.Option>
-            ))}
-          </Select>
+          <NetworkSelector
+            selectedNetwork={selectedNetwork}
+            onUpdateNetwork={val => onUpdateNetwork(val)}
+            networks={NETWORKS}
+          />
           <Tabs
             className="search-tabs"
             defaultActiveKey="0"
