@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { AddressInput } from "../components";
-import { Button, message, Select, Collapse } from "antd";
+import { Button, message, Select, Collapse, Tabs, Input } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { NETWORKS } from "../constants";
 import { useHistory } from "react-router-dom";
 import useBodyClass from "../hooks/useBodyClass";
 import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 import { loadContractRaw } from "../helpers/loadContractRaw";
+import { GithubFilled, HeartFilled } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 
@@ -39,6 +40,7 @@ function Homepage({
   const [contractAbi, setContractAbi] = useState("");
   const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const [isLoadingContract, setIsLoadingContract] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const history = useHistory();
 
   useBodyClass(`path-index`);
@@ -122,99 +124,95 @@ function Homepage({
     }
   };
 
-  const networkSelect = (
-    <Select
-      value={selectedNetwork.name}
-      style={{ textAlign: "left", width: 170, fontSize: 30 }}
-      onChange={value => {
-        if (selectedNetwork.chainId !== NETWORKS[value].chainId) {
-          sessionStorage.setItem("selectedNetwork", value);
-          setSelectedNetwork(NETWORKS[value]);
-          onUpdateNetwork(value);
-        }
-      }}
-    >
-      {Object.entries(NETWORKS).map(([name, network]) => (
-        <Select.Option key={name} value={name}>
-          <span style={{ color: network.color }}>{name}</span>
-        </Select.Option>
-      ))}
-    </Select>
-  );
-
   return (
     <div className="index-container">
-      <div className="logo">
-        <img src="/logo_inv.svg" alt="logo" />
-      </div>
-      <div className="lead-text">
-        <p>Interact with any contract on Ethereum.</p>
-      </div>
-      <div className="network-selector center">
-        <p>{networkSelect}</p>
-      </div>
-
-      <Collapse defaultActiveKey={["1"]} className="abi-ninja-options" accordion>
-        <Panel header="Verified Contract Address" key="1">
-          <div className="form-item">
-            <AddressInput
-              value={verifiedContractAddress}
-              placeholder={`Verified contract address on ${selectedNetwork.name}`}
-              ensProvider={mainnetProvider}
-              size="large"
-              onChange={setVerifiedContractAddress}
-            />
-          </div>
-          <div className="options-actions">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => loadContract("verified")}
-              loading={isLoadingContract}
-              block
-            >
-              Load Contract
-            </Button>
-          </div>
-        </Panel>
-        <Panel header="Address + ABI" key="2">
-          <div className="form-item">
-            <AddressInput
-              value={abiContractAddress}
-              placeholder={`Contract address on ${selectedNetwork.name}`}
-              ensProvider={mainnetProvider}
-              size="large"
-              onChange={setAbiContractAddress}
-            />
-          </div>
-          <div className="form-item">
-            <TextArea
-              style={{ height: 120 }}
-              value={contractAbi}
-              size="large"
-              placeholder="Contract ABI (json format)"
-              onChange={e => {
-                setContractAbi(e.target.value);
-              }}
-            />
-          </div>
-          <div className="options-actions">
-            <Button type="primary" size="large" onClick={() => loadContract("abi")} loading={isLoadingContract} block>
-              Load Contract
-            </Button>
-          </div>
-        </Panel>
-      </Collapse>
-      {selectedNetwork.chainId === 1 && (
-        <div className="quick-access">
-          <h3>Quick Access</h3>
-          <ul>
-            {quickAccessContracts.map(item => {
-              return <li onClick={() => loadContract("verified", item.address)}>{item.name}</li>;
-            })}
-          </ul>
+      <div className="search-container">
+        <div className="search-content">
+          <img src="/logo_inv.svg" alt="logo" />
+          <h1>ABI</h1>
+          <h2>Ninja</h2>
+          <Select
+            value={selectedNetwork.name}
+            className="nework-selector"
+            onChange={value => {
+              if (selectedNetwork.chainId !== NETWORKS[value].chainId) {
+                sessionStorage.setItem("selectedNetwork", value);
+                setSelectedNetwork(NETWORKS[value]);
+                onUpdateNetwork(value);
+              }
+            }}
+          >
+            {Object.entries(NETWORKS).map(([name, network]) => (
+              <Select.Option key={name} value={name}>
+                <span>{`${name[0].toUpperCase()}${name.substring(1, name.length)}`}</span>
+              </Select.Option>
+            ))}
+          </Select>
+          <Tabs
+            className="search-tabs"
+            defaultActiveKey="0"
+            centered
+            animated={{ inkBar: true, tabPane: true }}
+            onChange={activeKey => {
+              setActiveTab(activeKey);
+              console.log(activeKey);
+            }}
+          >
+            <Tabs.TabPane tab="Verified Contract Address" key="0">
+              <AddressInput
+                value={verifiedContractAddress}
+                placeholder={`Verified contract address on ${selectedNetwork.name}`}
+                ensProvider={mainnetProvider}
+                size="large"
+                className="address-input"
+                onChange={setVerifiedContractAddress}
+              />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Address + ABI" key="1">
+              <AddressInput
+                value={abiContractAddress}
+                placeholder={`Contract address on ${selectedNetwork.name}`}
+                ensProvider={mainnetProvider}
+                size="large"
+                onChange={setAbiContractAddress}
+                className="address-input"
+              />
+              <Input
+                value={contractAbi}
+                size="large"
+                className="standard-input"
+                placeholder="Contract ABI (json format)"
+                onChange={e => {
+                  setContractAbi(e.target.value);
+                }}
+              />
+            </Tabs.TabPane>
+          </Tabs>
+          <Button
+            type="primary"
+            size="large"
+            onClick={activeTab == 0 ? () => loadContract("verified") : () => loadContract("abi")}
+            block
+          >
+            {isLoadingContract ? "Loading..." : "Load Contract"}
+          </Button>
         </div>
-      )}
+        <div className="footer-items">
+          <p>
+            <GithubFilled />{" "}
+            <a href="https://github.com/carletex/abi.ninja" target="_blank" rel="noreferrer">
+              Fork me
+            </a>
+          </p>
+          <p className="separator"> | </p>
+          <p>
+            Built with <HeartFilled style={{ color: "red" }} /> at 🏰{" "}
+            <a href="https://buidlguidl.com/" target="_blank" rel="noreferrer">
+              BuidlGuidl
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

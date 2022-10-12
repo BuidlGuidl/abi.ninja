@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
+import { Typography } from "antd";
+const { Text } = Typography;
 export default function ContractNavigation({
   contractIsDeployed,
   contractName,
@@ -23,7 +24,9 @@ export default function ContractNavigation({
     <div className="contract-navigation-content">
       <div className="contract-navigation-title">
         <h2>{contractName}</h2>
-        <h4>{contractAddress}</h4>
+        <h4>
+          <Text copyable={{ text: contractAddress }}>{contractAddress.substring(0, 20)}...</Text>
+        </h4>
       </div>
 
       <ul>
