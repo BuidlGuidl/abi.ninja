@@ -4,7 +4,7 @@ export const NetworkSelector = ({ selectedNetwork, onUpdateNetwork, networks }) 
   return (
     <Select
       value={selectedNetwork.name}
-      className="nework-selector"
+      className="nework-selector network-ui"
       onChange={value => {
         if (selectedNetwork.chainId !== networks[value].chainId) {
           onUpdateNetwork(value);

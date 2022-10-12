@@ -8,7 +8,7 @@ export default function Header({ link, title, subTitle, ...props }) {
         <Link to="/" className="logo-link">
           <img width={50} src={Logo} alt="logo" />
           <span className="logo-abi">
-            ABI <span className="logo-ninja">ninja</span>
+            ABI <span className="logo-ninja">Ninja</span>
           </span>
         </Link>
       </div>

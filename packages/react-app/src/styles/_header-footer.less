@@ -1,151 +1,43 @@
-// Header & Footer
-
-.site-header {
+.header {
+  width: 100%;
   display: flex;
+  width: 100%;
   justify-content: space-between;
-  padding: 1.2rem;
-
-  .path-index & {
-    justify-content: end;
+  background-color: @white;
+  height: 60px;
+  align-items: center;
+  padding: 0 10px 0 20px;
+  .nework-selector {
+    margin-left: 10px;
   }
-}
-
-.header-logo {
-  max-width: 175px;
-  display: none;
-
-  .path-contract & {
-    display: block;
+  .address-component a {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #5e6475;
   }
-
-  .logo-small {
-    display: none;
-    max-width: 50px;
-
-    @media (max-width: 720px) {
-      display: block;
-    }
+  svg {
+    fill: #ae92ff;
   }
-
-  @media (max-width: 720px) {
-    .logo-small {
-      display: block;
-    }
-
-    .logo-big {
-      display: none;
-    }
+  .identicon {
+    margin-top: 6px;
   }
+  .header-logo {
+    width: @menu-width;
+    min-width: @menu-min-width;
 
-  .path-contract {
-    display: block;
-  }
-}
-
-.account-info {
-  .account-action-button {
-    border-color: @light-color;
-    color: @light-color;
-    background-color: transparent;
-    padding: 5px 20px;
-
-    .path-contract & {
-      background-color: @light-color;
-      color: @primary-color;
-      border: 1px solid @primary-color;
-    }
-  }
-
-  .anticon-copy svg {
-    fill: @light-color;
-
-    .path-contract & {
-      fill: @primary-color;
-    }
-  }
-
-  .path-contract & {
-    color: @primary-color;
-  }
-
-  .address-display a {
-    color: white;
-
-    .path-contract & {
-      color: @primary-color;
-    }
-  }
-
-  .address-component {
-    @media (max-width: 720px) {
-      font-size: 17px !important;
-    }
-  }
-}
-
-// Eth Info faucet section
-.eth-info-faucet {
-  @media (max-width: 720px) {
-    display: none;
-  }
-
-  button, .ant-input-affix-wrapper, input {
-    background-color: @medium-color;
-  }
-
-  .ant-btn-circle {
-    background-color: @primary-color;
-    border-color: @primary-color;
-
-    svg {
-      fill: white;
-    }
-  }
-}
-
-.site-footer {
-  padding: 10px 20px;
-
-  .footer-items {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-
-    .anticon {
-      color: @ligthdark-color;
-    }
-
-    a {
-      color: @ligthdark-color;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .path-contract & {
-      p {
-        color: black;
-      }
-
-      .anticon {
-        color: @primary-color;
-      }
-
-      a {
-        color: @primary-color;
-      }
-    }
-  }
-}
-
-@media (max-width: 720px) {
-  .account-info {
-    .address-balance {
-      display: none;
-
-      & + span {
-        display: none;
+    .logo-link {
+      color: black;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      .logo-abi {
+        font-weight: bold;
+        font-size: 20px;
+        .logo-ninja {
+          font-size: 20px;
+          font-weight: 100;
+        }
       }
     }
   }

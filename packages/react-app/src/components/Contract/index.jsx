@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Col, Modal, Row, Skeleton } from "antd";
+import { Button, Card, Checkbox, Col, Collapse, Modal, Row, Skeleton } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
@@ -10,6 +10,7 @@ import ContractNavigation from "./ContractNavigation";
 import { useHistory } from "react-router-dom";
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
+const { Panel } = Collapse;
 
 export default function Contract({
   customContract,
@@ -24,6 +25,8 @@ export default function Contract({
   chainId,
   contractConfig,
   selectedNetwork,
+  web3Modal,
+  logoutOfWeb3Modal,
   loadWeb3Modal,
   reset,
 }) {
@@ -47,6 +50,9 @@ export default function Contract({
   }, [contractIsDeployed]);
 
   useEffect(async () => {
+    if (!contract.name) {
+      return;
+    }
     const name = await contract.name();
     setContractName(name);
   }, []);
@@ -64,24 +70,21 @@ export default function Contract({
   }, []);
 
   // Handle method selection on modal
-  const handleMethodChange = checkedValues => {
+  const handleMethodChange = method => {
     // Init with existing search.
     const queryParams = new URLSearchParams(history?.location?.search);
-    const selectedMethods = checkedValues.toString();
 
-    if (selectedMethods) {
-      if (queryParams.has("functions")) {
-        queryParams.set("functions", selectedMethods);
-      } else {
-        queryParams.append("functions", selectedMethods);
-      }
-      history.push({ search: queryParams.toString() });
+    let newSelected = [...seletectedContractMethods];
+    if (!newSelected.includes(method)) {
+      newSelected.push(method);
     } else {
-      queryParams.delete("functions");
-      history.push({ search: queryParams.toString() });
+      newSelected = newSelected.filter(val => val != method);
     }
-
-    setSeletectedContractMethods(checkedValues);
+    if (newSelected) {
+      queryParams.set("functions", newSelected);
+    }
+    history.push({ search: queryParams.toString() });
+    setSeletectedContractMethods(newSelected);
   };
 
   const displayedContractFunctions = useMemo(() => {
@@ -113,6 +116,7 @@ export default function Contract({
   });
 
   const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
+
   const [refreshRequired, triggerRefresh] = useState(false);
 
   const contractVariablesDisplay = [];
@@ -138,37 +142,36 @@ export default function Contract({
           />,
         );
       } else {
-        if (seletectedContractMethods.length > 0 && !seletectedContractMethods.includes(contractFuncInfo[1].name)) {
-          return null;
-        }
-        if (contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure") {
-          contractMethodsDisplayRead.push(
-            <FunctionForm
-              key={"FF" + contractFuncInfo[0]}
-              contractFunction={contractFunc}
-              functionInfo={contractFuncInfo[1]}
-              provider={provider}
-              mainnetProvider={mainnetProvider}
-              gasPrice={gasPrice}
-              triggerRefresh={triggerRefresh}
-              loadWeb3Modal={loadWeb3Modal}
-              signer={signer}
-            />,
-          );
-        } else {
-          contractMethodsDisplaySend.push(
-            <FunctionForm
-              key={"FF" + contractFuncInfo[0]}
-              contractFunction={contractFunc}
-              functionInfo={contractFuncInfo[1]}
-              provider={provider}
-              mainnetProvider={mainnetProvider}
-              gasPrice={gasPrice}
-              triggerRefresh={triggerRefresh}
-              loadWeb3Modal={loadWeb3Modal}
-              signer={signer}
-            />,
-          );
+        if (seletectedContractMethods.includes(contractFuncInfo[1].name)) {
+          if (contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure") {
+            contractMethodsDisplayRead.push(
+              <FunctionForm
+                key={"FF" + contractFuncInfo[0]}
+                contractFunction={contractFunc}
+                functionInfo={contractFuncInfo[1]}
+                provider={provider}
+                mainnetProvider={mainnetProvider}
+                gasPrice={gasPrice}
+                triggerRefresh={triggerRefresh}
+                loadWeb3Modal={loadWeb3Modal}
+                signer={signer}
+              />,
+            );
+          } else {
+            contractMethodsDisplaySend.push(
+              <FunctionForm
+                key={"FF" + contractFuncInfo[0]}
+                contractFunction={contractFunc}
+                functionInfo={contractFuncInfo[1]}
+                provider={provider}
+                mainnetProvider={mainnetProvider}
+                gasPrice={gasPrice}
+                triggerRefresh={triggerRefresh}
+                loadWeb3Modal={loadWeb3Modal}
+                signer={signer}
+              />,
+            );
+          }
         }
       }
     }
@@ -178,16 +181,32 @@ export default function Contract({
   return (
     <div className="contract-component">
       <Row className="contract-component-row">
-        <Col xs={0} md={5} className="contract-navigation">
+        <Col xs={0} md={4} className="contract-navigation">
           <ContractNavigation
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
             contractName={contractName}
             contractAddress={address}
+            seletectedContractMethods={seletectedContractMethods}
+            handleMethodChange={handleMethodChange}
             contractMethodsRead={allMethodsNamesRead}
             contractMethodsSend={allMethodsNamesSend}
             contractIsDeployed={contractIsDeployed}
+            loadWeb3Modal={loadWeb3Modal}
+            web3Modal={web3Modal}
           />
         </Col>
-        <Col xs={24} md={19} className="contract-column">
+        <Col xs={24} md={20} className="contract-column contract-main">
+          <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
+            <Panel header="Contract Info" key="1">
+              <div className="address-row">
+                <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
+                <Balance address={address} provider={provider} price={price} fontSize={18} />
+              </div>
+
+              {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
+            </Panel>
+          </Collapse>
+
           {/* <Modal
             className="method-selection"
             title="Visible functions"
@@ -206,43 +225,23 @@ export default function Contract({
             </div>
             <Checkbox.Group options={allMethodsNames} value={seletectedContractMethods} onChange={handleMethodChange} />
           </Modal> */}
-          <div className="functions-container">
-            <h3>Read</h3>
-            <div className="function-container">
-              {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
-            </div>
-          </div>
-          <div className="functions-container">
-            <h3>Send</h3>
-            <div className="function-container">
-              {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
-            </div>
-          </div>
-        </Col>
-        {/* <Col xs={24} md={8} style={{ marginTop: 30 }} className="contract-variables">
-          <div className="contract-top-controls">
-            <Button className="return-button" type="link" onClick={reset}>
-              <ArrowLeftOutlined style={{ fontSize: "16px", cursor: "pointer" }} /> Return
-            </Button>
-          </div>
-          <Card
-            className="contract-variables-display"
-            title={
-              <div style={{ fontSize: 18 }}>
-                <span style={{ color: selectedNetwork.color }}>{selectedNetwork.name}</span>
-                <div style={{ float: "right" }}>
-                  <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
-                  <Balance address={address} provider={provider} price={price} fontSize={18} />
-                </div>
+          {contractMethodsDisplayRead.length > 0 && (
+            <div className="functions-container">
+              <h3>READ</h3>
+              <div className="function-container">
+                {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
               </div>
-            }
-            size="large"
-            style={{ marginTop: 18, width: "100%" }}
-            loading={contractVariablesDisplay && contractVariablesDisplay.length <= 0}
-          >
-            {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
-          </Card>
-        </Col> */}
+            </div>
+          )}
+          {contractMethodsDisplaySend.length > 0 && (
+            <div className="functions-container">
+              <h3>SEND</h3>
+              <div className="function-container">
+                {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
+              </div>
+            </div>
+          )}
+        </Col>
       </Row>
     </div>
   );
