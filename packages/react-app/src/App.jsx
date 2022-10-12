@@ -10,6 +10,7 @@ import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
+import { NetworkSelector } from "./components/Core/networkSelector";
 const { ethers } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
@@ -53,21 +54,25 @@ const refreshPollTime = process.env.REACT_APP_REFRESH_POLL_TIME ?? 30000;
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
-  const networkOptions = [initialNetwork.name, "mainnet", "rinkeby"];
 
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
-  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
-
-  const targetNetwork = NETWORKS[selectedNetwork];
-
+  const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork);
+  console.log(selectedNetwork);
   // 🔭 block explorer URL
-  const blockExplorer = targetNetwork.blockExplorer;
+  const blockExplorer = selectedNetwork.blockExplorer;
 
   // load all your providers
   const localProvider = useStaticJsonRPC([
-    process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : targetNetwork.rpcUrl,
+    process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : selectedNetwork.rpcUrl,
   ]);
+
+  useEffect(() => {
+    const storedNetwork = sessionStorage.getItem("selectedNetwork");
+    if (storedNetwork) {
+      setSelectedNetwork(NETWORKS[storedNetwork]);
+    }
+  }, []);
 
   const mainnetProvider = useStaticJsonRPC(providers);
 
@@ -87,7 +92,7 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, refreshPollTime);
+  const price = useExchangeEthPrice(selectedNetwork, mainnetProvider, refreshPollTime);
 
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
@@ -156,8 +161,13 @@ function App() {
   }, [loadWeb3Modal]);
 
   const [loadedContract, setLoadedContract] = useState(null);
-  const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
+  const faucetAvailable = localProvider && localProvider.connection && selectedNetwork.name.indexOf("local") !== -1;
 
+  const onNetworkChange = value => {
+    sessionStorage.setItem("selectedNetwork", value);
+    setSelectedNetwork(NETWORKS[value]);
+    // window.location.reload();
+  };
   return (
     <Switch>
       <Route exact path="/">
@@ -165,8 +175,8 @@ function App() {
           localProvider={localProvider}
           userSigner={userSigner}
           mainnetProvider={mainnetProvider}
-          targetNetwork={targetNetwork}
-          onUpdateNetwork={setSelectedNetwork}
+          selectedNetwork={selectedNetwork}
+          onUpdateNetwork={val => onNetworkChange(val)}
           setLoadedContract={setLoadedContract}
           selectedChainId={selectedChainId}
         />
@@ -191,21 +201,19 @@ function App() {
                   logoutOfWeb3Modal={null}
                   blockExplorer={blockExplorer}
                 />
-                <div style={{ marginRight: 20 }}>
-                  <NetworkSwitch
-                    networkOptions={networkOptions}
-                    selectedNetwork={selectedNetwork}
-                    setSelectedNetwork={setSelectedNetwork}
-                  />
-                </div>
+                <NetworkSelector
+                  selectedNetwork={selectedNetwork}
+                  onUpdateNetwork={val => onNetworkChange(val)}
+                  networks={NETWORKS}
+                />
               </div>
             </div>
           </Header>
 
           {yourLocalBalance.lte(ethers.BigNumber.from("0")) && (
-            <FaucetHint localProvider={localProvider} targetNetwork={targetNetwork} address={address} />
+            <FaucetHint localProvider={localProvider} targetNetwork={selectedNetwork} address={address} />
           )}
-          <ContractUI
+          {/* <ContractUI
             customContract={loadedContract}
             userSigner={userSigner}
             localProvider={localProvider}
@@ -214,7 +222,7 @@ function App() {
             setLoadedContract={setLoadedContract}
             setSelectedNetwork={setSelectedNetwork}
             loadWeb3Modal={loadWeb3Modal}
-          />
+          /> */}
 
           {/* <div className="site-footer">
             <div className="footer-items">
