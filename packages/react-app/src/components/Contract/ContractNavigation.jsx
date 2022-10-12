@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Typography } from "antd";
+import { Button, Collapse, Typography } from "antd";
+import { CloseCircleOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 const { Text } = Typography;
 export default function ContractNavigation({
   contractIsDeployed,
   contractName,
   contractAddress,
+  logoutOfWeb3Modal,
+  loadWeb3Modal,
+  seletectedContractMethods,
+  handleMethodChange,
   contractMethodsRead,
+  web3Modal,
   contractMethodsSend,
 }) {
   const history = useHistory();
@@ -19,6 +25,7 @@ export default function ContractNavigation({
   }, [history.location]);
 
   if (!contractIsDeployed) return null;
+  const { Panel } = Collapse;
 
   return (
     <div className="contract-navigation-content">
@@ -29,36 +36,75 @@ export default function ContractNavigation({
         </h4>
       </div>
 
-      <ul>
-        <li className="header">Read</li>
-        {contractMethodsRead.map(method => {
-          return (
-            <li key={method}>
-              <span
-                data-target={`method-${method}`}
-                onClick={() => history.push({ state: { method: `method-${method}` } })}
-              >
-                {method}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <ul>
-        <li className="header">Send</li>
-        {contractMethodsSend.map(method => {
-          return (
-            <li key={method}>
-              <span
-                data-target={`method-${method}`}
-                onClick={() => history.push({ state: { method: `method-${method}` } })}
-              >
-                {method}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+      <Collapse bordered={false} defaultActiveKey={["1", "2"]} ghost>
+        <Panel header="READ" key="1">
+          <ul>
+            {contractMethodsRead.map(method => {
+              return (
+                <li key={method} className={seletectedContractMethods.includes(method) ? "active" : ""}>
+                  <span
+                    data-target={`method-${method}`}
+                    onClick={() => {
+                      const queryParams = new URLSearchParams(history?.location?.search);
+                      if (!seletectedContractMethods.includes(method)) {
+                        handleMethodChange(method);
+                      }
+                      history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                    }}
+                  >
+                    {method}
+                  </span>
+                  <span>
+                    {seletectedContractMethods.includes(method) ? (
+                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                    ) : (
+                      ""
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+        <Panel header="SEND" key="2">
+          <ul>
+            {contractMethodsSend.map(method => {
+              return (
+                <li key={method} className={seletectedContractMethods.includes(method) ? "active" : ""}>
+                  <span
+                    data-target={`method-${method}`}
+                    onClick={() => {
+                      const queryParams = new URLSearchParams(history?.location?.search);
+                      if (!seletectedContractMethods.includes(method)) {
+                        handleMethodChange(method);
+                      }
+                      history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                    }}
+                  >
+                    {method}
+                  </span>
+                  <span>
+                    {seletectedContractMethods.includes(method) ? (
+                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                    ) : (
+                      ""
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      </Collapse>
+      {web3Modal?.cachedProvider ? (
+        <Button type="secondary" className="logout" onClick={() => logoutOfWeb3Modal()} icon={<LogoutOutlined />}>
+          Disconnect
+        </Button>
+      ) : (
+        <Button type="primary" className="primary" onClick={() => loadWeb3Modal()}>
+          Connect
+        </Button>
+      )}
     </div>
   );
 }

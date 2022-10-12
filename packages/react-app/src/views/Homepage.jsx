@@ -9,6 +9,7 @@ import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 import { loadContractRaw } from "../helpers/loadContractRaw";
 import { GithubFilled, HeartFilled } from "@ant-design/icons";
 import { NetworkSelector } from "../components/Core/networkSelector";
+import { MainInput } from "../components/Core/mainInput";
 const { Panel } = Collapse;
 
 const quickAccessContracts = [
@@ -154,10 +155,8 @@ function Homepage({
                 onChange={setAbiContractAddress}
                 className="address-input"
               />
-              <Input
+              <MainInput
                 value={contractAbi}
-                size="large"
-                className="standard-input"
                 placeholder="Contract ABI (json format)"
                 onChange={e => {
                   setContractAbi(e.target.value);
@@ -167,6 +166,7 @@ function Homepage({
           </Tabs>
           <Button
             type="primary"
+            className="primary"
             size="large"
             onClick={activeTab == 0 ? () => loadContract("verified") : () => loadContract("abi")}
             block

@@ -16,6 +16,8 @@ function ContractUI({
   setLoadedContract,
   setSelectedNetwork,
   loadWeb3Modal,
+  web3Modal,
+  logoutOfWeb3Modal,
 }) {
   useBodyClass(`path-contract`);
   const [error, setError] = useState(null);
@@ -104,7 +106,9 @@ function ContractUI({
         blockExplorer={blockExplorer}
         selectedNetwork={NETWORKS[urlNetworkName] ?? NETWORKS.mainnet}
         loadWeb3Modal={loadWeb3Modal}
+        web3Modal={web3Modal}
         reset={reset}
+        logoutOfWeb3Modal={logoutOfWeb3Modal}
       />
     </div>
   );
