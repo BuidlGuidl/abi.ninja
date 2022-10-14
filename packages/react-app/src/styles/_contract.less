@@ -88,6 +88,7 @@
     justify-content: space-between;
     .contract-method {
       min-width: calc(50% - 10px);
+      transition: all 0.3s;
       background-color: @white;
       border-radius: 12px;
       padding: 25px 16px;
@@ -114,13 +115,31 @@
         line-height: 22px;
         color: #212942;
       }
-      .result {
+      .contract-result-output {
         font-weight: 500;
         font-size: 16px;
-        height: 30px;
+        width: 100%;
         color: #212942;
-        border: 1px solid @background;
-        padding-left: 6px;
+        border: none;
+        position: relative;
+        .result-icon {
+          color: green;
+          position: absolute;
+          top: 0;
+          right: 0;
+          font-size: 20px;
+        }
+        .result-text {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+        .ant-collapse-item > .ant-collapse-header {
+          padding: 0 !important;
+        }
+        span {
+          font-weight: 100;
+        }
       }
     }
     @media (max-width: 720px) {
