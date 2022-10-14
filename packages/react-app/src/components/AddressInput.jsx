@@ -1,4 +1,4 @@
-import { Badge, Input } from "antd";
+import { Badge } from "antd";
 import React, { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { CameraOutlined, QrcodeOutlined } from "@ant-design/icons";

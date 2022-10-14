@@ -1,11 +1,10 @@
-import { Button, Card, Checkbox, Col, Collapse, Modal, Row, Skeleton } from "antd";
+import { Col, Collapse, Row, Skeleton } from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
 import Balance from "../Balance";
 import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
-import { ArrowLeftOutlined, SettingOutlined } from "@ant-design/icons";
 import ContractNavigation from "./ContractNavigation";
 import { useHistory } from "react-router-dom";
 
@@ -24,13 +23,10 @@ export default function Contract({
   blockExplorer,
   chainId,
   contractConfig,
-  selectedNetwork,
   web3Modal,
   logoutOfWeb3Modal,
   loadWeb3Modal,
-  reset,
 }) {
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const contracts = useContractLoader(provider, contractConfig, chainId);
   const history = useHistory();
   const [contractName, setContractName] = useState("");
@@ -49,14 +45,17 @@ export default function Contract({
     window.scrollTo(0, 0);
   }, [contractIsDeployed]);
 
-  useEffect(async () => {
-    let name = "Contract";
-    if (!contract.name) {
-      return;
-    }
-    name = await contract.name();
-    setContractName(name);
-  }, []);
+  useEffect(
+    () => async () => {
+      let name = "Contract";
+      if (!contract.name) {
+        return;
+      }
+      name = await contract.name();
+      setContractName(name);
+    },
+    [contract],
+  );
   useEffect(() => {
     const rawQueryParams = history.location.search;
     const queryParams = new URLSearchParams(rawQueryParams);
@@ -66,20 +65,16 @@ export default function Contract({
       const parsedFunctions = rawFunctions.split(",");
       setSeletectedContractMethods(parsedFunctions);
     }
-    // Omitting the history dependency in purpose. Only want to run this on init.
-    // eslint-disable-next-line
   }, []);
 
-  // Handle method selection on modal
   const handleMethodChange = method => {
-    // Init with existing search.
     const queryParams = new URLSearchParams(history?.location?.search);
 
     let newSelected = [...seletectedContractMethods];
     if (!newSelected.includes(method)) {
       newSelected.push(method);
     } else {
-      newSelected = newSelected.filter(val => val != method);
+      newSelected = newSelected.filter(val => val !== method);
     }
     if (newSelected) {
       queryParams.set("functions", newSelected);
@@ -207,25 +202,6 @@ export default function Contract({
               {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
             </Panel>
           </Collapse>
-
-          {/* <Modal
-            className="method-selection"
-            title="Visible functions"
-            visible={isModalVisible}
-            onOk={() => setIsModalVisible(false)}
-            onCancel={() => setIsModalVisible(false)}
-            footer={null}
-          >
-            <p>
-              <strong>Select the contract functions you want to be visible.</strong>
-            </p>
-            <p>They will be appended to the URL so you can share it.</p>
-            <div style={{ display: "flex", gap: "10px", marginBottom: 10 }}>
-              <Button onClick={() => setSeletectedContractMethods(allMethodsNames)}>Select all</Button>
-              <Button onClick={() => setSeletectedContractMethods([])}>Remove all</Button>
-            </div>
-            <Checkbox.Group options={allMethodsNames} value={seletectedContractMethods} onChange={handleMethodChange} />
-          </Modal> */}
           {contractMethodsDisplayRead.length > 0 && (
             <div className="functions-container">
               <h3>READ</h3>

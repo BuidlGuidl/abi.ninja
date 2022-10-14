@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AddressInput } from "../components";
-import { Button, message, Select, Collapse, Tabs, Input } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Button, message, Tabs } from "antd";
 import { NETWORKS } from "../constants";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useBodyClass from "../hooks/useBodyClass";
 import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 import { loadContractRaw } from "../helpers/loadContractRaw";
-import { GithubFilled, HeartFilled } from "@ant-design/icons";
 import { NetworkSelector } from "../components/Core/networkSelector";
 import { MainInput } from "../components/Core/mainInput";
-const { Panel } = Collapse;
+import { AbiFooter } from "../components/Core/footer";
 
 const quickAccessContracts = [
   {
@@ -22,7 +20,7 @@ const quickAccessContracts = [
     address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
   },
   {
-    name: "Opensea Seaport",
+    name: "Opensea",
     address: "0x00000000006c3852cbef3e08e8df289169ede581",
   },
 ];
@@ -145,6 +143,13 @@ function Homepage({
                 className="address-input"
                 onChange={setVerifiedContractAddress}
               />
+              <div className="contract-link-container">
+                {quickAccessContracts.map(item => (
+                  <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}`} className="contract-link">
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </Tabs.TabPane>
             <Tabs.TabPane tab="Address + ABI" key="1">
               <AddressInput
@@ -168,27 +173,13 @@ function Homepage({
             type="primary"
             className="primary"
             size="large"
-            onClick={activeTab == 0 ? () => loadContract("verified") : () => loadContract("abi")}
+            onClick={activeTab === 0 ? () => loadContract("verified") : () => loadContract("abi")}
             block
           >
             {isLoadingContract ? "Loading..." : "Load Contract"}
           </Button>
         </div>
-        <div className="footer-items">
-          <p>
-            <GithubFilled />{" "}
-            <a href="https://github.com/carletex/abi.ninja" target="_blank" rel="noreferrer">
-              Fork me
-            </a>
-          </p>
-          <p className="separator"> | </p>
-          <p>
-            Built with <HeartFilled style={{ color: "red" }} /> at 🏰{" "}
-            <a href="https://buidlguidl.com/" target="_blank" rel="noreferrer">
-              BuidlGuidl
-            </a>
-          </p>
-        </div>
+        <AbiFooter></AbiFooter>
       </div>
     </div>
   );
