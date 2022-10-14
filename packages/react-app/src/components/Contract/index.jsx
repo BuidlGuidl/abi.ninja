@@ -50,10 +50,11 @@ export default function Contract({
   }, [contractIsDeployed]);
 
   useEffect(async () => {
+    let name = "Contract";
     if (!contract.name) {
       return;
     }
-    const name = await contract.name();
+    name = await contract.name();
     setContractName(name);
   }, []);
   useEffect(() => {

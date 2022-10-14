@@ -194,9 +194,28 @@ function App() {
             web3Modal={web3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
           />
-          {localProvider?._network?.chainId === 31337 && (
-            <FaucetHint localProvider={localProvider} targetNetwork={selectedNetwork} address={address} />
-          )}
+        </div>
+        <div
+          className="eth-info-faucet"
+          style={{
+            position: "fixed",
+            textAlign: "left",
+            left: 0,
+            bottom: 20,
+            padding: 10,
+            right: "0px",
+            bottom: "20px",
+          }}
+        >
+          <Row align="middle" gutter={[4, 4]}>
+            <Col span={24}>
+              {faucetAvailable ? (
+                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
         </div>
       </Route>
     </Switch>
