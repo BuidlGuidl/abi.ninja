@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Collapse, Input, Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import JSONPretty from "react-json-pretty";
 import Blockies from "react-blockies";
 import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
@@ -11,7 +11,6 @@ import AddressInput from "../AddressInput";
 import { MainInput } from "../Core/mainInput";
 
 const { utils, BigNumber } = require("ethers");
-const { Panel } = Collapse;
 
 const getFunctionInputKey = (functionInfo, input, inputIndex) => {
   const name = input?.name ? input.name : "input_" + inputIndex + "_";

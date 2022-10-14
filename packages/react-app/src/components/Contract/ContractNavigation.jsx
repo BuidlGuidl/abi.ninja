@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, Collapse, Typography } from "antd";
-import { CloseCircleOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, LogoutOutlined } from "@ant-design/icons";
+import { AbiFooter } from "../Core/footer";
 const { Text } = Typography;
 export default function ContractNavigation({
   contractIsDeployed,
@@ -41,19 +42,18 @@ export default function ContractNavigation({
           <ul>
             {contractMethodsRead.map(method => {
               return (
-                <li key={method} className={seletectedContractMethods.includes(method) ? "active" : ""}>
-                  <span
-                    data-target={`method-${method}`}
-                    onClick={() => {
-                      const queryParams = new URLSearchParams(history?.location?.search);
-                      if (!seletectedContractMethods.includes(method)) {
-                        handleMethodChange(method);
-                      }
-                      history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
-                    }}
-                  >
-                    {method}
-                  </span>
+                <li
+                  onClick={() => {
+                    const queryParams = new URLSearchParams(history?.location?.search);
+                    if (!seletectedContractMethods.includes(method)) {
+                      handleMethodChange(method);
+                    }
+                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                  }}
+                  key={method}
+                  className={seletectedContractMethods.includes(method) ? "active" : ""}
+                >
+                  <span data-target={`method-${method}`}>{method}</span>
                   <span>
                     {seletectedContractMethods.includes(method) ? (
                       <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
@@ -70,19 +70,18 @@ export default function ContractNavigation({
           <ul>
             {contractMethodsSend.map(method => {
               return (
-                <li key={method} className={seletectedContractMethods.includes(method) ? "active" : ""}>
-                  <span
-                    data-target={`method-${method}`}
-                    onClick={() => {
-                      const queryParams = new URLSearchParams(history?.location?.search);
-                      if (!seletectedContractMethods.includes(method)) {
-                        handleMethodChange(method);
-                      }
-                      history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
-                    }}
-                  >
-                    {method}
-                  </span>
+                <li
+                  onClick={() => {
+                    const queryParams = new URLSearchParams(history?.location?.search);
+                    if (!seletectedContractMethods.includes(method)) {
+                      handleMethodChange(method);
+                    }
+                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                  }}
+                  key={method}
+                  className={seletectedContractMethods.includes(method) ? "active" : ""}
+                >
+                  <span data-target={`method-${method}`}>{method}</span>
                   <span>
                     {seletectedContractMethods.includes(method) ? (
                       <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
@@ -105,6 +104,7 @@ export default function ContractNavigation({
           Connect
         </Button>
       )}
+      <AbiFooter></AbiFooter>
     </div>
   );
 }

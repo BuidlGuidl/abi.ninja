@@ -2,7 +2,7 @@ import { useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Account, Header, NetworkDisplay, FaucetHint, NetworkSwitch, Faucet } from "./components";
+import { Account, Header, Faucet } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
 import { getRPCPollTime, Web3ModalSetup } from "./helpers";
@@ -11,7 +11,6 @@ import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
 import { NetworkSelector } from "./components/Core/networkSelector";
-import { SearchOutlined } from "@ant-design/icons";
 const { ethers } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
@@ -35,9 +34,7 @@ const { ethers } = require("ethers");
 /// 📡 What chain are your contracts deployed to?
 const initialNetwork = NETWORKS.mainnet;
 
-const NETWORKCHECK = true;
 const USE_BURNER_WALLET = process.env.REACT_APP_BURNER_WALLET ?? false;
-const USE_NETWORK_SELECTOR = false;
 
 const web3Modal = Web3ModalSetup();
 
@@ -103,7 +100,6 @@ function App() {
   }, [userSigner]);
 
   // You can warn the user if you would like them to be on a specific network
-  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
   const selectedChainId =
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
@@ -200,11 +196,9 @@ function App() {
           style={{
             position: "fixed",
             textAlign: "left",
-            left: 0,
             bottom: 20,
             padding: 10,
             right: "0px",
-            bottom: "20px",
           }}
         >
           <Row align="middle" gutter={[4, 4]}>
