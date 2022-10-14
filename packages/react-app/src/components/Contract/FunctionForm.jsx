@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Tooltip } from "antd";
+import { Button, Collapse, Tooltip } from "antd";
 import JSONPretty from "react-json-pretty";
 import Blockies from "react-blockies";
 import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
@@ -9,8 +9,10 @@ import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
 import { MainInput } from "../Core/mainInput";
+import { CheckCircleOutlined } from "@ant-design/icons";
 
 const { utils, BigNumber } = require("ethers");
+const { Panel } = Collapse;
 
 const getFunctionInputKey = (functionInfo, input, inputIndex) => {
   const name = input?.name ? input.name : "input_" + inputIndex + "_";
@@ -264,16 +266,21 @@ export default function FunctionForm({
           {buttonIcon}
         </div>
       </div>
-      <div key="goButton" className="contract-result-output">
-        <p>Result</p>
-        <div className="result">
+      <Collapse bordered={false} defaultActiveKey={["1"]} className={`contract-result-output`} ghost>
+        {!returnValue ? (
+          <span className="result-text">No result</span>
+        ) : (
+          <CheckCircleOutlined className="result-icon" />
+        )}
+
+        <Panel header="Result" key="1">
           {typeof returnValue === "string" ? (
             <JSONPretty className="contract-json-output" data={returnValue} />
           ) : (
             <div className="contract-json-output output-tx">{returnValue}</div>
           )}
-        </div>
-      </div>
+        </Panel>
+      </Collapse>
     </div>,
   );
 
