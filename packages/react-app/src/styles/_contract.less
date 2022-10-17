@@ -26,7 +26,7 @@
     position: relative;
     .contract-info {
       position: absolute;
-      background-color: #ffffff;
+      background-color: @white;
       border-radius: 8px;
       z-index: 100;
       right: 20px;
@@ -37,11 +37,11 @@
         font-weight: 400;
         font-size: 14px;
         line-height: 22px;
-        color: #5e6475;
+        color: @input-bg;
       }
       cursor: pointer;
       svg {
-        fill: #ae92ff;
+        fill: @primary-color;
       }
       .ant-collapse-content-box {
         padding-left: 10px;
@@ -55,13 +55,13 @@
         font-weight: 500;
         font-size: 18px;
         line-height: 22px;
-        color: #212942;
+        color: @dark-color;
       }
       .contract-variable-name {
         font-weight: 500;
         font-size: 14px;
         line-height: 22px;
-        color: #212942;
+        color: @dark-color;
       }
       .address-balance {
         margin-left: 10px;
@@ -70,7 +70,7 @@
         font-weight: 100;
         font-size: 12px;
         line-height: 20px;
-        color: #212942;
+        color: @dark-color;
       }
     }
   }
@@ -105,7 +105,7 @@
           font-size: 12px;
           font-weight: 400;
           line-height: 30px;
-          color: #5e6475;
+          color: @input-bg;
           margin-bottom: 10px;
         }
       }
@@ -113,17 +113,17 @@
         font-weight: 500;
         font-size: 18px;
         line-height: 22px;
-        color: #212942;
+        color: @dark-color;
       }
       .contract-result-output {
         font-weight: 500;
         font-size: 16px;
         width: 100%;
-        color: #212942;
+        color: @dark-color;
         border: none;
         position: relative;
         .result-icon {
-          color: green;
+          color: @success;
           position: absolute;
           top: 0;
           right: 0;
@@ -152,19 +152,19 @@
     .primary {
       height: 25px;
       margin-bottom: 20px;
-      color: #ffffff;
-      background-color: #ae92ff;
+      color: @white;
+      background-color: @primary-color;
       transition: all 0.3s ease-in;
-      border: 2px solid #ae92ff;
+      border: 2px solid @primary-color;
       transition: all 0.3s ease-out;
       align-self: center;
       width: 150px;
       margin-right: 14px;
       &:hover {
-        color: #ae92ff;
-        background-color: #ffffff;
+        color: @primary-color;
+        background-color: @white;
         transition: all 0.3s ease-in;
-        border: 2px solid #ae92ff;
+        border: 2px solid @primary-color;
         transition: all 0.3s ease-out;
       }
     }
@@ -202,7 +202,7 @@
       font-size: 14px;
     }
     svg {
-      fill: #ae92ff;
+      fill: @primary-color;
     }
   }
   .ant-collapse-header {
@@ -212,7 +212,7 @@
     flex-grow: 1;
   }
   .logout {
-    color: rgba(255, 0, 0, 0.6);
+    color: @danger;
     font-style: normal;
     font-weight: 400;
     border: none;
@@ -224,24 +224,24 @@
   .primary {
     height: 25px;
     margin-bottom: 20px;
-    color: #ae92ff;
-    background-color: #ffffff;
+    color: @primary-color;
+    background-color: @white;
     transition: all 0.3s ease-in;
-    border: 2px solid #ae92ff;
+    border: 2px solid @primary-color;
     transition: all 0.3s ease-out;
     align-self: center;
     width: 150px;
     margin-right: 14px;
     &:hover {
-      color: #ae92ff;
-      background-color: #ffffff;
+      color: @primary-color;
+      background-color: @white;
       transition: all 0.3s ease-in;
-      border: 2px solid #ae92ff;
+      border: 2px solid @primary-color;
       transition: all 0.3s ease-out;
     }
   }
   .logout:hover {
-    color: red;
+    color: @danger-hover;
   }
   ul {
     padding: 0;
@@ -266,11 +266,11 @@
         }
         > span:nth-child(2) {
           svg {
-            fill: #5e6475;
+            fill: @input-bg;
           }
         }
 
-        background-color: #f6f7fb;
+        background-color: @almost-white;
         border-radius: 4px;
       }
       cursor: pointer;
