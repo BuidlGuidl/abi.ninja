@@ -9,7 +9,7 @@ body {
 }
 
 button.primary {
-  background-color: #ae92ff;
+  background-color: @primary-color;
   padding: 14px 16px;
   gap: 12px;
   display: flex;
@@ -26,16 +26,16 @@ button.primary {
   align-items: center;
   text-align: center;
   border: none;
-  color: #ffffff;
+  color: @white;
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease-in;
   &:focus,
   &:hover {
-    color: #ae92ff;
-    background-color: #ffffff;
+    color: @primary-color;
+    background-color: @white;
     transition: all 0.3s ease-in;
-    border: 2px solid #ae92ff;
+    border: 2px solid @primary-color;
     transition: all 0.3s ease-out;
   }
 }
@@ -48,7 +48,7 @@ button.primary {
     animation: none;
     border-radius: 8px;
     border: none;
-    border-color: #d9d9d9 !important;
+    border-color: @input-border !important;
     box-shadow: none !important;
   }
 }
@@ -57,7 +57,7 @@ button.primary {
   animation: none;
   border-radius: 8px;
   border: none;
-  border-color: #d9d9d9 !important;
+  border-color: @input-border !important;
   box-shadow: none !important;
 }
 .standard-input {
