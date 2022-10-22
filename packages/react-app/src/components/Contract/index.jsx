@@ -173,8 +173,12 @@ export default function Contract({
             </p>
             <p>They will be appended to the URL so you can share it.</p>
             <div style={{ display: "flex", gap: "10px", marginBottom: 10 }}>
-              <Button onClick={() => setSeletectedContractMethods(allMethodsNames)}>Select all</Button>
-              <Button onClick={() => setSeletectedContractMethods([])}>Remove all</Button>
+              <Button className="method-selection-button" onClick={() => setSeletectedContractMethods(allMethodsNames)}>
+                Select all
+              </Button>
+              <Button className="method-selection-button" onClick={() => setSeletectedContractMethods([])}>
+                Remove all
+              </Button>
             </div>
             <Checkbox.Group options={allMethodsNames} value={seletectedContractMethods} onChange={handleMethodChange} />
           </Modal>
