@@ -107,7 +107,7 @@ function Homepage({
 
         history.push(`/${contractAddress}/${selectedNetwork.name}?${queryParams.toString()}`);
       } else {
-        history.push(`/${contractAddress}/${selectedNetwork.name}`);
+        history.push(`/${contractAddress}/${selectedNetwork.name}?functions=`);
       }
     }
   };
@@ -145,7 +145,7 @@ function Homepage({
               />
               <div className="contract-link-container">
                 {selectedNetwork.name == "mainnet" && quickAccessContracts.map(item => (
-                  <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}`} className="contract-link">
+                  <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}?functions=`} className="contract-link">
                     {item.name}
                   </Link>
                 ))}

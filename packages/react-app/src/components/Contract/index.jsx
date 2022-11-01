@@ -30,7 +30,9 @@ export default function Contract({
 
   const address = customContract ? customContract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
+  const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
 
+  const [refreshRequired, triggerRefresh] = useState(false);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [contractIsDeployed]);
@@ -57,20 +59,24 @@ export default function Contract({
   }, []);
 
   const handleMethodChange = method => {
-    const queryParams = new URLSearchParams(history?.location?.search);
+
 
     let newSelected = [...seletectedContractMethods];
+    console.log(seletectedContractMethods)
     if (!newSelected.includes(method)) {
       newSelected.push(method);
     } else {
       newSelected = newSelected.filter(val => val !== method);
     }
-    if (newSelected) {
-      queryParams.set("functions", newSelected);
-    }
-    history.push({ search: queryParams.toString() });
+
     setSeletectedContractMethods(newSelected);
   };
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(history?.location?.search);
+    queryParams.set("functions", seletectedContractMethods);
+    history.push({ search: queryParams.toString() });
+  }, [seletectedContractMethods])
 
   const displayedContractFunctions = useMemo(() => {
     const results = customContract
@@ -99,10 +105,6 @@ export default function Contract({
       }
     }
   });
-
-  const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
-
-  const [refreshRequired, triggerRefresh] = useState(false);
 
   const contractVariablesDisplay = [];
   const contractMethodsDisplayRead = [];
