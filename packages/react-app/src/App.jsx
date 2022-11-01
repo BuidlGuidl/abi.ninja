@@ -10,7 +10,6 @@ import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
-import { NetworkSelector } from "./components/Core/networkSelector";
 const { ethers } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !

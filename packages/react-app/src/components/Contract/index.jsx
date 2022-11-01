@@ -1,5 +1,5 @@
-import { Col, Collapse, Row, Skeleton} from "antd";
-import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
+import { Col, Collapse, Row, Skeleton } from "antd";
+import { useContractExistsAtAddress } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
 import Balance from "../Balance";
@@ -7,7 +7,7 @@ import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import ContractNavigation from "./ContractNavigation";
 import { useHistory } from "react-router-dom";
-import {MenuOutlined, CloseOutlined } from "@ant-design/icons";
+import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
 const { Panel } = Collapse;
@@ -27,7 +27,6 @@ export default function Contract({
   const [contractName, setContractName] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
 
-
   const address = customContract ? customContract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
   const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
@@ -37,16 +36,19 @@ export default function Contract({
     window.scrollTo(0, 0);
   }, [contractIsDeployed]);
 
-  useEffect(async() => {
+  useEffect(() => {
+    const fetchContractName = async () => {
       let name = "Contract";
       if (!customContract.name) {
         return;
       }
       name = await customContract.name();
       setContractName(name);
-    },
-    [customContract],
-  );
+    };
+
+    fetchContractName();
+  }, [customContract]);
+
   useEffect(() => {
     const rawQueryParams = history.location.search;
     const queryParams = new URLSearchParams(rawQueryParams);
@@ -56,13 +58,11 @@ export default function Contract({
       const parsedFunctions = rawFunctions.split(",");
       setSeletectedContractMethods(parsedFunctions);
     }
-  }, []);
+  }, [history.location.search]);
 
   const handleMethodChange = method => {
-
-
     let newSelected = [...seletectedContractMethods];
-    console.log(seletectedContractMethods)
+    console.log(seletectedContractMethods);
     if (!newSelected.includes(method)) {
       newSelected.push(method);
     } else {
@@ -76,7 +76,7 @@ export default function Contract({
     const queryParams = new URLSearchParams(history?.location?.search);
     queryParams.set("functions", seletectedContractMethods);
     history.push({ search: queryParams.toString() });
-  }, [seletectedContractMethods])
+  }, [seletectedContractMethods, history]);
 
   const displayedContractFunctions = useMemo(() => {
     const results = customContract
@@ -170,8 +170,8 @@ export default function Contract({
   return (
     <div className="contract-component">
       <Row className="contract-component-row">
-        <Col xs={0} sm={0} md={8} lg={6} xxl={4}  className={`contract-navigation ${openMenu ? "open": ""}`}>
-          <CloseOutlined className="menu-button-close" onClick={() =>setOpenMenu(false)} />
+        <Col xs={0} sm={0} md={8} lg={6} xxl={4} className={`contract-navigation ${openMenu ? "open" : ""}`}>
+          <CloseOutlined className="menu-button-close" onClick={() => setOpenMenu(false)} />
           <ContractNavigation
             contractName={contractName}
             contractAddress={address}
@@ -183,7 +183,7 @@ export default function Contract({
           />
         </Col>
         <Col xs={24} sm={24} md={16} lg={18} xxl={20} className="contract-column contract-main">
-        {!openMenu && <MenuOutlined className="menu-button" onClick={() =>setOpenMenu(true)} />}
+          {!openMenu && <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />}
 
           <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
             <Panel header="Contract Info" key="1">
@@ -195,7 +195,9 @@ export default function Contract({
               {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
             </Panel>
           </Collapse>
-          {contractMethodsDisplayRead.length == 0 && contractMethodsDisplaySend.length == 0 && <p className="no-methods-placeholder">Add methods from the sidebar....</p>}
+          {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
+            <p className="no-methods-placeholder">Add methods from the sidebar....</p>
+          )}
           {contractMethodsDisplayRead.length > 0 && (
             <div className="functions-container">
               <h3>READ</h3>

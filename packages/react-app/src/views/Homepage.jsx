@@ -144,11 +144,16 @@ function Homepage({
                 onChange={setVerifiedContractAddress}
               />
               <div className="contract-link-container">
-                {selectedNetwork.name == "mainnet" && quickAccessContracts.map(item => (
-                  <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}?functions=`} className="contract-link">
-                    {item.name}
-                  </Link>
-                ))}
+                {selectedNetwork.name === "mainnet" &&
+                  quickAccessContracts.map(item => (
+                    <Link
+                      key={item.name}
+                      to={`/${item.address}/${selectedNetwork.name}?functions=`}
+                      className="contract-link"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
               </div>
             </Tabs.TabPane>
             <Tabs.TabPane tab="Address + ABI" key="1">
