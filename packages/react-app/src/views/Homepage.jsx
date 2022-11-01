@@ -144,7 +144,7 @@ function Homepage({
                 onChange={setVerifiedContractAddress}
               />
               <div className="contract-link-container">
-                {quickAccessContracts.map(item => (
+                {selectedNetwork.name == "mainnet" && quickAccessContracts.map(item => (
                   <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}`} className="contract-link">
                     {item.name}
                   </Link>
