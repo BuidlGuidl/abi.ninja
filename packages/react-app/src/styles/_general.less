@@ -78,3 +78,24 @@ button.primary {
   border-bottom-right-radius: 8px;
   border: none;
 }
+.account-action-button {
+  color: @danger;
+  font-style: normal;
+  font-weight: 400;
+  border: none;
+  font-size: 14px;
+  line-height: 22px;
+  width: 100px;
+  height: 100%;
+  margin-left: 0;
+  &.connect{
+    color: @primary-color-light;
+  }
+}
+.account-action-button:hover {
+  color: @danger-hover;
+  &.connect{
+    color: @primary-color;
+  }
+  font-size: 15px;
+}

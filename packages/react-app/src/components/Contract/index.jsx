@@ -23,8 +23,6 @@ export default function Contract({
   blockExplorer,
   chainId,
   contractConfig,
-  web3Modal,
-  logoutOfWeb3Modal,
   loadWeb3Modal,
 }) {
   const contracts = useContractLoader(provider, contractConfig, chainId);
@@ -179,7 +177,6 @@ export default function Contract({
       <Row className="contract-component-row">
         <Col xs={0} md={4} className="contract-navigation">
           <ContractNavigation
-            logoutOfWeb3Modal={logoutOfWeb3Modal}
             contractName={contractName}
             contractAddress={address}
             seletectedContractMethods={seletectedContractMethods}
@@ -187,8 +184,6 @@ export default function Contract({
             contractMethodsRead={allMethodsNamesRead}
             contractMethodsSend={allMethodsNamesSend}
             contractIsDeployed={contractIsDeployed}
-            loadWeb3Modal={loadWeb3Modal}
-            web3Modal={web3Modal}
           />
         </Col>
         <Col xs={24} md={20} className="contract-column contract-main">

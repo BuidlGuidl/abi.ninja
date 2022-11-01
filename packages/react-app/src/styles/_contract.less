@@ -172,7 +172,7 @@
 }
 .contract-navigation-content {
   background-color: @white;
-  padding: 10px 0 0 15px;
+  padding: 10px 0 0 0px;
   max-width: 100%;
   overflow: hidden;
   height: calc(100vh - 60px);
@@ -181,12 +181,14 @@
   .ant-collapse-ghost {
     margin-top: 10px;
     overflow-y: auto;
+    padding-left: 15px;
   }
   .contract-navigation-title {
     overflow: hidden;
     white-space: nowrap;
     padding-top: 30px;
     padding-bottom: 10px;
+    padding-left: 15px;
     * {
       overflow: hidden;
       white-space: nowrap;
@@ -211,16 +213,6 @@
   .ant-collapse-ghost {
     flex-grow: 1;
   }
-  .logout {
-    color: @danger;
-    font-style: normal;
-    font-weight: 400;
-    border: none;
-    font-size: 14px;
-    line-height: 22px;
-    margin: 20px 10px 20px 0;
-    width: 100px;
-  }
   .primary {
     height: 25px;
     margin-bottom: 20px;
@@ -240,9 +232,7 @@
       transition: all 0.3s ease-out;
     }
   }
-  .logout:hover {
-    color: @danger-hover;
-  }
+ 
   ul {
     padding: 0;
     li {

@@ -8,12 +8,9 @@ export default function ContractNavigation({
   contractIsDeployed,
   contractName,
   contractAddress,
-  logoutOfWeb3Modal,
-  loadWeb3Modal,
   seletectedContractMethods,
   handleMethodChange,
   contractMethodsRead,
-  web3Modal,
   contractMethodsSend,
 }) {
   const history = useHistory();
@@ -95,15 +92,6 @@ export default function ContractNavigation({
           </ul>
         </Panel>
       </Collapse>
-      {web3Modal?.cachedProvider ? (
-        <Button type="secondary" className="logout" onClick={() => logoutOfWeb3Modal()} icon={<LogoutOutlined />}>
-          Disconnect
-        </Button>
-      ) : (
-        <Button type="primary" className="primary" onClick={() => loadWeb3Modal()}>
-          Connect
-        </Button>
-      )}
       <AbiFooter></AbiFooter>
     </div>
   );

@@ -166,13 +166,8 @@ function App() {
                   price={price}
                   web3Modal={web3Modal}
                   loadWeb3Modal={loadWeb3Modal}
-                  logoutOfWeb3Modal={null}
+                  logoutOfWeb3Modal={logoutOfWeb3Modal}
                   blockExplorer={blockExplorer}
-                />
-                <NetworkSelector
-                  selectedNetwork={selectedNetwork}
-                  onUpdateNetwork={val => onNetworkChange(val)}
-                  networks={NETWORKS}
                 />
               </div>
             </div>
