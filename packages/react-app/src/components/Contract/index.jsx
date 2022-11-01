@@ -73,9 +73,13 @@ export default function Contract({
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(history?.location?.search);
-    queryParams.set("functions", seletectedContractMethods);
-    history.push({ search: queryParams.toString() });
+    if (seletectedContractMethods.length > 0) {
+      const queryParams = new URLSearchParams(history?.location?.search);
+      queryParams.set("functions", seletectedContractMethods);
+      history.push({ search: queryParams.toString() });
+    } else {
+      history.push({ search: "" });
+    }
   }, [seletectedContractMethods, history]);
 
   const displayedContractFunctions = useMemo(() => {
