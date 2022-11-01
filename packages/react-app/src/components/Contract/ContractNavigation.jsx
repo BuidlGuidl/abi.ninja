@@ -1,15 +1,16 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Collapse, Typography } from "antd";
+import { Collapse } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { AbiFooter } from "../Core/footer";
-const { Text } = Typography;
+import Address from "../Address";
 export default function ContractNavigation({
   contractIsDeployed,
   contractName,
   contractAddress,
   seletectedContractMethods,
   handleMethodChange,
+  blockExplorer,
   contractMethodsRead,
   contractMethodsSend,
 }) {
@@ -30,7 +31,7 @@ export default function ContractNavigation({
       <div className="contract-navigation-title">
         <h2>{contractName}</h2>
         <h4>
-          <Text copyable={{ text: contractAddress }}>{contractAddress.substring(0, 20)}...</Text>
+          <Address value={contractAddress} blockExplorer={blockExplorer} fontSize={18} />
         </h4>
       </div>
 

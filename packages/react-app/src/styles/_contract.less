@@ -17,11 +17,18 @@
     }
   }
 }
+.address-display a {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: @input-bg;
+}
 .contract-column {
   height: calc(100vh - 60px);
   padding-top: 15px;
   overflow-y: auto;
   width: calc(100vw - 280px);
+  
   .no-methods-placeholder{
     color: @input-bg;
     margin: 0 auto;
@@ -41,12 +48,6 @@
       top: 10px;
       width: 300px;
       overflow: hidden;
-      .address-display a {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 22px;
-        color: @input-bg;
-      }
       cursor: pointer;
       svg {
         fill: @primary-color;
