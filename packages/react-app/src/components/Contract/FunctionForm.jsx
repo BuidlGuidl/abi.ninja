@@ -268,7 +268,7 @@ export default function FunctionForm({
         </div>
       </div>
       {!!returnValue && (
-        <Collapse bordered={false} defaultActiveKey={["0"]} className={`contract-result-output`} ghost>
+        <Collapse bordered={false} defaultActiveKey={["1"]} className={`contract-result-output`} ghost>
           <CheckCircleOutlined className="result-icon" />
           <Panel header="Result" key="1">
             {typeof returnValue === "string" ? (
