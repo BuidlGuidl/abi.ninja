@@ -18,42 +18,32 @@ export default function Contract({
   signer,
   provider,
   mainnetProvider,
-  name,
   show,
   price,
   blockExplorer,
-  chainId,
-  contractConfig,
   loadWeb3Modal,
 }) {
-  const contracts = useContractLoader(provider, contractConfig, chainId);
   const history = useHistory();
   const [contractName, setContractName] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
-  let contract;
-  if (!customContract) {
-    contract = contracts ? contracts[name] : "";
-  } else {
-    contract = customContract;
-  }
 
-  const address = contract ? contract.address : "";
+
+  const address = customContract ? customContract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [contractIsDeployed]);
 
-  useEffect(
-    () => async () => {
+  useEffect(async() => {
       let name = "Contract";
-      if (!contract.name) {
+      if (!customContract.name) {
         return;
       }
-      name = await contract.name();
+      name = await customContract.name();
       setContractName(name);
     },
-    [contract],
+    [customContract],
   );
   useEffect(() => {
     const rawQueryParams = history.location.search;
@@ -83,21 +73,21 @@ export default function Contract({
   };
 
   const displayedContractFunctions = useMemo(() => {
-    const results = contract
-      ? Object.entries(contract.interface.functions).filter(
+    const results = customContract
+      ? Object.entries(customContract.interface.functions).filter(
           fn => fn[1]["type"] === "function" && !(show && show.indexOf(fn[1]["name"]) < 0),
         )
       : [];
     return results;
-  }, [contract, show]);
+  }, [customContract, show]);
 
   const allMethodsNamesRead = [];
   const allMethodsNamesSend = [];
   displayedContractFunctions.forEach(contractFuncInfo => {
     const contractFunc =
       contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure"
-        ? contract[contractFuncInfo[0]]
-        : contract.connect(signer)[contractFuncInfo[0]];
+        ? customContract[contractFuncInfo[0]]
+        : customContract.connect(signer)[contractFuncInfo[0]];
 
     if (typeof contractFunc === "function") {
       if (!isQueryable(contractFuncInfo[1])) {
@@ -120,8 +110,8 @@ export default function Contract({
   displayedContractFunctions.forEach(contractFuncInfo => {
     const contractFunc =
       contractFuncInfo[1].stateMutability === "view" || contractFuncInfo[1].stateMutability === "pure"
-        ? contract[contractFuncInfo[0]]
-        : contract.connect(signer)[contractFuncInfo[0]];
+        ? customContract[contractFuncInfo[0]]
+        : customContract.connect(signer)[contractFuncInfo[0]];
 
     if (typeof contractFunc === "function") {
       if (isQueryable(contractFuncInfo[1])) {
