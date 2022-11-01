@@ -149,6 +149,7 @@ export default function Contract({
                 triggerRefresh={triggerRefresh}
                 loadWeb3Modal={loadWeb3Modal}
                 signer={signer}
+                handleMethodChange={handleMethodChange}
               />,
             );
           } else {
@@ -163,6 +164,7 @@ export default function Contract({
                 triggerRefresh={triggerRefresh}
                 loadWeb3Modal={loadWeb3Modal}
                 signer={signer}
+                handleMethodChange={handleMethodChange}
               />,
             );
           }
