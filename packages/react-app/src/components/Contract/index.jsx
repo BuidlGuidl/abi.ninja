@@ -1,4 +1,4 @@
-import { Col, Collapse, Row, Skeleton } from "antd";
+import { Col, Collapse, Row, Skeleton} from "antd";
 import { useContractExistsAtAddress, useContractLoader } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
@@ -7,6 +7,7 @@ import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import ContractNavigation from "./ContractNavigation";
 import { useHistory } from "react-router-dom";
+import {MenuOutlined, CloseOutlined } from "@ant-design/icons";
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
 const { Panel } = Collapse;
@@ -28,7 +29,7 @@ export default function Contract({
   const contracts = useContractLoader(provider, contractConfig, chainId);
   const history = useHistory();
   const [contractName, setContractName] = useState("");
-
+  const [openMenu, setOpenMenu] = useState(false);
   let contract;
   if (!customContract) {
     contract = contracts ? contracts[name] : "";
@@ -177,7 +178,8 @@ export default function Contract({
   return (
     <div className="contract-component">
       <Row className="contract-component-row">
-        <Col xs={0} md={4} className="contract-navigation">
+        <Col xs={0} sm={0} md={8} lg={6} xxl={4}  className={`contract-navigation ${openMenu ? "open": ""}`}>
+          <CloseOutlined className="menu-button-close" onClick={() =>setOpenMenu(false)} />
           <ContractNavigation
             contractName={contractName}
             contractAddress={address}
@@ -188,7 +190,9 @@ export default function Contract({
             contractIsDeployed={contractIsDeployed}
           />
         </Col>
-        <Col xs={24} md={20} className="contract-column contract-main">
+        <Col xs={24} sm={24} md={16} lg={18} xxl={20} className="contract-column contract-main">
+        {!openMenu && <MenuOutlined className="menu-button" onClick={() =>setOpenMenu(true)} />}
+
           <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
             <Panel header="Contract Info" key="1">
               <div className="address-row">

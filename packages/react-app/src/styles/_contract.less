@@ -76,8 +76,12 @@
   }
   h3 {
     line-height: 30px;
-    margin-top: 10px;
+    margin-top: 60px;
+    @media (min-width: 768px) {
+      margin-top: 30px;
+    }
   }
+ 
   .functions-container {
     padding-right: 20px;
     padding-left: 20px;
@@ -114,6 +118,10 @@
         font-size: 18px;
         line-height: 22px;
         color: @dark-color;
+        .anticon{
+          margin-right: 10px;
+          line-height: 10px;
+        }
       }
       .contract-result-output {
         font-weight: 500;
@@ -140,6 +148,9 @@
         span {
           font-weight: 100;
         }
+      }
+      @media (max-width: 1000px) {
+        width: 100%;
       }
     }
     @media (max-width: 720px) {
@@ -170,6 +181,7 @@
     }
   }
 }
+
 .contract-navigation-content {
   background-color: @white;
   padding: 10px 0 0 0px;
@@ -182,6 +194,12 @@
     margin-top: 10px;
     overflow-y: auto;
     padding-left: 15px;
+    .ant-collapse-content-box{
+      padding: 0;
+      li{
+        padding-left: 0;
+      }
+    }
   }
   .contract-navigation-title {
     overflow: hidden;
@@ -209,6 +227,7 @@
   }
   .ant-collapse-header {
     padding-left: 0px !important;
+    padding-bottom: 0px!important;
   }
   .ant-collapse-ghost {
     flex-grow: 1;
@@ -276,4 +295,40 @@
 .contract-loading-spinner{
   margin: 0 auto;
   margin-top: 60px;
+}
+
+.menu-button{
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+  font-size: 20px;
+}
+.menu-button-close{
+  position: absolute;
+  top: 20px;
+  left: 260px;
+  z-index: 999;
+  font-size: 20px;
+}
+
+.contract-navigation{
+  transition: all 0.3s;
+  &.open{
+    display: block;
+    position: absolute;
+    z-index: 700;
+    min-width: 280px;
+    transition: all 0.3s;
+    .contract-navigation-title{
+      padding-top: 2px;
+    }
+  }
+
+}
+
+@media (min-width: 768px) {
+  .menu-button-close, .menu-button{
+display: none;  
+  }
 }
