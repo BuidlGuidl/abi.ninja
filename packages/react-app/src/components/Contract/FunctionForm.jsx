@@ -266,21 +266,19 @@ export default function FunctionForm({
           {buttonIcon}
         </div>
       </div>
-      <Collapse bordered={false} defaultActiveKey={["1"]} className={`contract-result-output`} ghost>
-        {!returnValue ? (
-          <span className="result-text">No result</span>
-        ) : (
-          <CheckCircleOutlined className="result-icon" />
-        )}
-
-        <Panel header="Result" key="1">
-          {typeof returnValue === "string" ? (
-            <JSONPretty className="contract-json-output" data={returnValue} />
-          ) : (
-            <div className="contract-json-output output-tx">{returnValue}</div>
-          )}
-        </Panel>
-      </Collapse>
+      {!!returnValue &&
+        <Collapse bordered={false} defaultActiveKey={["0"]} className={`contract-result-output`} ghost>
+        
+            <CheckCircleOutlined className="result-icon" />
+          <Panel header="Result" key="1">
+            {typeof returnValue === "string" ? (
+              <JSONPretty className="contract-json-output" data={returnValue} />
+            ) : (
+              <div className="contract-json-output output-tx">{returnValue}</div>
+            )}
+          </Panel>
+        </Collapse>
+      }
     </div>,
   );
 
