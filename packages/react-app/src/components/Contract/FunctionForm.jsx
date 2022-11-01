@@ -9,7 +9,7 @@ import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
 import { MainInput } from "../Core/mainInput";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 const { utils, BigNumber } = require("ethers");
 const { Panel } = Collapse;
@@ -27,6 +27,7 @@ export default function FunctionForm({
   gasPrice,
   triggerRefresh,
   signer,
+  handleMethodChange,
   loadWeb3Modal,
 }) {
   const [form, setForm] = useState({});
@@ -285,7 +286,7 @@ export default function FunctionForm({
   return (
     <div className="contract-method">
       <h2 id={`method-${functionInfo.name}`} className="contract-method-name">
-        {functionInfo.name}
+      <CloseCircleOutlined onClick={() => handleMethodChange(functionInfo.name)} />{functionInfo.name}
       </h2>
       <div className="contract-method-inputs">{inputs}</div>
     </div>
