@@ -203,6 +203,7 @@ export default function Contract({
               {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
             </Panel>
           </Collapse>
+          {contractMethodsDisplayRead.length == 0 && contractMethodsDisplaySend.length == 0 && <p className="no-methods-placeholder">Add methods from the sidebar....</p>}
           {contractMethodsDisplayRead.length > 0 && (
             <div className="functions-container">
               <h3>READ</h3>
