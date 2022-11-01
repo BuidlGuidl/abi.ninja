@@ -267,10 +267,9 @@ export default function FunctionForm({
           {buttonIcon}
         </div>
       </div>
-      {!!returnValue &&
+      {!!returnValue && (
         <Collapse bordered={false} defaultActiveKey={["0"]} className={`contract-result-output`} ghost>
-        
-            <CheckCircleOutlined className="result-icon" />
+          <CheckCircleOutlined className="result-icon" />
           <Panel header="Result" key="1">
             {typeof returnValue === "string" ? (
               <JSONPretty className="contract-json-output" data={returnValue} />
@@ -279,14 +278,15 @@ export default function FunctionForm({
             )}
           </Panel>
         </Collapse>
-      }
+      )}
     </div>,
   );
 
   return (
     <div className="contract-method">
       <h2 id={`method-${functionInfo.name}`} className="contract-method-name">
-      <CloseCircleOutlined onClick={() => handleMethodChange(functionInfo.name)} />{functionInfo.name}
+        <CloseCircleOutlined onClick={() => handleMethodChange(functionInfo.name)} />
+        {functionInfo.name}
       </h2>
       <div className="contract-method-inputs">{inputs}</div>
     </div>

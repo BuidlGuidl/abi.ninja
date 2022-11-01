@@ -25,7 +25,7 @@ function ContractUI({
   const history = useHistory();
 
   useEffect(() => {
-    if (customContract && customContract.address == urlContractAddress) {
+    if (customContract && customContract.address === urlContractAddress) {
       // Contract already loaded. Coming from homepage UI.
       window.scrollTo(0, 0);
       return;

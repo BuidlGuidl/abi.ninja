@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Button, Collapse, Typography } from "antd";
-import { CloseCircleOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Collapse, Typography } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import { AbiFooter } from "../Core/footer";
 const { Text } = Typography;
 export default function ContractNavigation({
