@@ -179,6 +179,7 @@ export default function Contract({
           <ContractNavigation
             contractName={contractName}
             contractAddress={address}
+            blockExplorer={blockExplorer}
             seletectedContractMethods={seletectedContractMethods}
             handleMethodChange={handleMethodChange}
             contractMethodsRead={allMethodsNamesRead}
