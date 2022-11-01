@@ -58,9 +58,9 @@ export default function Account({
 
   let accountButtonInfo;
   if (web3Modal?.cachedProvider) {
-    accountButtonInfo = null;
+    accountButtonInfo = { name: "Logout", action: logoutOfWeb3Modal };;
   } else {
-    accountButtonInfo = null;
+    accountButtonInfo = { name: "Connect", action: loadWeb3Modal };
   }
 
   const display = !minimized && (
@@ -90,7 +90,7 @@ export default function Account({
     <div style={{ display: "flex" }}>
       {display}
       {web3Modal && accountButtonInfo != null && (
-        <Button className="account-action-button" style={{ marginLeft: 20 }} onClick={accountButtonInfo.action}>
+        <Button className={`account-action-button ${accountButtonInfo.name == "Logout" ?"logout":"connect"}`} onClick={accountButtonInfo.action}>
           {accountButtonInfo.name}
         </Button>
       )}
