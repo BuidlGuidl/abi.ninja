@@ -32,21 +32,48 @@
   .no-methods-placeholder{
     color: @input-bg;
     margin: 0 auto;
-    position: absolute;
-    left: 30%;
-    top: 45%;
+    text-align: center;
+    margin-top: 200px;
+    @media (min-width: 768px) {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 20%;
+    }
+   
     font-size: 30px;
   }
   &.contract-main {
     position: relative;
-    .contract-info {
+    .secondary-header{
+      height: 42px;
+      box-shadow: 4px 1px 1px 1px @input-border;
       position: absolute;
+      top: 1px;
+      width: 100%;
+      background-color: @white;
+      @media (min-width: 768px) {
+        box-shadow:none;
+        background-color:transparent;
+      }
+      align-items: center;
+    justify-content: flex-end;
+    }
+    .contract-info {
+     
       background-color: @white;
       border-radius: 8px;
       z-index: 100;
       right: 20px;
       top: 10px;
-      width: 300px;
+      width: 200px;
+      .ant-collapse-item{
+        border-bottom:none;
+      }
+      @media (min-width: 768px) {
+        position: absolute;
+        width: 300px;
+      }
       overflow: hidden;
       cursor: pointer;
       svg {
@@ -65,6 +92,11 @@
         font-size: 18px;
         line-height: 22px;
         color: @dark-color;
+        padding:10px 0 10px 0;
+        text-align: center;
+        @media (min-width: 768px) {
+          padding: 10px;
+        }
       }
       .contract-variable-name {
         font-weight: 500;
@@ -193,7 +225,7 @@
 
 .contract-navigation-content {
   background-color: @white;
-  padding: 10px 0 0 0px;
+  padding: 0px;
   max-width: 100%;
   overflow: hidden;
   height: calc(100vh - 60px);
@@ -308,27 +340,39 @@
 }
 
 .menu-button{
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  
+  margin-left: 10px;
   z-index: 999;
   font-size: 20px;
+  position: absolute;
+  left: 5px;
+  top: 13px;
 }
 .menu-button-close{
   position: absolute;
   top: 20px;
-  left: 260px;
+  right: 10px;
   z-index: 999;
   font-size: 20px;
 }
 
 .contract-navigation{
   transition: all 0.3s;
+  min-width: 100%;
+  @media (min-width: 768px) {
+    min-width: 280px;
+    margin-top: 0;
+    }
   &.open{
     display: block;
     position: absolute;
     z-index: 700;
-    min-width: 280px;
+    min-width: 100%;
+    background-color: @white;
+    @media (min-width: 768px) {
+      min-width: 280px;
+      padding-top: 0;
+      }
     transition: all 0.3s;
     .contract-navigation-title{
       padding-top: 2px;
@@ -341,4 +385,5 @@
   .menu-button-close, .menu-button{
 display: none;  
   }
+
 }
