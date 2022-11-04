@@ -188,18 +188,19 @@ export default function Contract({
           />
         </Col>
         <Col xs={24} sm={24} md={16} lg={18} xxl={20} className="contract-column contract-main">
-          {!openMenu && <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />}
+          <Row className="secondary-header">
+            {!openMenu && <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />}
+            <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
+              <Panel header="Contract Info" key="1">
+                <div className="address-row">
+                  <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
+                  <Balance address={address} provider={provider} price={price} fontSize={18} />
+                </div>
 
-          <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
-            <Panel header="Contract Info" key="1">
-              <div className="address-row">
-                <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
-                <Balance address={address} provider={provider} price={price} fontSize={18} />
-              </div>
-
-              {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
-            </Panel>
-          </Collapse>
+                {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
+              </Panel>
+            </Collapse>
+          </Row>
           {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
             <p className="no-methods-placeholder">Add methods from the sidebar....</p>
           )}
