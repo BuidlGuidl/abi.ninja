@@ -187,7 +187,7 @@ export default function Contract({
             contractIsDeployed={contractIsDeployed}
           />
         </Col>
-        <Col xs={0} sm={0} md={8} lg={6} xxl={4} className={`info-navigation ${openInfo ? "open" : ""}`}>
+        <Col xs={0} sm={0} md={8} lg={6} xl={6} xxl={4} className={`info-navigation ${openInfo ? "open" : ""}`}>
           <CloseOutlined className="info-button-close" onClick={() => setOpenInfo(false)} />
           <h2>Contract Info</h2>
           <div className="address-row">
@@ -197,20 +197,10 @@ export default function Contract({
 
           {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
         </Col>
-        <Col xs={24} sm={24} md={16} lg={18} xxl={20} className="contract-column contract-main">
+        <Col xs={24} sm={24} md={16} lg={18} xl={18}  xxl={20} className="contract-column contract-main">
           <Row className="secondary-header">
             {!openMenu && <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />}
             {!openInfo && <InfoCircleOutlined className="info-button" onClick={() => setOpenInfo(true)} />}
-            {/* <Collapse bordered={false} defaultActiveKey={["1"]} className="contract-info">
-              <Panel header="Contract Info" key="1">
-                <div className="address-row">
-                  <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
-                  <Balance address={address} provider={provider} price={price} fontSize={18} />
-                </div>
-
-                {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
-              </Panel>
-            </Collapse> */}
           </Row>
           {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
             <p className="no-methods-placeholder">Add methods from the sidebar....</p>
