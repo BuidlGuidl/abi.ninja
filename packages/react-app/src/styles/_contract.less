@@ -79,6 +79,9 @@
       svg {
         fill: @primary-color;
       }
+      .anticon-info-circle svg{
+        fill: @input-bg
+      }
       .ant-collapse-content-box {
         padding-left: 10px;
         .address-row {
@@ -340,13 +343,45 @@
 }
 
 .menu-button{
-  
   margin-left: 10px;
-  z-index: 999;
+  z-index: 100;
   font-size: 20px;
   position: absolute;
   left: 5px;
   top: 13px;
+}
+.info-button{
+  margin-left: 10px;
+  z-index: 100;
+  font-size: 20px;
+  position: absolute;
+  right: 11px;
+  top: 13px;
+  @media (min-width: 768px) {
+    top: 30px;
+    right: 15px;
+    background-color: @white;
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    }
+    
+}
+.info-button-close{
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  z-index: 999;
+  font-size: 20px;
+  @media (min-width: 768px) {
+    top: 45px;
+    right: 25px;
+
+    }
 }
 .menu-button-close{
   position: absolute;
@@ -355,7 +390,30 @@
   z-index: 999;
   font-size: 20px;
 }
-
+.info-navigation{
+  transition: all 0.3s;
+  padding-top: 13px;
+  padding-left: 8px;
+  background-color: @background;
+  height: 100%;
+  display: none;
+  &.open{
+    display: block;
+    position: absolute;
+    right: 0;
+    z-index: 700;
+    width: 280px;
+    background-color: @white;
+    @media (min-width: 768px) {
+      min-width: 280px;
+      padding-top: 40px;
+      }
+    transition: all 0.3s;
+    .contract-navigation-title{
+      padding-top: 2px;
+    }
+  }
+}
 .contract-navigation{
   transition: all 0.3s;
   min-width: 100%;
@@ -367,7 +425,7 @@
     display: block;
     position: absolute;
     z-index: 700;
-    min-width: 100%;
+    min-width: 280px;
     background-color: @white;
     @media (min-width: 768px) {
       min-width: 280px;
