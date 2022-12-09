@@ -4,6 +4,7 @@
   align-items: center;
   flex-direction: column;
   width: 100%;
+  background: @primary-color;
   height: 100vh;
   font-family: Ubuntu;
   .search-container {
@@ -17,7 +18,7 @@
     flex-direction: column;
 
     .search-content {
-      margin-top: 72px;
+      margin-top: 60px;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -36,18 +37,14 @@
         text-align: center;
         margin: 0;
         margin-top: 5px;
+     
       }
-      h2 {
-        font-family: Ubuntu;
-
-        font-family: "Ubuntu";
-        font-style: normal;
-        font-weight: 300;
-        font-size: 24px;
-        line-height: 32px;
-        margin-bottom: 28px;
+     
+      h3{
+        font-weight: 100;
+        margin-top: 0;
+        margin-bottom: 30px;
       }
-
       .search-tabs {
         margin-top: 10px;
         width: 320px;
@@ -90,16 +87,25 @@
           }
         }
       }
-      .contract-link-container {
+      .quick-access-container{
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .contract-link {
-          width: 33%;
+        flex-direction: column;
+        justify-content: center;
+        h5{
           text-align: center;
-          color: @primary-color;
+        }
+        .contract-link-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .contract-link {
+            width: 33%;
+            text-align: center;
+            color: @primary-color;
+          }
         }
       }
+      
     }
 
     .footer-items {

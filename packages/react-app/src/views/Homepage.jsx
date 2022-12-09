@@ -117,8 +117,9 @@ function Homepage({
       <div className="search-container">
         <div className="search-content">
           <img src="/logo_inv.svg" alt="logo" />
-          <h1>ABI</h1>
-          <h2>Ninja</h2>
+          <h1>ABI <span>Ninja</span></h1>
+          
+          <h3>Interact with any contract on Ethereum</h3>
           <NetworkSelector
             selectedNetwork={selectedNetwork}
             onUpdateNetwork={val => onUpdateNetwork(val)}
@@ -143,6 +144,8 @@ function Homepage({
                 className="address-input"
                 onChange={setVerifiedContractAddress}
               />
+              <div className="quick-access-container">
+              <h5>Quick Access</h5>
               <div className="contract-link-container">
                 {selectedNetwork.name === "mainnet" &&
                   quickAccessContracts.map(item => (
@@ -151,6 +154,8 @@ function Homepage({
                     </Link>
                   ))}
               </div>
+              </div>
+              
             </Tabs.TabPane>
             <Tabs.TabPane tab="Address + ABI" key="1">
               <AddressInput
