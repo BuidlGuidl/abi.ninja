@@ -58,7 +58,7 @@ export default function Account({
 
   let accountButtonInfo;
   if (web3Modal?.cachedProvider) {
-    accountButtonInfo = { name: "Logout", action: logoutOfWeb3Modal };
+    accountButtonInfo = { name: "Disconnect", action: logoutOfWeb3Modal };
   } else {
     accountButtonInfo = { name: "Connect", action: loadWeb3Modal };
   }
@@ -91,7 +91,7 @@ export default function Account({
       {display}
       {web3Modal && accountButtonInfo && (
         <Button
-          className={`account-action-button ${accountButtonInfo.name === "Logout" ? "logout" : "connect"}`}
+          className={`account-action-button ${accountButtonInfo.name === "Disconnect" ? "logout" : "connect"}`}
           onClick={accountButtonInfo.action}
         >
           {accountButtonInfo.name}

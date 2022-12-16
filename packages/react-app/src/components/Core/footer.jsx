@@ -5,7 +5,7 @@ export const AbiFooter = () => {
     <div className="footer-items">
       <p>
         <GithubFilled />{" "}
-        <a href="https://github.com/carletex/abi.ninja" target="_blank" rel="noreferrer">
+        <a href="https://github.com/buidlguidl/abi.ninja" target="_blank" rel="noreferrer">
           Fork me
         </a>
       </p>
