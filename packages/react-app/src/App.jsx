@@ -47,7 +47,7 @@ const providers = [
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
-
+  const [openMenu, setOpenMenu] = useState(false);
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
   const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork);
@@ -153,7 +153,7 @@ function App() {
       </Route>
       <Route exact path="/:urlContractAddress/:urlNetworkName?">
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <Header>
+          <Header openMenu={openMenu} setOpenMenu={setOpenMenu}>
             <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", flex: 1 }}>
                 <Account
@@ -174,6 +174,8 @@ function App() {
 
           <ContractUI
             customContract={loadedContract}
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
             userSigner={userSigner}
             localProvider={localProvider}
             mainnetProvider={mainnetProvider}

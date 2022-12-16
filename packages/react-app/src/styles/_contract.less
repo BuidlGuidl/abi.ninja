@@ -23,52 +23,40 @@
   line-height: 22px;
   color: @input-bg;
 }
-.contract-column {
-  height: calc(100vh - 60px);
-  padding-top: 15px;
-  overflow-y: auto;
-  width: calc(100vw - 280px);
-  
-  .no-methods-placeholder{
-    color: @input-bg;
-    margin: 0 auto;
-    text-align: center;
-    margin-top: 200px;
-    @media (min-width: 768px) {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 20%;
-    }
-   
-    font-size: 30px;
+.no-methods-placeholder {
+  color: @input-bg;
+  margin: 0 auto;
+  display: flex;
+  font-size: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  .mobile{
+    display: inherit;
+    margin-left: 4px;
   }
+  .desktop{
+    display: none;
+  }
+}
+.contract-column {
+  padding-top: 15px;
+
+  @media (min-width: 768px) {
+    width: calc(100vw - 280px);
+  }
+
+  
   &.contract-main {
     position: relative;
-    .secondary-header{
-      height: 42px;
-      box-shadow: 4px 1px 1px 1px @input-border;
-      position: absolute;
-      top: 1px;
-      width: 100%;
-      background-color: @white;
-      @media (min-width: 768px) {
-        box-shadow:none;
-        background-color:transparent;
-      }
-      align-items: center;
-    justify-content: flex-end;
-    }
     .contract-info {
-     
       background-color: @white;
       border-radius: 8px;
       z-index: 100;
       right: 20px;
       top: 10px;
       width: 200px;
-      .ant-collapse-item{
-        border-bottom:none;
+      .ant-collapse-item {
+        border-bottom: none;
       }
       @media (min-width: 768px) {
         position: absolute;
@@ -79,8 +67,8 @@
       svg {
         fill: @primary-color;
       }
-      .anticon-info-circle svg{
-        fill: @input-bg
+      .anticon-info-circle svg {
+        fill: @input-bg;
       }
       .ant-collapse-content-box {
         padding-left: 10px;
@@ -95,7 +83,7 @@
         font-size: 18px;
         line-height: 22px;
         color: @dark-color;
-        padding:10px 0 10px 0;
+        padding: 10px 0 10px 0;
         text-align: center;
         @media (min-width: 768px) {
           padding: 10px;
@@ -120,12 +108,12 @@
   }
   h3 {
     line-height: 30px;
-    margin-top: 60px;
+    margin-top: 20px;
     @media (min-width: 768px) {
       margin-top: 30px;
     }
   }
- 
+
   .functions-container {
     padding-right: 20px;
     padding-left: 20px;
@@ -162,7 +150,7 @@
         font-size: 18px;
         line-height: 22px;
         color: @dark-color;
-        .anticon{
+        .anticon {
           margin-right: 10px;
           line-height: 10px;
         }
@@ -225,7 +213,15 @@
     }
   }
 }
+.contract-container-main {
+  overflow-y: auto;
+  height: calc(100vh - 70px);
 
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+}
 .contract-navigation-content {
   background-color: @white;
   padding: 0px;
@@ -234,13 +230,39 @@
   height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
+
+  ::-webkit-scrollbar {
+    display: inherit;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #e6e6e6;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 50px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    border-radius: 50px;
+  }
   .ant-collapse-ghost {
     margin-top: 10px;
     overflow-y: auto;
     padding-left: 15px;
-    .ant-collapse-content-box{
+    .ant-collapse-content-box {
       padding: 0;
-      li{
+      li {
         padding-left: 0;
       }
     }
@@ -272,7 +294,7 @@
   }
   .ant-collapse-header {
     padding-left: 0px !important;
-    padding-bottom: 0px!important;
+    padding-bottom: 0px !important;
   }
   .ant-collapse-ghost {
     flex-grow: 1;
@@ -296,7 +318,7 @@
       transition: all 0.3s ease-out;
     }
   }
- 
+
   ul {
     padding: 0;
     li {
@@ -337,12 +359,12 @@
   }
 }
 
-.contract-loading-spinner{
+.contract-loading-spinner {
   margin: 0 auto;
   margin-top: 60px;
 }
 
-.menu-button{
+.menu-button {
   margin-left: 10px;
   z-index: 100;
   font-size: 20px;
@@ -350,7 +372,7 @@
   left: 5px;
   top: 13px;
 }
-.info-button{
+.info-button {
   margin-left: 10px;
   z-index: 100;
   font-size: 20px;
@@ -367,11 +389,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    }
-    
+  }
 }
-.info-button-close{
+.info-button-close {
   position: absolute;
   top: 20px;
   right: 10px;
@@ -380,68 +400,83 @@
   @media (min-width: 768px) {
     top: 45px;
     right: 25px;
-
-    }
+  }
 }
-.menu-button-close{
+.menu-button-close {
   position: absolute;
   top: 20px;
   right: 10px;
   z-index: 999;
   font-size: 20px;
 }
-.info-navigation{
+.info-navigation {
   transition: all 0.3s;
-  padding-top: 13px;
-  padding-left: 8px;
+  padding: 18px;
   background-color: @background;
-  height: 100%;
-  display: none;
-  &.open{
-    display: block;
-    position: absolute;
-    right: 0;
-    z-index: 700;
-    width: 280px;
-    background-color: @white;
-    @media (min-width: 768px) {
-      min-width: 280px;
-      padding-top: 40px;
-      }
-    transition: all 0.3s;
-    .contract-navigation-title{
-      padding-top: 2px;
-    }
+  max-width: 96%;
+  margin: 0 auto;
+  border-radius: 12px;
+  display: block;
+  background-color: @white;
+  @media (min-width: 768px) {
+    min-width: 280px;
+  }
+  transition: all 0.3s;
+  .contract-navigation-title {
+    padding-top: 2px;
   }
 }
-.contract-navigation{
+.contract-info-title {
+  margin-left: 20px;
+  margin-top: 20px;
+}
+.contract-navigation {
   transition: all 0.3s;
   min-width: 100%;
   @media (min-width: 768px) {
     min-width: 280px;
     margin-top: 0;
-    }
-  &.open{
+  }
+  &.open {
     display: block;
     position: absolute;
     z-index: 700;
-    min-width: 280px;
     background-color: @white;
+
     @media (min-width: 768px) {
       min-width: 280px;
       padding-top: 0;
+      .contract-navigation-content {
+        width: 100%;
+        margin: 0;
       }
+    }
     transition: all 0.3s;
-    .contract-navigation-title{
+    .contract-navigation-title {
       padding-top: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
   }
-
 }
 
 @media (min-width: 768px) {
-  .menu-button-close, .menu-button{
-display: none;  
+  .menu-button-close,
+  .menu-button {
+    display: none;
+  }
+
+  .no-methods-placeholder {
+    .mobile{
+      display: none;
+    }
+    .desktop{
+    
+      display: inherit;
+      margin-left: 4px;
+    }
   }
 
 }

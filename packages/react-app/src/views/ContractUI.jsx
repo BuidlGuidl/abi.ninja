@@ -17,6 +17,7 @@ function ContractUI({
   setSelectedNetwork,
   loadWeb3Modal,
   web3Modal,
+  openMenu,
   logoutOfWeb3Modal,
 }) {
   useBodyClass(`path-contract`);
@@ -99,6 +100,7 @@ function ContractUI({
   return (
     <div className="contract-container">
       <Contract
+        openMenu={openMenu}
         customContract={customContract}
         signer={userSigner}
         provider={localProvider}

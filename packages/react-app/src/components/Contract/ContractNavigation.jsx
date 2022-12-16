@@ -64,7 +64,7 @@ export default function ContractNavigation({
             })}
           </ul>
         </Panel>
-        <Panel header="SEND" key="2">
+        <Panel header="WRITE" key="2">
           <ul>
             {contractMethodsSend.map(method => {
               return (

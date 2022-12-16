@@ -1,4 +1,4 @@
-import { Col, Collapse, Row, Skeleton } from "antd";
+import { Col, Row, Skeleton } from "antd";
 import { useContractExistsAtAddress } from "eth-hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import Address from "../Address";
@@ -7,10 +7,8 @@ import DisplayVariable from "./DisplayVariable";
 import FunctionForm from "./FunctionForm";
 import ContractNavigation from "./ContractNavigation";
 import { useHistory } from "react-router-dom";
-import { MenuOutlined, CloseOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 const isQueryable = fn => (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
-const { Panel } = Collapse;
 
 export default function Contract({
   customContract,
@@ -22,11 +20,10 @@ export default function Contract({
   price,
   blockExplorer,
   loadWeb3Modal,
+  openMenu,
 }) {
   const history = useHistory();
   const [contractName, setContractName] = useState("");
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openInfo, setOpenInfo] = useState(false);
   const address = customContract ? customContract.address : "";
   const contractIsDeployed = useContractExistsAtAddress(provider, address);
   const [seletectedContractMethods, setSeletectedContractMethods] = useState([]);
@@ -175,7 +172,6 @@ export default function Contract({
     <div className="contract-component">
       <Row className="contract-component-row">
         <Col xs={0} sm={0} md={8} lg={6} xxl={4} className={`contract-navigation ${openMenu ? "open" : ""}`}>
-          <CloseOutlined className="menu-button-close" onClick={() => setOpenMenu(false)} />
           <ContractNavigation
             contractName={contractName}
             contractAddress={address}
@@ -187,40 +183,39 @@ export default function Contract({
             contractIsDeployed={contractIsDeployed}
           />
         </Col>
-        <Col xs={0} sm={0} md={8} lg={6} xl={6} xxl={4} className={`info-navigation ${openInfo ? "open" : ""}`}>
-          <CloseOutlined className="info-button-close" onClick={() => setOpenInfo(false)} />
-          <h2>Contract Info</h2>
-          <div className="address-row">
-            <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
-            <Balance address={address} provider={provider} price={price} fontSize={18} />
-          </div>
-
-          {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
-        </Col>
-        <Col xs={24} sm={24} md={16} lg={18} xl={18}  xxl={20} className="contract-column contract-main">
-          <Row className="secondary-header">
-            {!openMenu && <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />}
-            {!openInfo && <InfoCircleOutlined className="info-button" onClick={() => setOpenInfo(true)} />}
-          </Row>
+        <Col className="contract-container-main" xs={24} sm={24} md={16} lg={18} xxl={20}>
           {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
-            <p className="no-methods-placeholder">Add methods from the sidebar....</p>
+            <p className="no-methods-placeholder">
+              Add methods from the <span className="mobile">menu</span>
+              <span className="desktop">sidebar</span>
+            </p>
           )}
-          {contractMethodsDisplayRead.length > 0 && (
-            <div className="functions-container">
-              <h3>READ</h3>
-              <div className="function-container">
-                {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
-              </div>
+          <h3 className="contract-info-title">INFO</h3>
+          <Col xs={24} className={`info-navigation`}>
+            <div className="address-row">
+              <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
+              <Balance address={address} provider={provider} price={price} fontSize={18} />
+              {contractIsDeployed ? contractVariablesDisplay : <Skeleton active />}
             </div>
-          )}
-          {contractMethodsDisplaySend.length > 0 && (
-            <div className="functions-container">
-              <h3>SEND</h3>
-              <div className="function-container">
-                {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
+          </Col>
+          <Col xs={24} className="contract-column contract-main">
+            {contractMethodsDisplayRead.length > 0 && (
+              <div className="functions-container">
+                <h3>READ</h3>
+                <div className="function-container">
+                  {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+            {contractMethodsDisplaySend.length > 0 && (
+              <div className="functions-container">
+                <h3>WRITE</h3>
+                <div className="function-container">
+                  {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
+                </div>
+              </div>
+            )}
+          </Col>
         </Col>
       </Row>
     </div>
