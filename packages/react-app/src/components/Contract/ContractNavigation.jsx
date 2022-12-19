@@ -46,7 +46,6 @@ export default function ContractNavigation({
                     if (!seletectedContractMethods.includes(method)) {
                       handleMethodChange(method);
                     }
-                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
                   }}
                   key={method}
                   className={seletectedContractMethods.includes(method) ? "active" : ""}
@@ -74,7 +73,6 @@ export default function ContractNavigation({
                     if (!seletectedContractMethods.includes(method)) {
                       handleMethodChange(method);
                     }
-                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
                   }}
                   key={method}
                   className={seletectedContractMethods.includes(method) ? "active" : ""}
