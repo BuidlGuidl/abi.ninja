@@ -1,17 +1,26 @@
 .index-container {
+
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100%;
-  background: @primary-color;
-  height: 100vh;
+  min-height: 100vh;
+  background-color:@white;
+  @media (min-width: 768px) {
+    background-color: transparent;
+  }
+
   font-family: Ubuntu;
   .search-container {
     border-radius: 12px;
     position: relative;
-    max-width: 470px;
-    width: 90%;
+    width: 100%;
+    
+    @media (min-width: 768px) {
+      max-width: 470px;
+      width: 90%;
+    }
     background-color: @white;
     display: flex;
     justify-content: center;
@@ -25,7 +34,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 365px;
+      max-width: 365px;
       img {
         width: 120px;
       }
@@ -44,17 +53,25 @@
         font-weight: 100;
         margin-top: 0;
         margin-bottom: 30px;
+        text-align: center;
       }
       .search-tabs {
         margin-top: 10px;
-        width: 320px;
+        max-width: 360px;
+        margin-left: 10px;
+        margin-right: 10px;
         .ant-tabs-tab:hover {
           color: @primary-color;
         }
         .ant-tabs-tab + .ant-tabs-tab {
-          width: 150px;
+
+          @media (min-width: 400px) {
+            width: 150px;
+          }
           text-align: center;
           margin: 0;
+          margin-left: 10px;
+          margin-right: 10px;
         }
         .ant-tabs-nav-wrap {
           font-size: 14px;
