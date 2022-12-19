@@ -1,418 +1,482 @@
-// Contract page
-body.path-contract {
-  background-color: @light-color;
-
-  .return-button {
-    padding-left: 0;
-    font-size: 18px;
-    color: @primary-color;
-  }
-}
-
-.contract-top-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.contract-column {
-  .anticon-setting {
-    color: @primary-color;
-  }
-
-  @media (max-width: 720px) {
-    .contract-top-controls {
-      display: none;
+.side-contract-menu {
+  background-color: @white;
+  width: @menu-width;
+  min-width: @menu-min-width;
+  height: calc(100vh - 60px);
+  padding: 35px 10px 0 20px;
+  .side-contract-name {
+    h2 {
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 30px;
+    }
+    h4 {
+      font-weight: 100;
+      font-size: 14px;
+      line-height: 17px;
     }
   }
 }
-
-.contract-variables {
-  .contract-top-controls {
+.address-display a {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: @input-bg;
+}
+.no-methods-placeholder {
+  color: @input-bg;
+  margin: 0 auto;
+  display: flex;
+  font-size: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  .mobile{
+    display: inherit;
+    margin-left: 4px;
+  }
+  .desktop{
     display: none;
+  }
+}
+.contract-column {
+  padding-top: 15px;
 
+  @media (min-width: 768px) {
+    width: calc(100vw - 280px);
+  }
+
+  
+  &.contract-main {
+    position: relative;
+    .contract-info {
+      background-color: @white;
+      border-radius: 8px;
+      z-index: 100;
+      right: 20px;
+      top: 10px;
+      width: 200px;
+      .ant-collapse-item {
+        border-bottom: none;
+      }
+      @media (min-width: 768px) {
+        position: absolute;
+        width: 300px;
+      }
+      overflow: hidden;
+      cursor: pointer;
+      svg {
+        fill: @primary-color;
+      }
+      .anticon-info-circle svg {
+        fill: @input-bg;
+      }
+      .ant-collapse-content-box {
+        padding-left: 10px;
+        .address-row {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+      }
+
+      .ant-collapse-header {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 22px;
+        color: @dark-color;
+        padding: 10px 0 10px 0;
+        text-align: center;
+        @media (min-width: 768px) {
+          padding: 10px;
+        }
+      }
+      .contract-variable-name {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 22px;
+        color: @dark-color;
+      }
+      .address-balance {
+        margin-left: 10px;
+      }
+      .contract-variable-value {
+        font-weight: 100;
+        font-size: 12px;
+        line-height: 20px;
+        color: @dark-color;
+      }
+    }
+  }
+  h3 {
+    line-height: 30px;
+    margin-top: 20px;
+    @media (min-width: 768px) {
+      margin-top: 30px;
+    }
+  }
+
+  .functions-container {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+  .function-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .contract-method {
+      min-width: calc(50% - 10px);
+      transition: all 0.3s;
+      background-color: @white;
+      border-radius: 12px;
+      padding: 25px 16px;
+      margin-bottom: 20px;
+      position: relative;
+      button.primary {
+        position: absolute;
+        height: 32px;
+        right: 16px;
+        top: 22px;
+      }
+      .contract-method-input {
+        label {
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 30px;
+          color: @input-bg;
+          margin-bottom: 10px;
+        }
+      }
+      .contract-method-name {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 22px;
+        color: @dark-color;
+        .anticon {
+          margin-right: 10px;
+          line-height: 10px;
+        }
+      }
+      .contract-result-output {
+        font-weight: 500;
+        font-size: 16px;
+        width: 100%;
+        color: @dark-color;
+        border: none;
+        position: relative;
+        .result-icon {
+          color: @success;
+          position: absolute;
+          top: 0;
+          right: 0;
+          font-size: 20px;
+        }
+        .result-text {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+        .ant-collapse-item > .ant-collapse-header {
+          padding: 0 !important;
+        }
+        span {
+          font-weight: 100;
+        }
+      }
+      @media (max-width: 1000px) {
+        width: 100%;
+      }
+    }
     @media (max-width: 720px) {
       display: block;
     }
   }
-}
-
-.contract-container {
-  padding-bottom: 50px;
-
-  .logo {
-    margin-bottom: 50px;
-
-    img {
-      max-width: 200px;
-    }
-  }
-}
-
-.method-selection {
-  // modal close button
-  .ant-modal-close {
-    &:hover {
-      color: @primary-color;
-    }
-  }
-
-  .ant-modal-content {
-    background-color: @almost-white;
-    border-radius: 5px;
-
-    .ant-modal-header {
-      background-color: @almost-white;
-      border-color: @primary-color;
-      border-radius: 5px 5px 0 0;
-
-      .ant-modal-title {
-        color : @primary-color;
-      }
-    }
-
-    .ant-modal-body { 
-      color : @primary-color;
-
-      .method-selection-button {
-        border-color: @primary-color;
-        color: @primary-color;
-        background-color: transparent;
-        padding: 5px 20px;
-        border-radius: 8px;
-        font-weight: 500;
-        &:hover {
-          background-color: @medium-color;
-        }
-      }
-    }
-
-    // Customizing default antD checkbox
-    .ant-checkbox-checked .ant-checkbox-inner {
-      background-color: @primary-color;
-      border-color: @primary-color;
-    }
-  
-    .ant-checkbox-wrapper:hover .ant-checkbox-inner,
-    .ant-checkbox:hover .ant-checkbox-inner,
-    .ant-checkbox-input:focus+.ant-checkbox-inner {
-      border-color: @primary-color !important;
-    }
-  }
-
-  .ant-checkbox-group {
+  .contract-header {
     display: flex;
-    flex-wrap: wrap;
-  }
-
-  .ant-checkbox-group-item {
-    width: 45%;
+    justify-content: space-between;
+    .primary {
+      height: 25px;
+      margin-bottom: 20px;
+      color: @white;
+      background-color: @primary-color;
+      transition: all 0.3s ease-in;
+      border: 2px solid @primary-color;
+      transition: all 0.3s ease-out;
+      align-self: center;
+      width: 150px;
+      margin-right: 14px;
+      &:hover {
+        color: @primary-color;
+        background-color: @white;
+        transition: all 0.3s ease-in;
+        border: 2px solid @primary-color;
+        transition: all 0.3s ease-out;
+      }
+    }
   }
 }
+.contract-container-main {
+  overflow-y: auto;
+  height: calc(100vh - 70px);
 
-.contract-component {
-  margin: auto;
-  width: 1220px;
-  max-width: 95%;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 
-  @media (max-width: 720px) {
-    .contract-component-row {
-      flex-direction: column-reverse;
+}
+.contract-navigation-content {
+  background-color: @white;
+  padding: 0px;
+  max-width: 100%;
+  overflow: hidden;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
 
-      .ant-col {
-        margin-bottom: 25px;
+  ::-webkit-scrollbar {
+    display: inherit;
+  }
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #e6e6e6;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 50px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    border-radius: 50px;
+  }
+  .ant-collapse-ghost {
+    margin-top: 10px;
+    overflow-y: auto;
+    padding-left: 15px;
+    .ant-collapse-content-box {
+      padding: 0;
+      li {
+        padding-left: 0;
       }
     }
   }
-
-  h1, h2, h3, h4, h5, h6, p {
-    color: @dark-color;
-  }
-
-  .address-component {
-    a {
-      color: @dark-color !important;
-    }
-  }
-
-  .contract-methods-display,
-  .contract-variables-display {
-    background-color: @almost-white;
-  }
-
-  .contract-variable {
-    margin-bottom: 5px;
-  }
-
-  .contract-variable-name {
-    font-weight: bold;
-    color: @primary-color;
-    font-size: 16px;
-
-    svg {
-      color: @primary-color;
-    }
-  }
-
-  .contract-variable-value {
-    span {
-      word-break: break-all;
-      margin-right: 5px;
-    }
-
-    svg {
-      color: @primary-color;
-    }
-  }
-
-  .contract-variables-display {
-    .address-display {
-      svg {
-        color: @primary-color;
-      }
-    }
-  }
-
-  .contract-result-action {
-    input {
+  .contract-navigation-title {
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    min-height: 90px;
+    * {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
-  }
-
-  .contract-method-name {
-    border-bottom: 1px solid @primary-color;
-    color: @primary-color;
-    font-size: 16px;
-  }
-
-  .contract-method-inputs {
-    margin: 10px 0;
-
-    .contract-method-input {
-      margin-top: 4px;
-
-      .ant-input-suffix {
-        margin: 0 4px;
-      }
-
-      .ant-input-affix-wrapper-lg {
-        font-size: 14px;
-      }
-
-      .ant-input-group-addon {
-        border: 0;
-        background: transparent;
-      }
-
-      & > span {
-        background-color: @light-color;
-        font-size: 14px;
-        border: 0 !important;
-      }
-    }
-
-    .ant-input-affix-wrapper-disabled {
-      padding-right: 0;
-      padding-left: 0;
-    }
-
-    .helper-buttons-contract-inputs {
-      display: flex;
-      height: 100%;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .helper-button-contract-input {
-      display: flex;
-      align-items: center;
-    }
-
-    .ant-input-prefix {
+    h2 {
       margin: 0;
-
-      & > canvas {
-        margin-right: 6px;
-      }
+    }
+    h4 span {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+    }
+    svg {
+      fill: @primary-color;
     }
   }
-
-  input[type="text"] {
-    background-color: @light-color;
+  .ant-collapse-header {
+    padding-left: 0px !important;
+    padding-bottom: 0px !important;
+  }
+  .ant-collapse-ghost {
+    flex-grow: 1;
+  }
+  .primary {
+    height: 25px;
+    margin-bottom: 20px;
     color: @primary-color;
-    font-size: 14px;
-  }
-
-  .contract-actions-result {
-    margin-top: 6px;
-  }
-
-  .contract-result-output {
-    margin-top: -28px;
-
-    .ant-collapse-item {
-      border: 0;
-    }
-
-    .ant-collapse-borderless {
-      background-color: @almost-white;
-    }
-
-    .ant-collapse-header {
-      display: inline-block;
-      background: #d4f5f3;
-      padding: 5px 9px;
-      margin-bottom: 6px;
-      border-radius: 6px;
-
-      .ant-collapse-arrow {
-        margin-right: 6px;
-      }
-    }
-
-    .ant-collapse-content-box {
-      padding: 0 !important;
-    }
-  }
-
-  .contract-actions-wrapper {
-    text-align: right;
-  }
-
-  .contract-actions {
-    display: inline-block;
-    z-index: 2;
-    position: relative;
-  }
-
-  .contract-action-button {
-    background-color: @light-color;
-    color: @primary-color;
-    border: 1px solid @primary-color;
-    font-size: 14px;
-
-    &[disabled] {
-      background-color: inherit;
-      border-color: inherit;
-      color: inherit;
-    }
-
-    .ant-btn-loading-icon {
-      margin-right: 5px;
-    }
-  }
-
-  .contract-json-output {
-
-    &.output-tx,
-    pre {
-      word-break: break-all;
-      white-space: break-spaces;
-      padding: 10px;
-      margin: 0;
-      background: #D4F5F3;
+    background-color: @white;
+    transition: all 0.3s ease-in;
+    border: 2px solid @primary-color;
+    transition: all 0.3s ease-out;
+    align-self: center;
+    width: 150px;
+    margin-right: 14px;
+    &:hover {
       color: @primary-color;
+      background-color: @white;
+      transition: all 0.3s ease-in;
+      border: 2px solid @primary-color;
+      transition: all 0.3s ease-out;
     }
   }
 
-  .contract-navigation li {
-    color: @primary-color;
-    margin-left: 10px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  ul {
+    padding: 0;
+    li {
+      width: 100%;
+      height: 30px;
+      list-style: none;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-bottom: 10px;
+      &.active {
+        display: flex;
+        justify-content: space-between;
+        > span:nth-child(1) {
+          width: 100%;
+        }
+        > span:nth-child(2) {
+          svg {
+            fill: @input-bg;
+          }
+        }
 
-    span {
-      &:hover {
-        opacity: 0.8;
+        background-color: @almost-white;
+        border-radius: 4px;
+      }
+      cursor: pointer;
+      &.header {
+        font-weight: bold;
+        padding: 0;
+        margin-top: 10px;
       }
     }
-  }
-}
-
-.contract-navigation {
-  ul {
-    list-style: none;
-    padding-left: 15px;
-  }
-
-  .contract-navigation-content {
-    position: sticky;
-    padding-top: 50px;
-    top: 0;
-  }
-
-  span {
-    cursor: pointer;
-  }
-}
-
-.navigation-marker {
-  position: absolute;
-  top: 0;
-  left: -5px;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-
-  path {
-    transition: all 0.2s ease;
   }
 }
 
 .contract-loading-spinner {
-  margin-bottom: 50px;
+  margin: 0 auto;
+  margin-top: 60px;
 }
 
-.contract-load-error {
-  width: 95%;
-  max-width: 500px;
-  margin: 50px auto;
+.menu-button {
+  margin-left: 10px;
+  z-index: 100;
+  font-size: 20px;
+  position: absolute;
+  left: 5px;
+  top: 13px;
+}
+.info-button {
+  margin-left: 10px;
+  z-index: 100;
+  font-size: 20px;
+  position: absolute;
+  right: 11px;
+  top: 13px;
+  @media (min-width: 768px) {
+    top: 30px;
+    right: 15px;
+    background-color: @white;
+    border-radius: 30px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+.info-button-close {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  z-index: 999;
+  font-size: 20px;
+  @media (min-width: 768px) {
+    top: 45px;
+    right: 25px;
+  }
+}
+.menu-button-close {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  z-index: 999;
+  font-size: 20px;
+}
+.info-navigation {
+  transition: all 0.3s;
+  padding: 18px;
+  background-color: @background;
+  max-width: 96%;
+  margin: 0 auto;
+  border-radius: 12px;
+  display: block;
+  background-color: @white;
+  @media (min-width: 768px) {
+    min-width: 280px;
+  }
+  transition: all 0.3s;
+  .contract-navigation-title {
+    padding-top: 2px;
+  }
+}
+.contract-info-title {
+  margin-left: 20px;
+  margin-top: 20px;
+}
+.contract-navigation {
+  transition: all 0.3s;
+  min-width: 100%;
+  @media (min-width: 768px) {
+    min-width: 280px;
+    margin-top: 0;
+  }
+  &.open {
+    display: block;
+    position: absolute;
+    z-index: 700;
+    background-color: @white;
 
-  p, h3 {
-    color: @dark-color;
+    @media (min-width: 768px) {
+      min-width: 280px;
+      padding-top: 0;
+      .contract-navigation-content {
+        width: 100%;
+        margin: 0;
+      }
+    }
+    transition: all 0.3s;
+    .contract-navigation-title {
+      padding-top: 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .menu-button-close,
+  .menu-button {
+    display: none;
   }
 
-  h3 {
-    margin-bottom: 25px;
-    font-weight: bold;
+  .no-methods-placeholder {
+    .mobile{
+      display: none;
+    }
+    .desktop{
+    
+      display: inherit;
+      margin-left: 4px;
+    }
   }
 
-  a {
-    color: @primary-color;
-  }
-}
-
-
-// JSON Output
-.output-tx,
-.contract-component .contract-json-output .__json-pretty__ {
-  line-height: 1.3;
-  overflow: auto;
-  color: #056D6D;
-}
-
-.__json-pretty__ .__json-key__ {
-  color: #056D6D;
-}
-
-.__json-pretty__ .__json-value__ {
-  color: #551D98;
-}
-
-.__json-pretty__ .__json-string__ {
-  color: #4A9FED;
-}
-
-.__json-pretty__ .__json-boolean__ {
-  color: #551D98;
-}
-
-.__json-pretty-error__ {
-  line-height: 1.3;
-  color: black;
-  background: @almost-white;
-  overflow: auto;
 }

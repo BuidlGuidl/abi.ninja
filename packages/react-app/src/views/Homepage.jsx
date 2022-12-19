@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AddressInput } from "../components";
-import { Button, message, Select, Collapse } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Button, message, Tabs } from "antd";
 import { NETWORKS } from "../constants";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useBodyClass from "../hooks/useBodyClass";
 import { loadContractEtherscan } from "../helpers/loadContractEtherscan";
 import { loadContractRaw } from "../helpers/loadContractRaw";
-
-const { Panel } = Collapse;
+import { NetworkSelector } from "../components/Core/networkSelector";
+import { MainInput } from "../components/Core/mainInput";
+import { AbiFooter } from "../components/Core/footer";
 
 const quickAccessContracts = [
   {
@@ -20,7 +20,7 @@ const quickAccessContracts = [
     address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
   },
   {
-    name: "Opensea Seaport",
+    name: "Opensea",
     address: "0x00000000006c3852cbef3e08e8df289169ede581",
   },
 ];
@@ -28,7 +28,7 @@ const quickAccessContracts = [
 function Homepage({
   userSigner,
   mainnetProvider,
-  targetNetwork,
+  selectedNetwork,
   onUpdateNetwork,
   setLoadedContract,
   localProvider,
@@ -37,21 +37,11 @@ function Homepage({
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
-  const [selectedNetwork, setSelectedNetwork] = useState(targetNetwork);
   const [isLoadingContract, setIsLoadingContract] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const history = useHistory();
 
   useBodyClass(`path-index`);
-
-  useEffect(() => {
-    const storedNetwork = sessionStorage.getItem("selectedNetwork");
-    if (storedNetwork) {
-      setSelectedNetwork(NETWORKS[storedNetwork]);
-      onUpdateNetwork(storedNetwork);
-    }
-    // Dont want to re-run on selected network change.
-    // eslint-disable-next-line
-  }, [onUpdateNetwork]);
 
   const loadVerifiedContract = async (address = null) => {
     const queryContractAddress = address ?? verifiedContractAddress;
@@ -122,99 +112,82 @@ function Homepage({
     }
   };
 
-  const networkSelect = (
-    <Select
-      value={selectedNetwork.name}
-      style={{ textAlign: "left", width: 170, fontSize: 30 }}
-      onChange={value => {
-        if (selectedNetwork.chainId !== NETWORKS[value].chainId) {
-          sessionStorage.setItem("selectedNetwork", value);
-          setSelectedNetwork(NETWORKS[value]);
-          onUpdateNetwork(value);
-        }
-      }}
-    >
-      {Object.entries(NETWORKS).map(([name, network]) => (
-        <Select.Option key={name} value={name}>
-          <span style={{ color: network.color }}>{name}</span>
-        </Select.Option>
-      ))}
-    </Select>
-  );
-
   return (
     <div className="index-container">
-      <div className="logo">
-        <img src="/logo_inv.svg" alt="logo" />
-      </div>
-      <div className="lead-text">
-        <p>Interact with any contract on Ethereum.</p>
-      </div>
-      <div className="network-selector center">
-        <p>{networkSelect}</p>
-      </div>
+      <div className="search-container">
+        <div className="search-content">
+          <img src="/logo_inv.svg" alt="logo" />
+          <div className="title">
+            <h1>ABI Ninja</h1>
+          </div>
 
-      <Collapse defaultActiveKey={["1"]} className="abi-ninja-options" accordion>
-        <Panel header="Verified Contract Address" key="1">
-          <div className="form-item">
-            <AddressInput
-              value={verifiedContractAddress}
-              placeholder={`Verified contract address on ${selectedNetwork.name}`}
-              ensProvider={mainnetProvider}
-              size="large"
-              onChange={setVerifiedContractAddress}
-            />
-          </div>
-          <div className="options-actions">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => loadContract("verified")}
-              loading={isLoadingContract}
-              block
-            >
-              Load Contract
-            </Button>
-          </div>
-        </Panel>
-        <Panel header="Address + ABI" key="2">
-          <div className="form-item">
-            <AddressInput
-              value={abiContractAddress}
-              placeholder={`Contract address on ${selectedNetwork.name}`}
-              ensProvider={mainnetProvider}
-              size="large"
-              onChange={setAbiContractAddress}
-            />
-          </div>
-          <div className="form-item">
-            <TextArea
-              style={{ height: 120 }}
-              value={contractAbi}
-              size="large"
-              placeholder="Contract ABI (json format)"
-              onChange={e => {
-                setContractAbi(e.target.value);
-              }}
-            />
-          </div>
-          <div className="options-actions">
-            <Button type="primary" size="large" onClick={() => loadContract("abi")} loading={isLoadingContract} block>
-              Load Contract
-            </Button>
-          </div>
-        </Panel>
-      </Collapse>
-      {selectedNetwork.chainId === 1 && (
-        <div className="quick-access">
-          <h3>Quick Access</h3>
-          <ul>
-            {quickAccessContracts.map(item => {
-              return <li onClick={() => loadContract("verified", item.address)}>{item.name}</li>;
-            })}
-          </ul>
+          <h3>Interact with any contract on Ethereum</h3>
+          <NetworkSelector
+            selectedNetwork={selectedNetwork}
+            onUpdateNetwork={val => onUpdateNetwork(val)}
+            networks={NETWORKS}
+          />
+          <Tabs
+            className="search-tabs"
+            defaultActiveKey="0"
+            centered
+            animated={{ inkBar: true, tabPane: true }}
+            onChange={activeKey => {
+              setActiveTab(activeKey);
+              console.log(activeKey);
+            }}
+          >
+            <Tabs.TabPane tab="Verified Contract Address" key="0">
+              <AddressInput
+                value={verifiedContractAddress}
+                placeholder={`Verified contract address on ${selectedNetwork.name}`}
+                ensProvider={mainnetProvider}
+                size="large"
+                className="address-input"
+                onChange={setVerifiedContractAddress}
+              />
+              <div className="quick-access-container">
+                <h5>Quick Access</h5>
+                <div className="contract-link-container">
+                  {selectedNetwork.name === "mainnet" &&
+                    quickAccessContracts.map(item => (
+                      <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}`} className="contract-link">
+                        {item.name}
+                      </Link>
+                    ))}
+                </div>
+              </div>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Address + ABI" key="1">
+              <AddressInput
+                value={abiContractAddress}
+                placeholder={`Contract address on ${selectedNetwork.name}`}
+                ensProvider={mainnetProvider}
+                size="large"
+                onChange={setAbiContractAddress}
+                className="address-input"
+              />
+              <MainInput
+                value={contractAbi}
+                placeholder="Contract ABI (json format)"
+                onChange={e => {
+                  setContractAbi(e.target.value);
+                }}
+              />
+            </Tabs.TabPane>
+          </Tabs>
+          <Button
+            type="primary"
+            className="primary"
+            size="large"
+            onClick={activeTab === 0 ? () => loadContract("verified") : () => loadContract("abi")}
+            block
+          >
+            {isLoadingContract ? "Loading..." : "Load Contract"}
+          </Button>
         </div>
-      )}
+        <AbiFooter></AbiFooter>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,19 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import ContractNavigationMarker from "./ContractNavigationMarker";
-
-export default function ContractNavigation({ contractMethods, contractIsDeployed }) {
+import { Collapse } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { AbiFooter } from "../Core/footer";
+import Address from "../Address";
+export default function ContractNavigation({
+  contractIsDeployed,
+  contractName,
+  contractAddress,
+  seletectedContractMethods,
+  handleMethodChange,
+  blockExplorer,
+  contractMethodsRead,
+  contractMethodsSend,
+}) {
   const history = useHistory();
 
   useEffect(() => {
@@ -13,24 +24,76 @@ export default function ContractNavigation({ contractMethods, contractIsDeployed
   }, [history.location]);
 
   if (!contractIsDeployed) return null;
+  const { Panel } = Collapse;
 
   return (
     <div className="contract-navigation-content">
-      <ul>
-        {contractMethods.map(method => {
-          return (
-            <li key={method}>
-              <span
-                data-target={`method-${method}`}
-                onClick={() => history.push({ state: { method: `method-${method}` } })}
-              >
-                {method}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <ContractNavigationMarker />
+      <div className="contract-navigation-title">
+        <h2>{contractName}</h2>
+        <h4>
+          <Address value={contractAddress} blockExplorer={blockExplorer} fontSize={18} />
+        </h4>
+      </div>
+
+      <Collapse bordered={false} defaultActiveKey={["1", "2"]} ghost>
+        <Panel header="READ" key="1">
+          <ul>
+            {contractMethodsRead.map(method => {
+              return (
+                <li
+                  onClick={() => {
+                    const queryParams = new URLSearchParams(history?.location?.search);
+                    if (!seletectedContractMethods.includes(method)) {
+                      handleMethodChange(method);
+                    }
+                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                  }}
+                  key={method}
+                  className={seletectedContractMethods.includes(method) ? "active" : ""}
+                >
+                  <span data-target={`method-${method}`}>{method}</span>
+                  <span>
+                    {seletectedContractMethods.includes(method) ? (
+                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                    ) : (
+                      ""
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+        <Panel header="WRITE" key="2">
+          <ul>
+            {contractMethodsSend.map(method => {
+              return (
+                <li
+                  onClick={() => {
+                    const queryParams = new URLSearchParams(history?.location?.search);
+                    if (!seletectedContractMethods.includes(method)) {
+                      handleMethodChange(method);
+                    }
+                    history.push({ state: { method: `method-${method}` }, search: queryParams.toString() });
+                  }}
+                  key={method}
+                  className={seletectedContractMethods.includes(method) ? "active" : ""}
+                >
+                  <span data-target={`method-${method}`}>{method}</span>
+                  <span>
+                    {seletectedContractMethods.includes(method) ? (
+                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                    ) : (
+                      ""
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </Panel>
+      </Collapse>
+      <AbiFooter></AbiFooter>
     </div>
   );
 }

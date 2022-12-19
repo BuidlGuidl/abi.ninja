@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Collapse, Input, Tooltip } from "antd";
+import { Button, Collapse, Tooltip } from "antd";
 import JSONPretty from "react-json-pretty";
 import Blockies from "react-blockies";
 import { ReactComponent as AsteriskSVG } from "../../assets/asterisk.svg";
@@ -8,6 +8,8 @@ import { ReactComponent as PoundSVG } from "../../assets/pound.svg";
 import { Transactor } from "../../helpers";
 import { tryToDisplay, tryToDisplayAsText } from "./utils";
 import AddressInput from "../AddressInput";
+import { MainInput } from "../Core/mainInput";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 const { utils, BigNumber } = require("ethers");
 const { Panel } = Collapse;
@@ -25,6 +27,7 @@ export default function FunctionForm({
   gasPrice,
   triggerRefresh,
   signer,
+  handleMethodChange,
   loadWeb3Modal,
 }) {
   const [form, setForm] = useState({});
@@ -114,11 +117,12 @@ export default function FunctionForm({
 
     return (
       <div className="contract-method-input" key={key}>
+        <label>{input.name ? input.type + " " + input.name : input.type}</label>
         {input.type === "address" ? (
           <AddressInput
             name={key}
             ensProvider={mainnetProvider}
-            placeholder={input.name ? input.type + " " + input.name : input.type}
+            placeholder={input.type}
             value={form[key]}
             onChange={address => {
               const formUpdate = { ...form };
@@ -128,12 +132,10 @@ export default function FunctionForm({
             suffix={buttons}
           />
         ) : (
-          <Input
-            size="large"
-            placeholder={input.name ? input.type + " " + input.name : input.type}
-            autoComplete="off"
-            value={form[key]}
+          <MainInput
+            placeholder={input.type}
             name={key}
+            value={form[key]}
             onChange={event => {
               const formUpdate = { ...form };
               formUpdate[event.target.name] = event.target.value;
@@ -148,11 +150,10 @@ export default function FunctionForm({
 
   const txValueInput = (
     <div className="contract-method-input" key="txValueInput">
-      <Input
+      <MainInput
         placeholder="transaction value"
         onChange={e => setTxValue(e.target.value)}
         value={txValue}
-        size="large"
         suffix={
           <div className="helper-buttons-contract-inputs">
             <Tooltip placement="right" title=" * 10^18 ">
@@ -193,12 +194,13 @@ export default function FunctionForm({
   const isReadable = fn => fn.stateMutability === "view" || fn.stateMutability === "pure";
 
   const buttonIcon = isReadable(functionInfo) ? (
-    <Button className="contract-action-button" loading={isLoading}>
+    <Button type="primary" className="contract-action-button primary" loading={isLoading}>
       Read 📡
     </Button>
   ) : (
     <Button
-      className="contract-action-button"
+      type="primary"
+      className="contract-action-button  primary"
       loading={isLoading}
       onClick={e => {
         if (signer) return;
@@ -265,18 +267,17 @@ export default function FunctionForm({
           {buttonIcon}
         </div>
       </div>
-      {returnValue !== undefined && (
-        <div key="goButton" className="contract-result-output">
-          <Collapse defaultActiveKey={["1"]} bordered={false}>
-            <Panel header="Result" key="1">
-              {typeof returnValue === "string" ? (
-                <JSONPretty class="contract-json-output" data={returnValue} />
-              ) : (
-                <div className="contract-json-output output-tx">{returnValue}</div>
-              )}
-            </Panel>
-          </Collapse>
-        </div>
+      {!!returnValue && (
+        <Collapse bordered={false} defaultActiveKey={["1"]} className={`contract-result-output`} ghost>
+          <CheckCircleOutlined className="result-icon" />
+          <Panel header="Result" key="1">
+            {typeof returnValue === "string" ? (
+              <JSONPretty className="contract-json-output" data={returnValue} />
+            ) : (
+              <div className="contract-json-output output-tx">{returnValue}</div>
+            )}
+          </Panel>
+        </Collapse>
       )}
     </div>,
   );
@@ -284,6 +285,7 @@ export default function FunctionForm({
   return (
     <div className="contract-method">
       <h2 id={`method-${functionInfo.name}`} className="contract-method-name">
+        <CloseCircleOutlined onClick={() => handleMethodChange(functionInfo.name)} />
         {functionInfo.name}
       </h2>
       <div className="contract-method-inputs">{inputs}</div>

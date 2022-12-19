@@ -2,7 +2,7 @@ import { useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Account, Header, NetworkDisplay, FaucetHint, NetworkSwitch, Faucet } from "./components";
+import { Account, Header, Faucet } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
 import { getRPCPollTime, Web3ModalSetup } from "./helpers";
@@ -10,8 +10,6 @@ import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
-import { GithubFilled, HeartFilled } from "@ant-design/icons";
-
 const { ethers } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
@@ -35,9 +33,7 @@ const { ethers } = require("ethers");
 /// 📡 What chain are your contracts deployed to?
 const initialNetwork = NETWORKS.mainnet;
 
-const NETWORKCHECK = true;
 const USE_BURNER_WALLET = process.env.REACT_APP_BURNER_WALLET ?? false;
-const USE_NETWORK_SELECTOR = false;
 
 const web3Modal = Web3ModalSetup();
 
@@ -51,21 +47,25 @@ const providers = [
 function App() {
   // specify all the chains your app is available on. Eg: ['localhost', 'mainnet', ...otherNetworks ]
   // reference './constants.js' for other networks
-  const networkOptions = [initialNetwork.name, "mainnet", "rinkeby"];
-
+  const [openMenu, setOpenMenu] = useState(false);
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
-  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
-
-  const targetNetwork = NETWORKS[selectedNetwork];
-
+  const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork);
+  console.log(selectedNetwork);
   // 🔭 block explorer URL
-  const blockExplorer = targetNetwork.blockExplorer;
+  const blockExplorer = selectedNetwork.blockExplorer;
 
   // load all your providers
   const localProvider = useStaticJsonRPC([
-    process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : targetNetwork.rpcUrl,
+    process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : selectedNetwork.rpcUrl,
   ]);
+
+  useEffect(() => {
+    const storedNetwork = sessionStorage.getItem("selectedNetwork");
+    if (storedNetwork) {
+      setSelectedNetwork(NETWORKS[storedNetwork]);
+    }
+  }, []);
 
   const mainnetProvider = useStaticJsonRPC(providers);
 
@@ -82,7 +82,7 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(targetNetwork, mainnetProvider, mainnetProviderPollingTime);
+  const price = useExchangeEthPrice(selectedNetwork, mainnetProvider, mainnetProviderPollingTime);
 
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
@@ -99,7 +99,6 @@ function App() {
   }, [userSigner]);
 
   // You can warn the user if you would like them to be on a specific network
-  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
   const selectedChainId =
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
@@ -132,109 +131,84 @@ function App() {
   }, [loadWeb3Modal]);
 
   const [loadedContract, setLoadedContract] = useState(null);
-  const faucetAvailable = localProvider && localProvider.connection && targetNetwork.name.indexOf("local") !== -1;
+  const faucetAvailable = localProvider && localProvider.connection && selectedNetwork.name.indexOf("local") !== -1;
 
+  const onNetworkChange = value => {
+    sessionStorage.setItem("selectedNetwork", value);
+    setSelectedNetwork(NETWORKS[value]);
+    // window.location.reload();
+  };
   return (
-    <div className="App">
-      {/* ✏️ Edit the header and change the title to your project name */}
-      <Header>
-        {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-        <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", flex: 1 }}>
-            {USE_NETWORK_SELECTOR && (
-              <div style={{ marginRight: 20 }}>
-                <NetworkSwitch
-                  networkOptions={networkOptions}
-                  selectedNetwork={selectedNetwork}
-                  setSelectedNetwork={setSelectedNetwork}
+    <Switch>
+      <Route exact path="/">
+        <Homepage
+          localProvider={localProvider}
+          userSigner={userSigner}
+          mainnetProvider={mainnetProvider}
+          selectedNetwork={selectedNetwork}
+          onUpdateNetwork={val => onNetworkChange(val)}
+          setLoadedContract={setLoadedContract}
+          selectedChainId={selectedChainId}
+        />
+      </Route>
+      <Route exact path="/:urlContractAddress/:urlNetworkName?">
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <Header openMenu={openMenu} setOpenMenu={setOpenMenu}>
+            <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", flex: 1 }}>
+                <Account
+                  useBurner={USE_BURNER_WALLET}
+                  address={address}
+                  localProvider={localProvider}
+                  userSigner={userSigner}
+                  mainnetProvider={mainnetProvider}
+                  price={price}
+                  web3Modal={web3Modal}
+                  loadWeb3Modal={loadWeb3Modal}
+                  logoutOfWeb3Modal={logoutOfWeb3Modal}
+                  blockExplorer={blockExplorer}
                 />
               </div>
-            )}
-            <Account
-              useBurner={USE_BURNER_WALLET}
-              address={address}
-              localProvider={localProvider}
-              userSigner={userSigner}
-              mainnetProvider={mainnetProvider}
-              price={price}
-              web3Modal={web3Modal}
-              loadWeb3Modal={loadWeb3Modal}
-              logoutOfWeb3Modal={logoutOfWeb3Modal}
-              blockExplorer={blockExplorer}
-            />
-          </div>
-        </div>
-      </Header>
-      {localProvider?._network?.chainId === 31337 && (
-        <FaucetHint localProvider={localProvider} targetNetwork={targetNetwork} address={address} />
-      )}
-      {userSigner && (
-        <NetworkDisplay
-          NETWORKCHECK={NETWORKCHECK}
-          localChainId={localChainId}
-          selectedChainId={selectedChainId}
-          targetNetwork={targetNetwork}
-          logoutOfWeb3Modal={logoutOfWeb3Modal}
-          USE_NETWORK_SELECTOR={USE_NETWORK_SELECTOR}
-        />
-      )}
-      <Switch>
-        <Route exact path="/">
-          <Homepage
-            localProvider={localProvider}
-            userSigner={userSigner}
-            mainnetProvider={mainnetProvider}
-            targetNetwork={targetNetwork}
-            onUpdateNetwork={setSelectedNetwork}
-            setLoadedContract={setLoadedContract}
-            selectedChainId={selectedChainId}
-          />
-        </Route>
-        <Route exact path="/:urlContractAddress/:urlNetworkName?">
+            </div>
+          </Header>
+
           <ContractUI
             customContract={loadedContract}
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
             userSigner={userSigner}
             localProvider={localProvider}
             mainnetProvider={mainnetProvider}
-            blockExplorer={targetNetwork.blockExplorer}
+            blockExplorer={selectedNetwork.blockExplorer}
             setLoadedContract={setLoadedContract}
             setSelectedNetwork={setSelectedNetwork}
             loadWeb3Modal={loadWeb3Modal}
+            web3Modal={web3Modal}
+            logoutOfWeb3Modal={logoutOfWeb3Modal}
           />
-        </Route>
-      </Switch>
-      <div className="site-footer">
-        <div className="footer-items">
-          <p>
-            <GithubFilled />{" "}
-            <a href="https://github.com/buidlguidl/abi.ninja" target="_blank" rel="noreferrer">
-              Fork me
-            </a>
-          </p>
-          <p>|</p>
-          <p>
-            Built with <HeartFilled /> at 🏰{" "}
-            <a href="https://buidlguidl.com/" target="_blank" rel="noreferrer">
-              BuidlGuidl
-            </a>
-          </p>
         </div>
-      </div>
-      <div
-        className="eth-info-faucet"
-        style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}
-      >
-        <Row align="middle" gutter={[4, 4]}>
-          <Col span={24}>
-            {faucetAvailable ? (
-              <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
-            ) : (
-              ""
-            )}
-          </Col>
-        </Row>
-      </div>
-    </div>
+        <div
+          className="eth-info-faucet"
+          style={{
+            position: "fixed",
+            textAlign: "left",
+            bottom: 20,
+            padding: 10,
+            right: "0px",
+          }}
+        >
+          <Row align="middle" gutter={[4, 4]}>
+            <Col span={24}>
+              {faucetAvailable ? (
+                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
+        </div>
+      </Route>
+    </Switch>
   );
 }
 
