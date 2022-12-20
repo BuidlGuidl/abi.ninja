@@ -48,10 +48,7 @@
   
   &.contract-main {
     position: relative;
-    order: 2;
-    @media (min-width: 991px) {
-      order: 1;
-    }
+    order: 1;
     .contract-info {
       background-color: @white;
       border-radius: 8px;
@@ -131,10 +128,16 @@
       margin-bottom: 20px;
       position: relative;
       button.primary {
-        position: absolute;
+        margin: 0 auto;
         height: 32px;
-        right: 16px;
-        top: 22px;
+
+        @media (min-width: 768px) {
+          position: absolute;
+          right: 16px;
+          top: 22px;
+          margin: 0;
+        }
+    
       }
       .contract-method-input {
         label {
@@ -406,7 +409,6 @@
   font-size: 20px;
 }
 .info-navigation {
-  transition: all 0.3s;
   margin: 0 auto;
   order: 1;
 

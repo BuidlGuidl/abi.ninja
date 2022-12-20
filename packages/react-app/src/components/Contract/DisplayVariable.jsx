@@ -36,7 +36,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
           paddingRight: 6,
           display: "flex",
           alignItems: "center",
-          fontWeight:800
+          fontWeight: 800,
         }}
       >
         {functionInfo.name}{" "}
