@@ -25,7 +25,13 @@
     position: inherit;
     width: 100px;
     text-align: left;
-
+    @media (min-width: 768px) {
+      display: none;
+    }
+    height: 60px;
+    display: flex;
+    text-align: left;
+    align-items: center;
   }
   
   .address-component a {
