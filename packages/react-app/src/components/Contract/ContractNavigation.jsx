@@ -42,7 +42,6 @@ export default function ContractNavigation({
               return (
                 <li
                   onClick={() => {
-                    const queryParams = new URLSearchParams(history?.location?.search);
                     if (!seletectedContractMethods.includes(method)) {
                       handleMethodChange(method);
                     }
@@ -69,7 +68,6 @@ export default function ContractNavigation({
               return (
                 <li
                   onClick={() => {
-                    const queryParams = new URLSearchParams(history?.location?.search);
                     if (!seletectedContractMethods.includes(method)) {
                       handleMethodChange(method);
                     }
