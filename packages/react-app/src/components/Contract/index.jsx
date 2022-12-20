@@ -185,30 +185,34 @@ export default function Contract({
         </Col>
         <Col className="contract-container-main" xs={24} sm={24} md={16} lg={17} xxl={20}>
           <Row>
-            <Col xs={24} md={24} lg={14} xxl={18} className="contract-column contract-main">
-              {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
+            {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length ? (
+              <Col xs={24} md={24} lg={14} xxl={18} className="contract-column contract-main empty">
                 <p className="no-methods-placeholder">
                   Add methods from the <span className="mobile">menu</span>
                   <span className="desktop">sidebar</span>
                 </p>
-              )}
-              {contractMethodsDisplayRead.length > 0 && (
-                <div className="functions-container">
-                  <h3>READ</h3>
-                  <div className="function-container">
-                    {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
+              </Col>
+            ) : (
+              <Col xs={24} md={24} lg={14} xxl={18} className="contract-column contract-main">
+                {contractMethodsDisplayRead.length > 0 && (
+                  <div className="functions-container">
+                    <h3>READ</h3>
+                    <div className="function-container">
+                      {contractIsDeployed ? contractMethodsDisplayRead : <Skeleton active />}
+                    </div>
                   </div>
-                </div>
-              )}
-              {contractMethodsDisplaySend.length > 0 && (
-                <div className="functions-container">
-                  <h3>WRITE</h3>
-                  <div className="function-container">
-                    {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
+                )}
+                {contractMethodsDisplaySend.length > 0 && (
+                  <div className="functions-container">
+                    <h3>WRITE</h3>
+                    <div className="function-container">
+                      {contractIsDeployed ? contractMethodsDisplaySend : <Skeleton active />}
+                    </div>
                   </div>
-                </div>
-              )}
-            </Col>
+                )}
+              </Col>
+            )}
+
             <Col xs={24} md={24} lg={10} xxl={6} className={`info-navigation`}>
               <h3 className="contract-info-title">INFO</h3>
               <div className="address-row">
