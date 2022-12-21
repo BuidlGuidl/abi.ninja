@@ -1,68 +1,75 @@
 .header {
   width: 100%;
   display: flex;
-  width: 100%;
   justify-content: space-around;
   background-color: @white;
   height: 70px;
   align-items: center;
   padding: 0 10px 0 10px;
-  
+
   @media (min-width: 768px) {
     padding: 0 10px 0 20px;
     justify-content: space-between;
   }
-  .address-balance{
+
+  .address-balance {
     font-size: 14px !important;
   }
+
   .nework-selector {
     margin-left: 10px;
   }
-  .menu-button{
+
+  .menu-button {
     margin-left: 10px;
     z-index: 100;
     font-size: 20px;
     position: inherit;
     width: 100px;
     text-align: left;
+    height: 60px;
+    display: flex;
+    align-items: center;
     @media (min-width: 768px) {
       display: none;
     }
-    height: 60px;
-    display: flex;
-    text-align: left;
-    align-items: center;
   }
-  
+
   .address-component a {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
     color: @input-bg;
   }
+
   svg {
     fill: @primary-color;
   }
+
   .identicon {
     margin-top: 6px;
   }
+
   .header-logo {
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
     @media (min-width: 768px) {
-      margin-left:0px;
+      margin-left: 0;
       justify-content: flex-start;
     }
+
     .logo-link {
       color: black;
       text-decoration: none;
       display: flex;
       align-items: center;
+
       .logo-abi {
         font-weight: bold;
         font-size: 20px;
+
         .logo-ninja {
           font-size: 20px;
           font-weight: 100;
@@ -71,22 +78,24 @@
     }
   }
 }
+
 .footer-items {
   display: flex;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
-  margin: 0 auto;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin: 30px auto 10px;
+
   a {
     text-decoration: none;
     color: @primary-color;
   }
+
   .separator {
     padding-left: 4px;
     padding-right: 4px;
   }
+
   color: @dark-color;
 }

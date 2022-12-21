@@ -4,12 +4,14 @@
   min-width: @menu-min-width;
   height: calc(100vh - 60px);
   padding: 35px 10px 0 20px;
+
   .side-contract-name {
     h2 {
       font-weight: 500;
       font-size: 20px;
       line-height: 30px;
     }
+
     h4 {
       font-weight: 100;
       font-size: 14px;
@@ -17,27 +19,31 @@
     }
   }
 }
+
 .address-display a {
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
   color: @input-bg;
 }
+
 .no-methods-placeholder {
   color: @input-bg;
-  margin: 0 auto;
   display: flex;
   font-size: 20px;
   justify-content: center;
-  margin-top: 20px;
-  .mobile{
+  margin: 20px auto 0;
+
+  .mobile {
     display: inherit;
     margin-left: 4px;
   }
-  .desktop{
+
+  .desktop {
     display: none;
   }
 }
+
 .contract-column {
   padding-top: 15px;
 
@@ -45,10 +51,11 @@
     width: calc(100vw - 280px);
   }
 
-  
+
   &.contract-main {
     position: relative;
     order: 1;
+
     .contract-info {
       background-color: @white;
       border-radius: 8px;
@@ -56,20 +63,25 @@
       right: 20px;
       top: 10px;
       width: 200px;
+
       .ant-collapse-item {
         border-bottom: none;
       }
+
       @media (min-width: 768px) {
         position: absolute;
         width: 300px;
       }
       cursor: pointer;
+
       svg {
         fill: @primary-color;
       }
+
       .anticon-info-circle svg {
         fill: @input-bg;
       }
+
       .ant-collapse-content-box {
         padding-left: 10px;
 
@@ -90,15 +102,18 @@
           padding: 10px;
         }
       }
+
       .contract-variable-name {
         font-weight: 500;
         font-size: 14px;
         line-height: 22px;
         color: @dark-color;
       }
+
       .address-balance {
         margin-left: 10px;
       }
+
       .contract-variable-value {
         font-weight: 100;
         font-size: 12px;
@@ -107,6 +122,7 @@
       }
     }
   }
+
   h3 {
     line-height: 30px;
     margin-top: 20px;
@@ -119,6 +135,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+
     .contract-method {
       width: 100%;
       transition: all 0.3s;
@@ -127,6 +144,7 @@
       padding: 25px 16px;
       margin-bottom: 20px;
       position: relative;
+
       button.primary {
         margin: 0 auto;
         height: 32px;
@@ -137,8 +155,9 @@
           top: 22px;
           margin: 0;
         }
-    
+
       }
+
       .contract-method-input {
         label {
           font-size: 12px;
@@ -148,16 +167,19 @@
           margin-bottom: 10px;
         }
       }
+
       .contract-method-name {
         font-weight: 500;
         font-size: 18px;
         line-height: 22px;
         color: @dark-color;
+
         .anticon {
           margin-right: 10px;
           line-height: 10px;
         }
       }
+
       .contract-result-output {
         font-weight: 500;
         font-size: 16px;
@@ -165,6 +187,7 @@
         color: @dark-color;
         border: none;
         position: relative;
+
         .result-icon {
           color: @success;
           position: absolute;
@@ -172,50 +195,57 @@
           right: 0;
           font-size: 20px;
         }
+
         .result-text {
           position: absolute;
           top: 0;
           right: 0;
         }
+
         .ant-collapse-item > .ant-collapse-header {
           padding: 0 !important;
         }
+
         span {
           font-weight: 100;
         }
       }
+
       @media (max-width: 1000px) {
         width: 100%;
       }
     }
+
     @media (max-width: 720px) {
       display: block;
     }
   }
+
   .contract-header {
     display: flex;
     justify-content: space-between;
+
     .primary {
       height: 25px;
       margin-bottom: 20px;
       color: @white;
       background-color: @primary-color;
-      transition: all 0.3s ease-in;
       border: 2px solid @primary-color;
       transition: all 0.3s ease-out;
       align-self: center;
       width: 150px;
       margin-right: 14px;
+
       &:hover {
         color: @primary-color;
         background-color: @white;
-        transition: all 0.3s ease-in;
         border: 2px solid @primary-color;
         transition: all 0.3s ease-out;
       }
     }
   }
 }
+
 .contract-container-main {
   overflow-y: auto;
   height: calc(100vh - 70px);
@@ -225,9 +255,10 @@
   }
 
 }
+
 .contract-navigation-content {
   background-color: @white;
-  padding: 0px;
+  padding: 0;
   max-width: 100%;
   height: calc(100vh - 60px);
   display: flex;
@@ -238,82 +269,95 @@
   }
 
   /* width */
+
   ::-webkit-scrollbar {
     width: 5px;
   }
 
   /* Track */
+
   ::-webkit-scrollbar-track {
     background: #e6e6e6;
   }
 
   /* Handle */
+
   ::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 50px;
   }
 
   /* Handle on hover */
+
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
     border-radius: 50px;
   }
+
   .ant-collapse-ghost {
     margin-top: 10px;
     overflow-y: auto;
     padding-left: 15px;
+
     .ant-collapse-content-box {
       padding: 0;
+
       li {
         padding-left: 0;
       }
     }
   }
+
   .contract-navigation-title {
     white-space: nowrap;
     padding-top: 30px;
     padding-bottom: 10px;
     padding-left: 15px;
     min-height: 90px;
+
     * {
       white-space: nowrap;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
+
     h2 {
       margin: 0;
     }
+
     h4 span {
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
     }
+
     svg {
       fill: @primary-color;
     }
   }
+
   .ant-collapse-header {
-    padding-left: 0px !important;
-    padding-bottom: 0px !important;
+    padding-left: 0 !important;
+    padding-bottom: 0 !important;
   }
+
   .ant-collapse-ghost {
     flex-grow: 1;
   }
+
   .primary {
     height: 25px;
     margin-bottom: 20px;
     color: @primary-color;
     background-color: @white;
-    transition: all 0.3s ease-in;
     border: 2px solid @primary-color;
     transition: all 0.3s ease-out;
     align-self: center;
     width: 150px;
     margin-right: 14px;
+
     &:hover {
       color: @primary-color;
       background-color: @white;
-      transition: all 0.3s ease-in;
       border: 2px solid @primary-color;
       transition: all 0.3s ease-out;
     }
@@ -321,24 +365,27 @@
 
   ul {
     padding: 0;
+
     li {
       width: 100%;
       height: 30px;
       list-style: none;
       white-space: nowrap;
       text-overflow: ellipsis;
-      white-space: nowrap;
       display: flex;
       align-items: center;
       padding-left: 10px;
       padding-right: 10px;
       margin-bottom: 10px;
+
       &.active {
         display: flex;
         justify-content: space-between;
+
         > span:nth-child(1) {
           width: 100%;
         }
+
         > span:nth-child(2) {
           svg {
             fill: @input-bg;
@@ -348,7 +395,9 @@
         background-color: @almost-white;
         border-radius: 4px;
       }
+
       cursor: pointer;
+
       &.header {
         font-weight: bold;
         padding: 0;
@@ -359,8 +408,7 @@
 }
 
 .contract-loading-spinner {
-  margin: 0 auto;
-  margin-top: 60px;
+  margin: 60px auto 0;
 }
 
 .menu-button {
@@ -371,6 +419,7 @@
   left: 5px;
   top: 13px;
 }
+
 .info-button {
   margin-left: 10px;
   z-index: 100;
@@ -390,6 +439,7 @@
     align-items: center;
   }
 }
+
 .info-button-close {
   position: absolute;
   top: 20px;
@@ -401,6 +451,7 @@
     right: 25px;
   }
 }
+
 .menu-button-close {
   position: absolute;
   top: 20px;
@@ -408,22 +459,25 @@
   z-index: 999;
   font-size: 20px;
 }
+
 .info-navigation {
   margin: 0 auto;
   order: 1;
 
-    @media (min-width: 991px) {
-      order: 2;
-    }
+  @media (min-width: 991px) {
+    order: 2;
+  }
   @media (min-width: 768px) {
     min-width: 280px;
   }
   height: auto;
   transition: all 0.3s;
+
   .contract-navigation-title {
     padding-top: 2px;
   }
-  .address-row{
+
+  .address-row {
     padding: 18px;
     border-radius: 12px;
     background-color: @white;
@@ -434,8 +488,9 @@
       margin-left: 0;
     }
   }
-  
+
 }
+
 .contract-info-title {
   margin-left: 20px;
   @media (min-width: 768px) {
@@ -444,6 +499,7 @@
   }
   margin-top: 20px;
 }
+
 .contract-navigation {
   transition: all 0.3s;
   min-width: 100%;
@@ -451,6 +507,7 @@
     min-width: 280px;
     margin-top: 0;
   }
+
   &.open {
     display: block;
     position: absolute;
@@ -466,6 +523,7 @@
       }
     }
     transition: all 0.3s;
+
     .contract-navigation-title {
       padding-top: 2px;
       display: flex;
@@ -483,11 +541,12 @@
   }
 
   .no-methods-placeholder {
-    .mobile{
+    .mobile {
       display: none;
     }
-    .desktop{
-    
+
+    .desktop {
+
       display: inherit;
       margin-left: 4px;
     }

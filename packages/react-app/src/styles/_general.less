@@ -1,10 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
+
 body {
- 
   background: @background;
   font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
-    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
 *::-webkit-scrollbar {
   display: none;
 }
@@ -21,29 +22,28 @@ button.primary {
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  display: flex;
   height: 50px;
   max-width: 180px;
-  align-items: center;
   text-align: center;
-  border: none;
   color: @white;
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease-in;
+
   &:focus,
   &:hover {
     color: @primary-color;
     background-color: @white;
-    transition: all 0.3s ease-in;
     border: 2px solid @primary-color;
     transition: all 0.3s ease-out;
   }
 }
+
 .standard-input {
   input {
     background-color: transparent;
   }
+
   .ant-input-affix-wrapper {
     background-color: transparent;
     animation: none;
@@ -53,6 +53,7 @@ button.primary {
     box-shadow: none !important;
   }
 }
+
 .standard-input {
   background-color: transparent;
   animation: none;
@@ -61,10 +62,12 @@ button.primary {
   border-color: @input-border !important;
   box-shadow: none !important;
 }
+
 .standard-input {
   background-color: rgba(239, 241, 249, 0.6);
   margin-bottom: 16px;
 }
+
 .standard-input::placeholder,
 .standard-input input::placeholder {
   font-weight: 400;
@@ -74,11 +77,11 @@ button.primary {
 
 .ant-input-group-addon {
   background-color: rgba(239, 241, 249, 0.6);
-  border-left: none;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border: none;
 }
+
 .account-action-button {
   color: @danger;
   font-style: normal;
@@ -89,14 +92,18 @@ button.primary {
   width: 100px;
   height: 100%;
   margin-left: 0;
-  &.connect{
+
+  &.connect {
     color: @primary-color-light;
   }
 }
+
 .account-action-button:hover {
   color: @danger-hover;
-  &.connect{
+
+  &.connect {
     color: @primary-color;
   }
+
   font-size: 15px;
 }
