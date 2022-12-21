@@ -36,58 +36,62 @@ export default function ContractNavigation({
       </div>
 
       <Collapse bordered={false} defaultActiveKey={["1", "2"]} ghost>
-        <Panel header="READ" key="1">
-          <ul>
-            {contractMethodsRead.map(method => {
-              return (
-                <li
-                  onClick={() => {
-                    if (!seletectedContractMethods.includes(method)) {
-                      handleMethodChange(method);
-                    }
-                  }}
-                  key={method}
-                  className={seletectedContractMethods.includes(method) ? "active" : ""}
-                >
-                  <span data-target={`method-${method}`}>{method}</span>
-                  <span>
-                    {seletectedContractMethods.includes(method) ? (
-                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
-                    ) : (
-                      ""
-                    )}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </Panel>
-        <Panel header="WRITE" key="2">
-          <ul>
-            {contractMethodsSend.map(method => {
-              return (
-                <li
-                  onClick={() => {
-                    if (!seletectedContractMethods.includes(method)) {
-                      handleMethodChange(method);
-                    }
-                  }}
-                  key={method}
-                  className={seletectedContractMethods.includes(method) ? "active" : ""}
-                >
-                  <span data-target={`method-${method}`}>{method}</span>
-                  <span>
-                    {seletectedContractMethods.includes(method) ? (
-                      <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
-                    ) : (
-                      ""
-                    )}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </Panel>
+        {contractMethodsRead.length && (
+          <Panel header="READ" key="1">
+            <ul>
+              {contractMethodsRead.map(method => {
+                return (
+                  <li
+                    onClick={() => {
+                      if (!seletectedContractMethods.includes(method)) {
+                        handleMethodChange(method);
+                      }
+                    }}
+                    key={method}
+                    className={seletectedContractMethods.includes(method) ? "active" : ""}
+                  >
+                    <span data-target={`method-${method}`}>{method}</span>
+                    <span>
+                      {seletectedContractMethods.includes(method) ? (
+                        <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                      ) : (
+                        ""
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Panel>
+        )}
+        {contractMethodsSend.length && (
+          <Panel header="WRITE" key="2">
+            <ul>
+              {contractMethodsSend.map(method => {
+                return (
+                  <li
+                    onClick={() => {
+                      if (!seletectedContractMethods.includes(method)) {
+                        handleMethodChange(method);
+                      }
+                    }}
+                    key={method}
+                    className={seletectedContractMethods.includes(method) ? "active" : ""}
+                  >
+                    <span data-target={`method-${method}`}>{method}</span>
+                    <span>
+                      {seletectedContractMethods.includes(method) ? (
+                        <CloseCircleOutlined onClick={() => handleMethodChange(method)} />
+                      ) : (
+                        ""
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Panel>
+        )}
       </Collapse>
       <AbiFooter></AbiFooter>
     </div>
