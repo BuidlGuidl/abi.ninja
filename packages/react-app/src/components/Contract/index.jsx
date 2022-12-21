@@ -59,7 +59,6 @@ export default function Contract({
 
   const handleMethodChange = method => {
     let newSelected = [...seletectedContractMethods];
-    console.log(seletectedContractMethods);
     if (!newSelected.includes(method)) {
       newSelected.push(method);
     } else {

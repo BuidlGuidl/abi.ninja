@@ -51,7 +51,6 @@ function App() {
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
   const [selectedNetwork, setSelectedNetwork] = useState(initialNetwork);
-  console.log(selectedNetwork);
   // 🔭 block explorer URL
   const blockExplorer = selectedNetwork.blockExplorer;
 

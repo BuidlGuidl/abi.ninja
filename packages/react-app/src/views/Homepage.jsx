@@ -134,7 +134,6 @@ function Homepage({
             animated={{ inkBar: true, tabPane: true }}
             onChange={activeKey => {
               setActiveTab(activeKey);
-              console.log(activeKey);
             }}
           >
             <Tabs.TabPane tab="Verified Contract Address" key="0">
