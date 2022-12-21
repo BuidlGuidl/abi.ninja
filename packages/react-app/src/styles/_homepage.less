@@ -27,13 +27,16 @@
     flex-direction: column;
 
     .search-content {
-      margin-top: 60px;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       max-width: 365px;
+
+      @media (min-width: 768px) {
+        margin-top: 60px;
+      }
 
       img {
         width: 120px;
