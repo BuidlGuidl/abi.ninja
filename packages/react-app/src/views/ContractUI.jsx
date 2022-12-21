@@ -19,6 +19,7 @@ function ContractUI({
   web3Modal,
   openMenu,
   logoutOfWeb3Modal,
+  price,
 }) {
   useBodyClass(`path-contract`);
   const [error, setError] = useState(null);
@@ -111,6 +112,7 @@ function ContractUI({
         web3Modal={web3Modal}
         reset={reset}
         logoutOfWeb3Modal={logoutOfWeb3Modal}
+        price={price}
       />
     </div>
   );

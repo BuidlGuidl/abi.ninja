@@ -184,6 +184,7 @@ function App() {
             loadWeb3Modal={loadWeb3Modal}
             web3Modal={web3Modal}
             logoutOfWeb3Modal={logoutOfWeb3Modal}
+            price={price}
           />
         </div>
         <div
