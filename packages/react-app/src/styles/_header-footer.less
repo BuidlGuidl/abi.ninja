@@ -1,152 +1,102 @@
-// Header & Footer
-
-.site-header {
+.header {
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  padding: 1.2rem;
+  justify-content: space-around;
+  background-color: @white;
+  height: 70px;
+  align-items: center;
+  padding: 0 10px 0 10px;
 
-  .path-index & {
-    justify-content: end;
-  }
-}
-
-.header-logo {
-  max-width: 175px;
-  display: none;
-
-  .path-contract & {
-    display: block;
+  @media (min-width: 768px) {
+    padding: 0 10px 0 20px;
+    justify-content: space-between;
   }
 
-  .logo-small {
-    display: none;
-    max-width: 50px;
-
-    @media (max-width: 720px) {
-      display: block;
-    }
+  .address-balance {
+    font-size: 14px !important;
   }
 
-  @media (max-width: 720px) {
-    .logo-small {
-      display: block;
-    }
+  .nework-selector {
+    margin-left: 10px;
+  }
 
-    .logo-big {
+  .menu-button {
+    margin-left: 10px;
+    z-index: 100;
+    font-size: 20px;
+    position: inherit;
+    width: 100px;
+    text-align: left;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    @media (min-width: 768px) {
       display: none;
     }
   }
 
-  .path-contract {
-    display: block;
+  .address-component a {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: @input-bg;
+  }
+
+  svg {
+    fill: @primary-color;
+  }
+
+  .identicon {
+    margin-top: 6px;
+  }
+
+  .header-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    @media (min-width: 768px) {
+      margin-left: 0;
+      justify-content: flex-start;
+    }
+
+    .logo-link {
+      color: black;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+
+      .logo-abi {
+        font-weight: bold;
+        font-size: 20px;
+        margin-left: 3px;
+
+        .logo-ninja {
+          font-size: 20px;
+          font-weight: 100;
+        }
+      }
+    }
   }
 }
 
-.account-info {
-  .account-action-button {
-    border-color: @light-color;
-    color: @light-color;
-    background-color: transparent;
-    padding: 5px 20px;
+.footer-items {
+  display: flex;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  margin: 30px auto 10px;
 
-    .path-contract & {
-      background-color: @light-color;
-      color: @primary-color;
-      border: 1px solid @primary-color;
-    }
-  }
-
-  .anticon-copy svg {
-    fill: @light-color;
-
-    .path-contract & {
-      fill: @primary-color;
-    }
-  }
-
-  .path-contract & {
+  a {
+    text-decoration: none;
     color: @primary-color;
   }
 
-  .address-display a {
-    color: white;
-
-    .path-contract & {
-      color: @primary-color;
-    }
+  .separator {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
-  .address-component {
-    @media (max-width: 720px) {
-      font-size: 17px !important;
-    }
-  }
-}
-
-// Eth Info faucet section
-.eth-info-faucet {
-  @media (max-width: 720px) {
-    display: none;
-  }
-
-  button, .ant-input-affix-wrapper, input {
-    background-color: @medium-color;
-  }
-
-  .ant-btn-circle {
-    background-color: @primary-color;
-    border-color: @primary-color;
-
-    svg {
-      fill: white;
-    }
-  }
-}
-
-.site-footer {
-  padding: 10px 20px;
-
-  .footer-items {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-
-    .anticon {
-      color: @ligthdark-color;
-    }
-
-    a {
-      color: @ligthdark-color;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .path-contract & {
-      p {
-        color: black;
-      }
-
-      .anticon {
-        color: @primary-color;
-      }
-
-      a {
-        color: @primary-color;
-      }
-    }
-  }
-}
-
-@media (max-width: 720px) {
-  .account-info {
-    .address-balance {
-      display: none;
-
-      & + span {
-        display: none;
-      }
-    }
-  }
+  color: @dark-color;
 }

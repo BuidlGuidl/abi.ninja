@@ -1,4 +1,4 @@
-import { Badge, Input } from "antd";
+import { Badge } from "antd";
 import React, { useCallback, useState } from "react";
 import { ethers } from "ethers";
 import { CameraOutlined, QrcodeOutlined } from "@ant-design/icons";
@@ -6,6 +6,7 @@ import { useLookupAddress } from "eth-hooks/dapps/ens";
 import QrReader from "react-qr-reader";
 
 import Blockie from "./Blockie";
+import { MainInput } from "./Core/mainInput";
 
 const isENS = (address = "") => address.endsWith(".eth") || address.endsWith(".xyz");
 
@@ -106,14 +107,12 @@ export default function AddressInput(props) {
       ) : (
         ""
       )}
-      <Input
+      <MainInput
         name={props.name ?? "0xAddress"}
-        className="input-address"
         autoComplete="off"
         autoFocus={props.autoFocus}
         placeholder={props.placeholder ? props.placeholder : ""}
         prefix={<Blockie address={currentValue} size={8} scale={3} />}
-        size="large"
         value={
           ethers.utils.isAddress(currentValue) && !isENS(currentValue) && isENS(retrievedEns)
             ? retrievedEns

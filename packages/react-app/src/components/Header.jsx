@@ -1,16 +1,25 @@
+import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
 import React from "react";
 import { Link } from "react-router-dom";
-
-export default function Header({ link, title, subTitle, ...props }) {
+import Logo from "../assets/logo_inv-svg.png";
+export default function Header({ link, title, setOpenMenu, openMenu, subTitle, ...props }) {
   return (
-    <div className="site-header">
+    <header className={"header"}>
+      {!openMenu ? (
+        <MenuOutlined className="menu-button" onClick={() => setOpenMenu(true)} />
+      ) : (
+        <CloseOutlined className="menu-button" onClick={() => setOpenMenu(false)} />
+      )}
+
       <div className="header-logo">
-        <Link to="/">
-          <img className="logo logo-big" src="/logo.svg" alt="logo" />
+        <Link to="/" className="logo-link">
+          <img width={50} src={Logo} alt="logo" />
+          <span className="logo-abi">
+            ABI <span className="logo-ninja">Ninja</span>
+          </span>
         </Link>
-        <img className="logo logo-small" src="/logo_small.svg" alt="logo" />
       </div>
       {props.children}
-    </div>
+    </header>
   );
 }

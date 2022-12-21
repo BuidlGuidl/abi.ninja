@@ -16,6 +16,10 @@ function ContractUI({
   setLoadedContract,
   setSelectedNetwork,
   loadWeb3Modal,
+  web3Modal,
+  openMenu,
+  logoutOfWeb3Modal,
+  price,
 }) {
   useBodyClass(`path-contract`);
   const [error, setError] = useState(null);
@@ -23,7 +27,7 @@ function ContractUI({
   const history = useHistory();
 
   useEffect(() => {
-    if (customContract) {
+    if (customContract && customContract.address === urlContractAddress) {
       // Contract already loaded. Coming from homepage UI.
       window.scrollTo(0, 0);
       return;
@@ -97,6 +101,7 @@ function ContractUI({
   return (
     <div className="contract-container">
       <Contract
+        openMenu={openMenu}
         customContract={customContract}
         signer={userSigner}
         provider={localProvider}
@@ -104,7 +109,10 @@ function ContractUI({
         blockExplorer={blockExplorer}
         selectedNetwork={NETWORKS[urlNetworkName] ?? NETWORKS.mainnet}
         loadWeb3Modal={loadWeb3Modal}
+        web3Modal={web3Modal}
         reset={reset}
+        logoutOfWeb3Modal={logoutOfWeb3Modal}
+        price={price}
       />
     </div>
   );

@@ -1,61 +1,109 @@
-// General & utils
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
+
 body {
-  margin: 0;
-  background-color: @dark-color;
+  background: @background;
+  font-family: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+  sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-// Utils
-.center {
+*::-webkit-scrollbar {
+  display: none;
+}
+
+button.primary {
+  background-color: @primary-color;
+  padding: 14px 16px;
+  gap: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  height: 50px;
+  max-width: 180px;
   text-align: center;
+  color: @white;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease-in;
+
+  &:focus,
+  &:hover {
+    color: @primary-color;
+    background-color: @white;
+    border: 2px solid @primary-color;
+    transition: all 0.3s ease-out;
+  }
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-// ToDo. We should override antd styles with craco-antd plugin
-.App {
-  body & {
-    color: white;
-  }
-
-  ::-webkit-input-placeholder {
-    color: @ligthdark-color;
-  }
-
-  ::-moz-placeholder {
-    color: @ligthdark-color;
-  }
-
-  :-ms-input-placeholder {
-    color: @ligthdark-color;
-  }
-
-  :-moz-placeholder {
-    color: @ligthdark-color;
-  }
-
-  button:hover {
-    opacity: 0.8;
-  }
-
-  .ant-btn {
-    border-radius: 8px;
-    font-weight: bold;
-  }
-
-  .ant-btn-primary {
-    background-color: @primary-color;
-    border-color: @primary-color;
-  }
-
-  h1, h2, h3, h4, h5, h6, p {
-    color: white;
+.standard-input {
+  input {
+    background-color: transparent;
   }
 
   .ant-input-affix-wrapper {
     background-color: transparent;
-    border: 0;
+    animation: none;
+    border-radius: 8px;
+    border: none;
+    border-color: @input-border !important;
+    box-shadow: none !important;
   }
+}
+
+.standard-input {
+  background-color: transparent;
+  animation: none;
+  border-radius: 8px;
+  border: none;
+  border-color: @input-border !important;
+  box-shadow: none !important;
+}
+
+.standard-input {
+  background-color: rgba(239, 241, 249, 0.6);
+  margin-bottom: 16px;
+}
+
+.standard-input::placeholder,
+.standard-input input::placeholder {
+  font-weight: 400;
+  font-size: 16px;
+  color: #abafb1;
+}
+
+.ant-input-group-addon {
+  background-color: rgba(239, 241, 249, 0.6);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border: none;
+}
+
+.account-action-button {
+  color: @danger;
+  font-style: normal;
+  font-weight: 400;
+  border: none;
+  font-size: 14px;
+  line-height: 22px;
+  width: 100px;
+  height: 100%;
+  margin-left: 0;
+
+  &.connect {
+    color: @primary-color-light;
+  }
+}
+
+.account-action-button:hover {
+  color: @danger-hover;
+
+  &.connect {
+    color: @primary-color;
+  }
+
+  font-size: 15px;
 }
