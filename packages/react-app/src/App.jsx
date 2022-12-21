@@ -135,7 +135,6 @@ function App() {
   const onNetworkChange = value => {
     sessionStorage.setItem("selectedNetwork", value);
     setSelectedNetwork(NETWORKS[value]);
-    // window.location.reload();
   };
   return (
     <Switch>
