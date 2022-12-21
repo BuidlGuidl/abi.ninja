@@ -3,10 +3,10 @@
 Interact with any contract on Ethereum. Just need the Contract address (if it's verified) or its ABI + Contract address.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/12072395/208698442-44532ac1-1e7d-486e-bbdb-5e4f874f91aa.PNG">
+  <img src=".github/img/ui.png">
 </p>
 
-![ABINinjaContract - Copy](https://user-images.githubusercontent.com/12072395/208698812-1c9dae7b-121c-4c52-9118-2407c75be35f.PNG)
+![ABINinjaContract - Dashboard](.github/img/ui2.png)
 
 # 🏄‍♂️ Quick Start
 
