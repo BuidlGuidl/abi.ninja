@@ -98,6 +98,15 @@ export const NETWORKS = {
     etherscanEndpoint: "https://api.arbiscan.io",
     apiKey: ETHERSCAN_API_KEY,
   },
+  gnosisChain: {
+    name: "gnosisChain",
+    color: "#0d8e74",
+    chainId: 100,
+    blockExplorer: "ttps://gnosisscan.io/",
+    rpcUrl: "https://rpc.gnosischain.com",
+    etherscanEndpoint: "https://api.gnosisscan.io",
+    apiKey: ETHERSCAN_API_KEY,
+  },
   // devnetArbitrum: {
   //   name: "devnetArbitrum",
   //   color: "#28a0f0",
