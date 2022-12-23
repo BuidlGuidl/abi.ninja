@@ -11,6 +11,7 @@ export const loadContractFromUrl = async (
   rawQueryParams,
 ) => {
   const network = urlNetworkName ? NETWORKS[urlNetworkName] : NETWORKS.mainnet;
+
   if (!network) {
     throw new Error(`${urlNetworkName} is not a valid network`);
   }
@@ -24,7 +25,7 @@ export const loadContractFromUrl = async (
   //   1.1 Need to set the network with setSelectedNetwork.
   //   1.2 Load contract
   if (!userSigner && localProvider._network.chainId !== network.chainId) {
-    setSelectedNetwork(network.name);
+    setSelectedNetwork(network);
     return;
   }
 

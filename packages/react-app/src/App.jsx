@@ -2,7 +2,7 @@ import { useUserProviderAndSigner } from "eth-hooks";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Account, Header, Faucet } from "./components";
+import { Account, Header, Faucet, NetworkDisplay } from "./components";
 import { NETWORKS, ALCHEMY_KEY } from "./constants";
 
 import { getRPCPollTime, Web3ModalSetup } from "./helpers";
@@ -59,13 +59,6 @@ function App() {
     process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : selectedNetwork.rpcUrl,
   ]);
 
-  useEffect(() => {
-    const storedNetwork = sessionStorage.getItem("selectedNetwork");
-    if (storedNetwork) {
-      setSelectedNetwork(NETWORKS[storedNetwork]);
-    }
-  }, []);
-
   const mainnetProvider = useStaticJsonRPC(providers);
 
   const mainnetProviderPollingTime = getRPCPollTime(mainnetProvider);
@@ -98,6 +91,7 @@ function App() {
   }, [userSigner]);
 
   // You can warn the user if you would like them to be on a specific network
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
   const selectedChainId =
     userSigner && userSigner.provider && userSigner.provider._network && userSigner.provider._network.chainId;
 
@@ -137,77 +131,90 @@ function App() {
     setSelectedNetwork(NETWORKS[value]);
   };
   return (
-    <Switch>
-      <Route exact path="/">
-        <Homepage
-          localProvider={localProvider}
-          userSigner={userSigner}
-          mainnetProvider={mainnetProvider}
-          selectedNetwork={selectedNetwork}
-          onUpdateNetwork={val => onNetworkChange(val)}
-          setLoadedContract={setLoadedContract}
+    <div>
+      {userSigner && (
+        <NetworkDisplay
+          NETWORKCHECK={true}
+          localChainId={localChainId}
           selectedChainId={selectedChainId}
+          targetNetwork={selectedNetwork}
+          logoutOfWeb3Modal={logoutOfWeb3Modal}
+          USE_NETWORK_SELECTOR={true}
         />
-      </Route>
-      <Route exact path="/:urlContractAddress/:urlNetworkName?">
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <Header openMenu={openMenu} setOpenMenu={setOpenMenu}>
-            <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", flex: 1 }}>
-                <Account
-                  useBurner={USE_BURNER_WALLET}
-                  address={address}
-                  localProvider={localProvider}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  price={price}
-                  web3Modal={web3Modal}
-                  loadWeb3Modal={loadWeb3Modal}
-                  logoutOfWeb3Modal={logoutOfWeb3Modal}
-                  blockExplorer={blockExplorer}
-                />
-              </div>
-            </div>
-          </Header>
-
-          <ContractUI
-            customContract={loadedContract}
-            openMenu={openMenu}
-            setOpenMenu={setOpenMenu}
-            userSigner={userSigner}
+      )}
+      <Switch>
+        <Route exact path="/">
+          <Homepage
             localProvider={localProvider}
+            userSigner={userSigner}
             mainnetProvider={mainnetProvider}
-            blockExplorer={selectedNetwork.blockExplorer}
-            setLoadedContract={setLoadedContract}
             setSelectedNetwork={setSelectedNetwork}
-            loadWeb3Modal={loadWeb3Modal}
-            web3Modal={web3Modal}
-            logoutOfWeb3Modal={logoutOfWeb3Modal}
-            price={price}
+            selectedNetwork={selectedNetwork}
+            onUpdateNetwork={val => onNetworkChange(val)}
+            setLoadedContract={setLoadedContract}
+            selectedChainId={selectedChainId}
           />
-        </div>
-        <div
-          className="eth-info-faucet"
-          style={{
-            position: "fixed",
-            textAlign: "left",
-            bottom: 20,
-            padding: 10,
-            right: "0px",
-          }}
-        >
-          <Row align="middle" gutter={[4, 4]}>
-            <Col span={24}>
-              {faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
-              ) : (
-                ""
-              )}
-            </Col>
-          </Row>
-        </div>
-      </Route>
-    </Switch>
+        </Route>
+        <Route exact path="/:urlContractAddress/:urlNetworkName?">
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Header openMenu={openMenu} setOpenMenu={setOpenMenu}>
+              <div className="account-info" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", flex: 1 }}>
+                  <Account
+                    useBurner={USE_BURNER_WALLET}
+                    address={address}
+                    localProvider={localProvider}
+                    userSigner={userSigner}
+                    mainnetProvider={mainnetProvider}
+                    price={price}
+                    web3Modal={web3Modal}
+                    loadWeb3Modal={loadWeb3Modal}
+                    logoutOfWeb3Modal={logoutOfWeb3Modal}
+                    blockExplorer={blockExplorer}
+                  />
+                </div>
+              </div>
+            </Header>
+
+            <ContractUI
+              customContract={loadedContract}
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              userSigner={userSigner}
+              localProvider={localProvider}
+              mainnetProvider={mainnetProvider}
+              blockExplorer={selectedNetwork.blockExplorer}
+              setLoadedContract={setLoadedContract}
+              setSelectedNetwork={setSelectedNetwork}
+              loadWeb3Modal={loadWeb3Modal}
+              web3Modal={web3Modal}
+              logoutOfWeb3Modal={logoutOfWeb3Modal}
+              price={price}
+            />
+          </div>
+          <div
+            className="eth-info-faucet"
+            style={{
+              position: "fixed",
+              textAlign: "left",
+              bottom: 20,
+              padding: 10,
+              right: "0px",
+            }}
+          >
+            <Row align="middle" gutter={[4, 4]}>
+              <Col span={24}>
+                {faucetAvailable ? (
+                  <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+                ) : (
+                  ""
+                )}
+              </Col>
+            </Row>
+          </div>
+        </Route>
+      </Switch>
+    </div>
   );
 }
 

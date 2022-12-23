@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddressInput } from "../components";
 import { Button, message, Tabs } from "antd";
 import { NETWORKS } from "../constants";
@@ -28,6 +28,7 @@ const quickAccessContracts = [
 function Homepage({
   userSigner,
   mainnetProvider,
+  setSelectedNetwork,
   selectedNetwork,
   onUpdateNetwork,
   setLoadedContract,
@@ -42,6 +43,13 @@ function Homepage({
   const history = useHistory();
 
   useBodyClass(`path-index`);
+
+  useEffect(() => {
+    const storedNetwork = sessionStorage.getItem("selectedNetwork");
+    if (storedNetwork) {
+      setSelectedNetwork(NETWORKS[storedNetwork]);
+    }
+  }, [setSelectedNetwork]);
 
   const loadVerifiedContract = async (address = null) => {
     const queryContractAddress = address ?? verifiedContractAddress;
