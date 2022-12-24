@@ -124,7 +124,7 @@ export default function Transactor(providerOrSigner, gasPrice, etherscan) {
             : e.data
             ? e.data
             : JSON.stringify(e);
-        if (!e.error && e.message) {
+        if (!e.error && e.message && !e.data.message) {
           message = e.message;
         }
 
