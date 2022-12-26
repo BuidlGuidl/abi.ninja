@@ -10,6 +10,7 @@ import { Homepage } from "./views";
 import { ContractUI } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 import { Col, Row } from "antd";
+import { getNetworkPriceByChainId } from "./helpers/networks";
 const { ethers } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
@@ -74,7 +75,14 @@ function App() {
   };
 
   /* 💵 This hook will get the price of ETH from 🦄 Uniswap: */
-  const price = useExchangeEthPrice(selectedNetwork, mainnetProvider, mainnetProviderPollingTime);
+  let price = useExchangeEthPrice(selectedNetwork, mainnetProvider, mainnetProviderPollingTime);
+
+  // useExchangeEthPrice should handle this, but the pollPrice functions is not being
+  // called after price change (only after the RPC polling time)
+  const overridingPrice = getNetworkPriceByChainId(localProvider?._network?.chainId);
+  if (overridingPrice) {
+    price = overridingPrice;
+  }
 
   // Use your injected provider from 🦊 Metamask or if you don't have it then instantly generate a 🔥 burner wallet.
   const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider, USE_BURNER_WALLET);
