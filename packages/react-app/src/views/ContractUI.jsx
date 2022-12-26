@@ -54,11 +54,13 @@ function ContractUI({
     };
 
     loadContract();
+    // eslint-disable-next-line
   }, [
     urlContractAddress,
     urlNetworkName,
     customContract,
-    userSigner,
+    // Avoid unnecessary re-renders.
+    userSigner?.provider?._network?.chainId,
     setLoadedContract,
     setSelectedNetwork,
     localProvider,
