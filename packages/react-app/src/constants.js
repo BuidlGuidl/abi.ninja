@@ -102,6 +102,7 @@ export const NETWORKS = {
     name: "gnosisChain",
     color: "#0d8e74",
     chainId: 100,
+    price: 1,
     blockExplorer: "ttps://gnosisscan.io/",
     rpcUrl: "https://rpc.gnosischain.com",
     etherscanEndpoint: "https://api.gnosisscan.io",
