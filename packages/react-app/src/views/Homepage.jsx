@@ -153,17 +153,18 @@ function Homepage({
                 className="address-input"
                 onChange={setVerifiedContractAddress}
               />
-              <div className="quick-access-container">
-                <h5>Quick Access</h5>
-                <div className="contract-link-container">
-                  {selectedNetwork.name === "mainnet" &&
-                    quickAccessContracts.map(item => (
+              {selectedNetwork.name === "mainnet" && (
+                <div className="quick-access-container">
+                  <h5>Quick Access</h5>
+                  <div className="contract-link-container">
+                    {quickAccessContracts.map(item => (
                       <Link key={item.name} to={`/${item.address}/${selectedNetwork.name}`} className="contract-link">
                         {item.name}
                       </Link>
                     ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Address + ABI" key="1">
               <AddressInput
