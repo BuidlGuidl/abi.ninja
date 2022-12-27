@@ -114,7 +114,7 @@ export const NETWORKS = {
     chainId: 100,
     price: 1,
     blockExplorer: "ttps://gnosisscan.io/",
-    rpcUrl: "https://rpc.gnosischain.com",
+    rpcUrl: "https://rpc.gnosis.gateway.fm",
     etherscanEndpoint: "https://api.gnosisscan.io",
     apiKey: ETHERSCAN_API_KEY,
   },
