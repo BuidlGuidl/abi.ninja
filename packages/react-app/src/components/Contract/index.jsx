@@ -182,9 +182,9 @@ export default function Contract({
             contractIsDeployed={contractIsDeployed}
           />
         </Col>
-        <Col className="contract-container-main" xs={24} sm={24} md={16} lg={17} xxl={20}>
+        <Col className="contract-container-main" xs={24} sm={24} md={16} lg={18} xxl={20}>
           <Row>
-            <Col xs={24} md={24} lg={14} xxl={18} className="contract-column contract-main">
+            <Col xs={24} md={24} lg={15} xxl={16} className="contract-column contract-main">
               {!contractMethodsDisplayRead.length && !contractMethodsDisplaySend.length && (
                 <p className="no-methods-placeholder">
                   Add methods from the <span className="mobile">menu</span>
@@ -208,7 +208,7 @@ export default function Contract({
                 </div>
               )}
             </Col>
-            <Col xs={24} md={24} lg={10} xxl={6} className={`info-navigation`}>
+            <Col xs={24} md={24} lg={8} xxl={7} className={`info-navigation`}>
               <h3 className="contract-info-title">INFO</h3>
               <div className="address-row">
                 <Address value={address} blockExplorer={blockExplorer} fontSize={18} />
