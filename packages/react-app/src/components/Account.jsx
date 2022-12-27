@@ -57,7 +57,7 @@ export default function Account({
   const { currentTheme } = useThemeSwitcher();
 
   let accountButtonInfo;
-  if (web3Modal?.cachedProvider) {
+  if (userSigner) {
     accountButtonInfo = { name: "Disconnect", action: logoutOfWeb3Modal };
   } else {
     accountButtonInfo = { name: "Connect", action: loadWeb3Modal };

@@ -93,6 +93,8 @@ function App() {
       if (userSigner) {
         const newAddress = await userSigner.getAddress();
         setAddress(newAddress);
+      } else {
+        setAddress(undefined);
       }
     }
     getAddress();
