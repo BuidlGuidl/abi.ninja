@@ -2,6 +2,7 @@ import { Alert, Button } from "antd";
 import React from "react";
 
 import { NETWORK } from "../constants";
+import { WarningOutlined } from "@ant-design/icons";
 
 function NetworkDisplay({
   NETWORKCHECK,
@@ -17,9 +18,16 @@ function NetworkDisplay({
     const networkLocal = NETWORK(localChainId);
     if (selectedChainId === 1337 && localChainId === 31337) {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
+        <div
+          className="network-switch-alert"
+          style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}
+        >
           <Alert
-            message="⚠️ Wrong Network ID"
+            message={
+              <>
+                <WarningOutlined style={{ color: "#ff4646" }} />️ Wrong Network ID
+              </>
+            }
             description={
               <div>
                 You have <b>chain id 1337</b> for localhost and you need to change it to <b>31337</b> to work with
@@ -34,13 +42,20 @@ function NetworkDisplay({
       );
     } else {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
+        <div className="network-switch-alert">
           <Alert
-            message="⚠️ Wrong Network"
+            message={
+              <>
+                <WarningOutlined style={{ color: "#ff4646" }} />️ Wrong Network
+              </>
+            }
             description={
               <div>
                 You have <b>{networkSelected && networkSelected.name}</b> selected and you need to be on{" "}
+                <b>{networkLocal && networkLocal.name}</b>
                 <Button
+                  className="network-switch-button"
+                  size="small"
                   onClick={async () => {
                     const ethereum = window.ethereum;
                     const data = [
@@ -78,7 +93,7 @@ function NetworkDisplay({
                     }
                   }}
                 >
-                  <b>{networkLocal && networkLocal.name}</b>
+                  <b>Switch to {networkLocal && networkLocal.name}</b>
                 </Button>
               </div>
             }

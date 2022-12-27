@@ -25,3 +25,31 @@
     color: @dark-color;
   }
 }
+
+.network-switch-alert {
+  z-index: 2;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 16px;
+
+  .path-contract & {
+    top: 73px;
+  }
+
+  .ant-alert-message {
+    font-weight: bold;
+  }
+
+  .ant-alert-error {
+    border-radius: 12px;
+    box-shadow: 0 0 12px 0 #ffccc7;
+    border-width: 3px;
+  }
+
+  .network-switch-button {
+    display: block;
+    margin-top: 6px;
+
+  }
+}
