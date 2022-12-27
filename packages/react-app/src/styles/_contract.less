@@ -56,8 +56,6 @@
 }
 
 .contract-column {
-  padding-top: 15px;
-
   @media (min-width: 768px) {
     width: calc(100vw - 280px);
   }
@@ -260,6 +258,7 @@
 .contract-container-main {
   overflow-y: auto;
   height: calc(100vh - 70px);
+  padding-top: 15px;
 
   ::-webkit-scrollbar {
     display: none;
@@ -477,9 +476,7 @@
   @media (min-width: 991px) {
     order: 2;
   }
-  @media (min-width: 768px) {
-    min-width: 280px;
-  }
+
   height: auto;
   transition: all 0.3s;
 
@@ -504,6 +501,10 @@
 .contract-info-title {
   margin-left: 20px;
   margin-top: 20px;
+
+  @media (min-width: 992px) {
+    margin-left: 0;
+  }
 }
 
 .contract-navigation {
