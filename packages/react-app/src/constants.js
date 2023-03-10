@@ -118,6 +118,24 @@ export const NETWORKS = {
     etherscanEndpoint: "https://api.gnosisscan.io",
     apiKey: ETHERSCAN_API_KEY,
   },
+  fuji: {
+    name: "fuji",
+    color: "#28a0f0",
+    chainId: 43113,
+    blockExplorer: "https://testnet.snowtrace.io/",
+    rpcUrl: "https://api.avax-test.network/ext/bc/C/rpc",
+    etherscanEndpoint: "https://api-testnet.snowtrace.io/",
+    apiKey: ETHERSCAN_API_KEY,
+  },
+  avalanche: {
+    name: "avalanche",
+    color: "#28a0f0",
+    chainId: 43114,
+    blockExplorer: "https://snowtrace.io/",
+    rpcUrl: "https://api.avax.network/ext/bc/C/rpc",
+    etherscanEndpoint: "https://api.snowtrace.io/",
+    apiKey: ETHERSCAN_API_KEY,
+  },
 };
 
 export const NETWORK = chainId => {
