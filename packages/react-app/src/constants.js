@@ -4,6 +4,7 @@ export const RPC_POLL_TIME = 30000;
 export const INFURA_ID = process.env.REACT_APP_INFURA_KEY ?? "460f40a260564ac4a4f4b3fffb032dad";
 
 const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY;
+const OPTIMISTIC_ETHERSCAN_API_KEY = process.env.OPTIMISTIC_ETHERSCAN_API_KEY;
 const POLYGONSCAN_API_KEY = process.env.REACT_APP_POLYGONSCAN_API_KEY;
 
 // BLOCKNATIVE ID FOR Notify.js:
@@ -88,7 +89,7 @@ export const NETWORKS = {
     blockExplorer: "https://optimistic.etherscan.io/",
     rpcUrl: `https://mainnet.optimism.io`,
     etherscanEndpoint: "https://api-optimistic.etherscan.io",
-    apiKey: ETHERSCAN_API_KEY,
+    apiKey: OPTIMISTIC_ETHERSCAN_API_KEY,
   },
   rinkebyArbitrum: {
     name: "rinkebyArbitrum",
