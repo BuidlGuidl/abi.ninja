@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { init as etherscanInit } from "etherscan-api";
 import axios from "axios";
 import { NETWORKS } from "../constants";
+import { maybeGetProxyContract, supportedProxies } from "./maybeGetProxyContract";
 
 export const loadContractEtherscan = async (address, selectedNetwork, userSigner) => {
   if (!ethers.utils.isAddress(address)) {
@@ -31,6 +32,14 @@ export const loadContractEtherscan = async (address, selectedNetwork, userSigner
   }
 
   const contractAbi = response.result;
+  let contract = new ethers.Contract(address, contractAbi, userSigner);
 
-  return new ethers.Contract(address, contractAbi, userSigner);
+  const proxies = supportedProxies();
+
+  var proxyContract = null;
+  for (let i = 0; i < proxies.length && proxyContract === null; ++i) {
+    proxyContract = await maybeGetProxyContract(address, proxies[i], selectedNetwork, userSigner);
+  }
+
+  return proxyContract ?? contract;
 };

@@ -167,11 +167,21 @@ export default function Contract({
     return null;
   });
 
+  const proxyDetails =
+    customContract.hasOwnProperty("isProxy") && customContract.isProxy
+      ? {
+          isProxy: customContract.isProxy,
+          proxyType: customContract.proxyType,
+          proxyImplementationAddress: customContract.proxyImplementationAddress,
+        }
+      : null;
+
   return (
     <div className="contract-component">
       <Row className="contract-component-row">
         <Col xs={0} sm={0} md={8} lg={6} xxl={4} className={`contract-navigation ${openMenu ? "open" : ""}`}>
           <ContractNavigation
+            proxyDetails={proxyDetails}
             contractName={contractName}
             contractAddress={address}
             blockExplorer={blockExplorer}
