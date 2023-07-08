@@ -82,7 +82,13 @@ function Homepage({
   };
 
   const loadContract = async (type, address = null) => {
-    if (selectedChainId && selectedNetwork.chainId !== selectedChainId) {
+    // Make sure network is the same in selection and provider
+    if (
+      selectedChainId &&
+      selectedNetwork.chainId !== selectedChainId &&
+      // Ignore case when provider chain is 1337 instead of 31337
+      !(selectedNetwork.chainId === 31337 && selectedChainId === 1337)
+    ) {
       message.error(`Please switch your wallet to ${selectedNetwork.name}.`);
       return;
     }
