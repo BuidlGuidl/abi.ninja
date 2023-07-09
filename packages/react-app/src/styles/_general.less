@@ -39,6 +39,31 @@ button.primary {
   }
 }
 
+button.primary-small {
+  background-color: @primary-color;
+  padding: 6px 8px;
+  display: inline-block;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 8px;
+  height: 24px;
+  margin-left: 6px;
+  max-width: 180px;
+  text-align: center;
+  color: @white;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease-in;
+
+  &:focus,
+  &:hover {
+    color: @primary-color;
+    background-color: @white;
+    border: 2px solid @primary-color;
+    transition: all 0.3s ease-out;
+  }
+}
+
 .standard-input {
   input {
     background-color: transparent;

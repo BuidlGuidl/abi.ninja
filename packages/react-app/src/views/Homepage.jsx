@@ -9,6 +9,7 @@ import { loadContractRaw } from "../helpers/loadContractRaw";
 import { NetworkSelector } from "../components/Core/networkSelector";
 import { MainInput } from "../components/Core/mainInput";
 import { AbiFooter } from "../components/Core/footer";
+import genericABIs from "../helpers/generic_abis";
 
 const quickAccessContracts = [
   {
@@ -120,6 +121,17 @@ function Homepage({
     }
   };
 
+  const abiButtons = Object.keys(genericABIs).map(abiName => (
+    <Button
+      type="primary"
+      className="primary-small"
+      size="small"
+      onClick={() => setContractAbi(JSON.stringify(genericABIs[abiName]))}
+    >
+      {abiName}
+    </Button>
+  ));
+
   return (
     <div className="index-container">
       <div className="search-container">
@@ -182,6 +194,7 @@ function Homepage({
                   setContractAbi(e.target.value);
                 }}
               />
+              <p className="generic-abis">Or use a generic ABI: {abiButtons}</p>
             </Tabs.TabPane>
           </Tabs>
           <Button
