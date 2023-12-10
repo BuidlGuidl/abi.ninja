@@ -8,15 +8,15 @@ module.exports = {
     themes: [
       {
         scaffoldEth: {
-          primary: "#93BBFB",
-          "primary-content": "#212638",
+          primary: "#551d98",
+          "primary-content": "#ffffff",
           secondary: "#DAE8FF",
           "secondary-content": "#212638",
           accent: "#93BBFB",
           "accent-content": "#212638",
           neutral: "#212638",
           "neutral-content": "#ffffff",
-          "base-100": "#ffffff",
+          "base-100": "#efeaff",
           "base-200": "#f4f8ff",
           "base-300": "#DAE8FF",
           "base-content": "#212638",
@@ -24,8 +24,6 @@ module.exports = {
           success: "#34EEB6",
           warning: "#FFCF72",
           error: "#FF8863",
-
-          "--rounded-btn": "9999rem",
 
           ".tooltip": {
             "--tooltip-tail": "6px",
@@ -57,8 +55,6 @@ module.exports = {
           warning: "#FFCF72",
           error: "#FF8863",
 
-          "--rounded-btn": "9999rem",
-
           ".tooltip": {
             "--tooltip-tail": "6px",
             "--tooltip-color": "hsl(var(--p))",
@@ -80,6 +76,9 @@ module.exports = {
       },
       animation: {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      screens: {
+        lg: "800px", // Change to 800 from 1024
       },
     },
   },
