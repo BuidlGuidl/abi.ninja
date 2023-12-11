@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -9,6 +10,38 @@ import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState("verifiedContract");
   const [network, setNetwork] = useState("mainnet");
+  const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
+  // const [abiContractAddress, setAbiContractAddress] = useState("");
+  // const [contractAbi, setContractAbi] = useState("");
+
+  const router = useRouter();
+
+  const fetchContractABI = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;
+    const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${verifiedContractAddress}&apikey=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === "1") {
+        //setContractAbi(data.result);
+        console.log("Contract ABI:", data.result);
+      } else {
+        console.error("Error fetching ABI:", data.result);
+      }
+    } catch (error) {
+      console.error("Error fetching ABI:", error);
+    }
+  };
+
+  const loadVerifiedContract = useCallback(async () => {
+    try {
+      await fetchContractABI();
+      router.push(`/${verifiedContractAddress}/${network}`);
+    } catch (error) {
+      console.error("Error in loading verified contract:", error);
+    }
+  }, [verifiedContractAddress, network]);
 
   return (
     <>
@@ -55,6 +88,7 @@ const Home: NextPage = () => {
                     type="text"
                     placeholder="Verified contract address"
                     className="input h-9 w-full bg-slate-100"
+                    onChange={e => setVerifiedContractAddress(e.target.value)}
                   />
                   <div className="flex flex-col text-sm">
                     <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
@@ -92,7 +126,14 @@ const Home: NextPage = () => {
                 </div>
               )}
             </div>
-            <button className="btn btn-primary w-1/2">Load Contract</button>
+            <button
+              className="btn btn-primary w-1/2"
+              onClick={() => {
+                loadVerifiedContract();
+              }}
+            >
+              Load Contract
+            </button>
           </div>
           <div className="mt-10">
             <ul className="menu menu-horizontal w-full">
