@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -14,6 +14,8 @@ const Home: NextPage = () => {
   // const [abiContractAddress, setAbiContractAddress] = useState("");
   // const [contractAbi, setContractAbi] = useState("");
 
+  const [isAbiAvailable, setIsAbiAvailable] = useState(false);
+
   const router = useRouter();
 
   const fetchContractABI = async () => {
@@ -24,15 +26,28 @@ const Home: NextPage = () => {
       const response = await fetch(url);
       const data = await response.json();
       if (data.status === "1") {
-        //setContractAbi(data.result);
         console.log("Contract ABI:", data.result);
+        setIsAbiAvailable(true);
       } else {
         console.error("Error fetching ABI:", data.result);
+        setIsAbiAvailable(false);
       }
     } catch (error) {
       console.error("Error fetching ABI:", error);
+      setIsAbiAvailable(false);
     }
   };
+
+  useEffect(() => {
+    if (verifiedContractAddress) {
+      fetchContractABI();
+      console.log("fetching contract abi inside useeffect...");
+    }
+  }, [verifiedContractAddress]);
+
+  const loadAddressAndAbi = useCallback(() => {
+    console.log("Loading Address + ABI");
+  }, []);
 
   const loadVerifiedContract = useCallback(async () => {
     try {
@@ -42,6 +57,14 @@ const Home: NextPage = () => {
       console.error("Error in loading verified contract:", error);
     }
   }, [verifiedContractAddress, network]);
+
+  const handleLoadContract = () => {
+    if (activeTab === "verifiedContract") {
+      loadVerifiedContract();
+    } else if (activeTab === "addressAbi") {
+      loadAddressAndAbi();
+    }
+  };
 
   return (
     <>
@@ -134,12 +157,8 @@ const Home: NextPage = () => {
                 </div>
               )}
             </div>
-            <button
-              className="btn btn-primary w-1/2"
-              onClick={() => {
-                loadVerifiedContract();
-              }}
-            >
+
+            <button className="btn btn-primary w-1/2" onClick={handleLoadContract} disabled={!isAbiAvailable}>
               Load Contract
             </button>
           </div>
