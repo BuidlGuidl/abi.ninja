@@ -158,7 +158,11 @@ const Home: NextPage = () => {
               )}
             </div>
 
-            <button className="btn btn-primary w-1/2" onClick={handleLoadContract} disabled={!isAbiAvailable}>
+            <button
+              className="btn btn-primary w-1/2 text-base border-2 hover:bg-white hover:text-primary"
+              onClick={handleLoadContract}
+              disabled={!isAbiAvailable}
+            >
               Load Contract
             </button>
           </div>
