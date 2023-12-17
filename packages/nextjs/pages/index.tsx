@@ -6,16 +6,17 @@ import type { NextPage } from "next";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
+import { useGlobalState } from "~~/services/store/store";
+import { notification } from "~~/utils/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState("verifiedContract");
   const [network, setNetwork] = useState("mainnet");
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
-  // const [abiContractAddress, setAbiContractAddress] = useState("");
-  // const [contractAbi, setContractAbi] = useState("");
-
+  const [abiContractAddress, setAbiContractAddress] = useState("");
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
+  const setContractAbi = useGlobalState(state => state.setContractAbi);
   const router = useRouter();
 
   const fetchContractABI = async () => {
@@ -28,6 +29,7 @@ const Home: NextPage = () => {
       if (data.status === "1") {
         console.log("Contract ABI:", data.result);
         setIsAbiAvailable(true);
+        setContractAbi(data.result);
       } else {
         console.error("Error fetching ABI:", data.result);
         setIsAbiAvailable(false);
@@ -40,13 +42,17 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (verifiedContractAddress) {
-      fetchContractABI();
       console.log("fetching contract abi inside useeffect...");
+
+      fetchContractABI();
+    } else {
+      notification.error("This is not a verified contract!");
     }
   }, [verifiedContractAddress]);
 
   const loadAddressAndAbi = useCallback(() => {
     console.log("Loading Address + ABI");
+    router.push(`/${abiContractAddress}/${network}`);
   }, []);
 
   const loadVerifiedContract = useCallback(async () => {
@@ -152,8 +158,17 @@ const Home: NextPage = () => {
 
               {activeTab === "addressAbi" && (
                 <div className="my-4 flex w-full flex-col gap-3">
-                  <input type="text" placeholder="Contract address" className="input h-9 w-full bg-slate-100" />
-                  <input placeholder="Contract ABI(json format)" className="input h-9 w-full bg-slate-100" />
+                  <input
+                    type="text"
+                    placeholder="Contract address"
+                    className="input h-9 w-full bg-slate-100"
+                    onChange={e => setAbiContractAddress(e.target.value)}
+                  />
+                  <input
+                    placeholder="Contract ABI(json format)"
+                    className="input h-9 w-full bg-slate-100"
+                    onChange={e => setContractAbi(e.target.value)}
+                  />
                 </div>
               )}
             </div>
