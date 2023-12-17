@@ -71,7 +71,7 @@ const Home: NextPage = () => {
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
         <div className="flex h-screen w-full flex-col items-center justify-center rounded-2xl bg-white p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
-          <div className="mt-10 flex w-7/12 flex-col items-center justify-center lg:w-10/12">
+          <div className="mt-10 flex flex-col items-center justify-center lg:w-10/12">
             <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
             <div role="tablist" className="flex w-full border-b">
               <a
                 role="tab"
-                className={`inline-block px-4 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
+                className={`inline-block px-2 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
                   activeTab === "verifiedContract"
                     ? "border-purple-500"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -159,7 +159,7 @@ const Home: NextPage = () => {
             </div>
 
             <button
-              className="btn btn-primary w-1/2 text-base border-2 hover:bg-white hover:text-primary"
+              className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
               disabled={!isAbiAvailable}
             >
