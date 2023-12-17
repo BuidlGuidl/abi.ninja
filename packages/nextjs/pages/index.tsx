@@ -153,7 +153,7 @@ const Home: NextPage = () => {
               {activeTab === "addressAbi" && (
                 <div className="my-4 flex w-full flex-col gap-3">
                   <input type="text" placeholder="Contract address" className="input h-9 w-full bg-slate-100" />
-                  <input placeholder="Contract ABI(json format)" className="input h-9 w-full bg-slate-100" />
+                  <input placeholder="Contract ABI (json format)" className="input h-9 w-full bg-slate-100" />
                 </div>
               )}
             </div>
