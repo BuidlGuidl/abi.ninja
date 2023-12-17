@@ -116,6 +116,7 @@ const Home: NextPage = () => {
               {activeTab === "verifiedContract" && (
                 <div className="my-4">
                   <input
+                    value={verifiedContractAddress}
                     type="text"
                     placeholder="Verified contract address"
                     className="input h-9 w-full bg-slate-100"
