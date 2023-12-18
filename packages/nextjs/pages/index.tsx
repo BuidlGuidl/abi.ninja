@@ -15,6 +15,26 @@ const Home: NextPage = () => {
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
+  const tabNames = ["verifiedContract", "addressAbi"];
+
+  const getTransitionClasses = (tabName: any) => {
+    const baseClasses = "absolute inset-0 w-full transition-transform duration-300 ease-in-out";
+    let translateClasses = "";
+
+    const currentTabIndex = tabNames.indexOf(activeTab);
+    const targetTabIndex = tabNames.indexOf(tabName);
+
+    if (currentTabIndex === targetTabIndex) {
+      translateClasses = "translate-x-0";
+    } else if (currentTabIndex < targetTabIndex) {
+      translateClasses = activeTab ? "translate-x-full" : "-translate-x-full";
+    } else {
+      translateClasses = activeTab ? "-translate-x-full" : "translate-x-full";
+    }
+
+    return `${baseClasses} ${translateClasses}`;
+  };
+
   const router = useRouter();
 
   const fetchContractABI = async () => {
@@ -111,51 +131,56 @@ const Home: NextPage = () => {
               </a>
             </div>
 
-            <div className="min-h-[150px] w-full">
-              {activeTab === "verifiedContract" && (
-                <div className="my-4">
-                  <input
-                    value={verifiedContractAddress}
-                    type="text"
-                    placeholder="Verified contract address"
-                    className="input h-9 w-full bg-slate-100"
-                    onChange={e => setVerifiedContractAddress(e.target.value)}
-                  />
-                  <div className="flex flex-col text-sm">
-                    <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
-                    <div className="flex justify-around">
-                      <Link
-                        href="/placeholder"
-                        passHref
-                        className="link w-1/3 text-center text-purple-700 no-underline"
-                      >
-                        DAI
-                      </Link>
-                      <Link
-                        href="/placeholder"
-                        passHref
-                        className="link w-1/3 text-center text-purple-700 no-underline"
-                      >
-                        Gitcoin
-                      </Link>
-                      <Link
-                        href="/placeholder"
-                        passHref
-                        className="link w-1/3 text-center text-purple-700 no-underline"
-                      >
-                        Opensea
-                      </Link>
-                    </div>
+            <div className="relative min-h-[150px] w-full overflow-hidden">
+              <div className="flex">
+                {tabNames.map(tabName => (
+                  <div key={tabName} className={getTransitionClasses(tabName)}>
+                    {tabName === "verifiedContract" && (
+                      <div className="my-4">
+                        <input
+                          value={verifiedContractAddress}
+                          type="text"
+                          placeholder="Verified contract address"
+                          className="input h-9 w-full bg-slate-100"
+                          onChange={e => setVerifiedContractAddress(e.target.value)}
+                        />
+                        <div className="flex flex-col text-sm">
+                          <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
+                          <div className="flex justify-around">
+                            <Link
+                              href="/placeholder"
+                              passHref
+                              className="link w-1/3 text-center text-purple-700 no-underline"
+                            >
+                              DAI
+                            </Link>
+                            <Link
+                              href="/placeholder"
+                              passHref
+                              className="link w-1/3 text-center text-purple-700 no-underline"
+                            >
+                              Gitcoin
+                            </Link>
+                            <Link
+                              href="/placeholder"
+                              passHref
+                              className="link w-1/3 text-center text-purple-700 no-underline"
+                            >
+                              Opensea
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {tabName === "addressAbi" && (
+                      <div className="my-4 flex w-full flex-col gap-3">
+                        <input type="text" placeholder="Contract address" className="input h-9 w-full bg-slate-100" />
+                        <input placeholder="Contract ABI (json format)" className="input h-9 w-full bg-slate-100" />
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
-
-              {activeTab === "addressAbi" && (
-                <div className="my-4 flex w-full flex-col gap-3">
-                  <input type="text" placeholder="Contract address" className="input h-9 w-full bg-slate-100" />
-                  <input placeholder="Contract ABI (json format)" className="input h-9 w-full bg-slate-100" />
-                </div>
-              )}
+                ))}
+              </div>
             </div>
 
             <button
