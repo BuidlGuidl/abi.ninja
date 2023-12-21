@@ -5,13 +5,14 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
+import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState("verifiedContract");
   const [network, setNetwork] = useState("mainnet");
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
-  // const [abiContractAddress, setAbiContractAddress] = useState("");
-  // const [contractAbi, setContractAbi] = useState("");
+  const [abiContractAddress, setAbiContractAddress] = useState("");
+  const [contractAbi, setContractAbi] = useState("");
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
@@ -137,12 +138,10 @@ const Home: NextPage = () => {
                   <div key={tabName} className={getTransitionClasses(tabName)}>
                     {tabName === "verifiedContract" && (
                       <div className="my-4">
-                        <input
+                        <AddressInput
                           value={verifiedContractAddress}
-                          type="text"
                           placeholder="Verified contract address"
-                          className="input h-9 w-full bg-slate-100"
-                          onChange={e => setVerifiedContractAddress(e.target.value)}
+                          onChange={setVerifiedContractAddress}
                         />
                         <div className="flex flex-col text-sm">
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
@@ -174,8 +173,16 @@ const Home: NextPage = () => {
                     )}
                     {tabName === "addressAbi" && (
                       <div className="my-4 flex w-full flex-col gap-3">
-                        <input type="text" placeholder="Contract address" className="input h-9 w-full bg-slate-100" />
-                        <input placeholder="Contract ABI (json format)" className="input h-9 w-full bg-slate-100" />
+                        <AddressInput
+                          placeholder="Contract address"
+                          value={abiContractAddress}
+                          onChange={setAbiContractAddress}
+                        />
+                        <InputBase
+                          placeholder="Contract ABI (json format)"
+                          value={contractAbi}
+                          onChange={setContractAbi}
+                        />
                       </div>
                     )}
                   </div>
