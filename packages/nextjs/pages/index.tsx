@@ -33,7 +33,7 @@ const Home: NextPage = () => {
         console.log("data: ", abi);
         setIsAbiAvailable(true);
       } catch (e) {
-        console.log("Error while getting abi: ", e);
+        console.error("Error while getting abi: ", e);
         setIsAbiAvailable(false);
       }
     };

@@ -7,7 +7,7 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: str
   if (data.status === "1") {
     return data.result;
   } else {
-    console.log("Got non-1 status from Etherscan API", data);
+    console.error("Got non-1 status from Etherscan API", data);
     throw new Error("Got non-1 status from Etherscan API");
   }
 };
