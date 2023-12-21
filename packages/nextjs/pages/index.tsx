@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
+import { isAddress } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
@@ -59,7 +60,7 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    if (verifiedContractAddress) {
+    if (verifiedContractAddress && isAddress(verifiedContractAddress)) {
       fetchContractABI();
       console.log("fetching contract abi inside useeffect...");
     }

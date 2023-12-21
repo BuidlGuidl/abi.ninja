@@ -19,9 +19,9 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
 }: InputBaseProps<T>) => {
   let modifier = "";
   if (error) {
-    modifier = "border-error";
+    modifier = "border border-error";
   } else if (disabled) {
-    modifier = "border-disabled bg-base-300";
+    modifier = "border border-disabled bg-base-300";
   }
 
   const handleChange = useCallback(
