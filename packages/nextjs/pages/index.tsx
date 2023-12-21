@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,9 +7,16 @@ import { isAddress } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
+import { fetchContractABIFromEtherscan } from "~~/utils/abi-ninja";
+
+enum TabName {
+  verifiedContract,
+  addressAbi,
+}
+const tabValues = Object.values(TabName) as TabName[];
 
 const Home: NextPage = () => {
-  const [activeTab, setActiveTab] = useState("verifiedContract");
+  const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState("mainnet");
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
@@ -17,73 +24,30 @@ const Home: NextPage = () => {
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
-  const tabNames = ["verifiedContract", "addressAbi"];
-
-  const getTransitionClasses = (tabName: string) => {
-    const baseClasses = "absolute inset-0 w-full transition-transform duration-300 ease-in-out px-1";
-    let translateClasses = "";
-
-    const currentTabIndex = tabNames.indexOf(activeTab);
-    const targetTabIndex = tabNames.indexOf(tabName);
-
-    if (currentTabIndex === targetTabIndex) {
-      translateClasses = "translate-x-0";
-    } else if (currentTabIndex < targetTabIndex) {
-      translateClasses = activeTab ? "translate-x-full" : "-translate-x-full";
-    } else {
-      translateClasses = activeTab ? "-translate-x-full" : "translate-x-full";
-    }
-
-    return `${baseClasses} ${translateClasses}`;
-  };
-
   const router = useRouter();
 
-  const fetchContractABI = async () => {
-    const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;
-    const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${verifiedContractAddress}&apikey=${apiKey}`;
-
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      if (data.status === "1") {
-        console.log("Contract ABI:", data.result);
+  useEffect(() => {
+    const fetchContractAbi = async () => {
+      try {
+        const abi = await fetchContractABIFromEtherscan(verifiedContractAddress);
+        console.log("data: ", abi);
         setIsAbiAvailable(true);
-      } else {
-        console.error("Error fetching ABI:", data.result);
+      } catch (e) {
+        console.log("Error while getting abi: ", e);
         setIsAbiAvailable(false);
       }
-    } catch (error) {
-      console.error("Error fetching ABI:", error);
-      setIsAbiAvailable(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (verifiedContractAddress && isAddress(verifiedContractAddress)) {
-      fetchContractABI();
-      console.log("fetching contract abi inside useeffect...");
+    if (isAddress(verifiedContractAddress)) {
+      fetchContractAbi();
     }
   }, [verifiedContractAddress]);
 
-  const loadAddressAndAbi = useCallback(() => {
-    console.log("Loading Address + ABI");
-  }, []);
-
-  const loadVerifiedContract = useCallback(async () => {
-    try {
-      await fetchContractABI();
-      router.push(`/${verifiedContractAddress}/${network}`);
-    } catch (error) {
-      console.error("Error in loading verified contract:", error);
-    }
-  }, [verifiedContractAddress, network]);
-
   const handleLoadContract = () => {
-    if (activeTab === "verifiedContract") {
-      loadVerifiedContract();
-    } else if (activeTab === "addressAbi") {
-      loadAddressAndAbi();
+    if (activeTab === TabName.verifiedContract) {
+      router.push(`/${verifiedContractAddress}/${network}`);
+    } else {
+      console.log("Loading Address + ABI");
     }
   };
 
@@ -112,22 +76,22 @@ const Home: NextPage = () => {
               <a
                 role="tab"
                 className={`inline-block px-2 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
-                  activeTab === "verifiedContract"
+                  activeTab === TabName.verifiedContract
                     ? "border-purple-500"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
-                onClick={() => setActiveTab("verifiedContract")}
+                onClick={() => setActiveTab(TabName.verifiedContract)}
               >
                 Verified Contract
               </a>
               <a
                 role="tab"
                 className={`inline-block px-4 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
-                  activeTab === "addressAbi"
+                  activeTab === TabName.addressAbi
                     ? "border-purple-500"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
-                onClick={() => setActiveTab("addressAbi")}
+                onClick={() => setActiveTab(TabName.addressAbi)}
               >
                 Address + ABI
               </a>
@@ -135,9 +99,18 @@ const Home: NextPage = () => {
 
             <div className="relative min-h-[150px] w-full overflow-hidden">
               <div className="flex">
-                {tabNames.map(tabName => (
-                  <div key={tabName} className={getTransitionClasses(tabName)}>
-                    {tabName === "verifiedContract" && (
+                {tabValues.map(tabValue => (
+                  <div
+                    key={tabValue}
+                    className={`absolute inset-0 w-full transition-transform duration-300 ease-in-out px-1 ${
+                      activeTab === tabValue
+                        ? "translate-x-0"
+                        : activeTab < tabValue
+                        ? "translate-x-full"
+                        : "-translate-x-full"
+                    }`}
+                  >
+                    {tabValue === TabName.verifiedContract ? (
                       <div className="my-4">
                         <AddressInput
                           value={verifiedContractAddress}
@@ -171,8 +144,7 @@ const Home: NextPage = () => {
                           </div>
                         </div>
                       </div>
-                    )}
-                    {tabName === "addressAbi" && (
+                    ) : (
                       <div className="my-4 flex w-full flex-col gap-3">
                         <AddressInput
                           placeholder="Contract address"
@@ -194,7 +166,7 @@ const Home: NextPage = () => {
             <button
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
-              disabled={!isAbiAvailable}
+              disabled={!isAbiAvailable || !isAddress(verifiedContractAddress)}
             >
               Load Contract
             </button>
