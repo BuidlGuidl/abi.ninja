@@ -7,7 +7,7 @@ import { isAddress } from "viem";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
-import { fetchContractABIFromEtherscan } from "~~/utils/abi-ninja";
+import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 enum TabName {
   verifiedContract,
