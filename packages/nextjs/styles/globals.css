@@ -30,3 +30,11 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.input {
+  @apply border-none;
+}
+
+.input:focus {
+  @apply outline-none;
+}
