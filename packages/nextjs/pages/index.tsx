@@ -18,7 +18,7 @@ const Home: NextPage = () => {
 
   const tabNames = ["verifiedContract", "addressAbi"];
 
-  const getTransitionClasses = (tabName: any) => {
+  const getTransitionClasses = (tabName: string) => {
     const baseClasses = "absolute inset-0 w-full transition-transform duration-300 ease-in-out px-1";
     let translateClasses = "";
 
