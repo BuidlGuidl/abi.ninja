@@ -12,7 +12,7 @@ module.exports = {
           "primary-content": "#ffffff",
           secondary: "#DAE8FF",
           "secondary-content": "#212638",
-          accent: "#93BBFB",
+          accent: "#666B7C",
           "accent-content": "#212638",
           neutral: "#212638",
           "neutral-content": "#ffffff",
@@ -73,6 +73,7 @@ module.exports = {
     extend: {
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",
+        xl: "0 0 15px -5px rgb(85 29 152)",
       },
       animation: {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
