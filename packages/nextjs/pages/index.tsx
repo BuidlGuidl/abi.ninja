@@ -128,14 +128,14 @@ const Home: NextPage = () => {
                               DAI
                             </Link>
                             <Link
-                              href="/placeholder"
+                              href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/mainnet"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >
                               Gitcoin
                             </Link>
                             <Link
-                              href="/placeholder"
+                              href="/0x00000000006c3852cbef3e08e8df289169ede581/mainnet"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >
