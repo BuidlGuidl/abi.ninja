@@ -121,7 +121,7 @@ const Home: NextPage = () => {
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
                           <div className="flex justify-around">
                             <Link
-                              href="/placeholder"
+                              href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/mainnet"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >

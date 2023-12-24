@@ -1,5 +1,5 @@
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string) => {
-  const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
   const url = `https://api.etherscan.io/api?module=contract&action=getabi&address=${verifiedContractAddress}&apikey=${apiKey}`;
 
   const response = await fetch(url);

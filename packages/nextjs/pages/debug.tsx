@@ -48,7 +48,11 @@ const Debug: NextPage = () => {
               </div>
             )}
             {contractNames.map(contractName => (
-              <ContractUI key={contractName} className={contractName === selectedContract ? "" : "hidden"} />
+              <ContractUI
+                key={contractName}
+                className={contractName === selectedContract ? "" : "hidden"}
+                deployedContractData={{ address: "0x0", abi: [] }}
+              />
             ))}
           </>
         )}
