@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
-import { ContractUI } from "~~/components/scaffold-eth";
+import { Footer } from "~~/components/Footer";
+import { ContractUI, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -37,12 +38,20 @@ const ContractDetailPage = () => {
   }, [contractAddress]);
 
   return (
-    <div className="flex flex-col gap-y-6 lg:gap-y-8 py-8 lg:py-12 justify-center items-center bg-base-100 min-h-screen">
-      {contractData.abi?.length > 0 ? (
-        <ContractUI key={contractName} deployedContractData={contractData} />
-      ) : (
-        <h1 className="text-2xl">Contract not found</h1>
-      )}
+    <div className="bg-base-100 min-h-screen">
+      <div className="navbar bg-base-100 text-neutral-content">
+        <div className="navbar-end flex-grow mr-4">
+          <RainbowKitCustomConnectButton />
+        </div>
+      </div>
+      <div className="flex flex-col gap-y-6 lg:gap-y-8 justify-center items-center">
+        {contractData.abi?.length > 0 ? (
+          <ContractUI key={contractName} deployedContractData={contractData} />
+        ) : (
+          <h1 className="text-2xl">Contract not found</h1>
+        )}
+      </div>
+      <Footer />
     </div>
   );
 };
