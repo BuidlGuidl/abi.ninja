@@ -139,6 +139,8 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.gnosis.id]: {
     color: "#48a9a6",
+    etherscanEndpoint: "https://api.gnosisscan.io",
+    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.polygon.id]: {
     color: "#2bbdf7",
@@ -150,15 +152,21 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.optimismGoerli.id]: {
     color: "#f01a37",
+    etherscanEndpoint: "https://api-goerli-optimism.etherscan.io",
+    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.optimism.id]: {
     color: "#f01a37",
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
+    etherscanEndpoint: "https://api.arbiscan.io",
+    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.arbitrum.id]: {
     color: "#28a0f0",
+    etherscanEndpoint: "https://api.arbiscan.io",
+    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.fantom.id]: {
     color: "#1969ff",
