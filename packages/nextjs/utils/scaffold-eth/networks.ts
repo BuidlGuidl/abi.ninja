@@ -160,13 +160,9 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
-    etherscanEndpoint: "https://api.arbiscan.io",
-    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.arbitrum.id]: {
     color: "#28a0f0",
-    etherscanEndpoint: "https://api.arbiscan.io",
-    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.fantom.id]: {
     color: "#1969ff",
