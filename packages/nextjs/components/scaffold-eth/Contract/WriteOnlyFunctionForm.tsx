@@ -14,7 +14,7 @@ import {
   getParsedError,
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 type WriteOnlyFunctionFormProps = {
@@ -32,14 +32,14 @@ export const WriteOnlyFunctionForm = ({
   contractAddress,
   inheritedFrom,
 }: WriteOnlyFunctionFormProps) => {
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [txValue, setTxValue] = useState<string | bigint>("");
   const { chain } = useNetwork();
   const writeTxn = useTransactor();
-  const { targetNetwork } = useTargetNetwork();
   const { address: connectedAddress } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const wrongNetwork = !chain || chain?.id !== targetNetwork.id;
+  const wrongNetwork = !chain || chain?.id !== mainChainId;
 
   const {
     data: result,
@@ -48,6 +48,7 @@ export const WriteOnlyFunctionForm = ({
   } = useContractWrite({
     address: contractAddress,
     functionName: abiFunction.name,
+    chainId: mainChainId,
     abi: abi,
     args: getParsedContractFunctionArgs(form),
   });

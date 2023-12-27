@@ -12,9 +12,9 @@ export function getNetworkColor(network: ChainWithAttributes, isDarkMode: boolea
 /**
  * Gets the color of the target network
  */
-export const useNetworkColor = () => {
+export const useNetworkColor = (network?: ChainWithAttributes) => {
   const { isDarkMode } = useDarkMode();
   const { targetNetwork } = useTargetNetwork();
 
-  return getNetworkColor(targetNetwork, isDarkMode);
+  return getNetworkColor(network || targetNetwork, isDarkMode);
 };

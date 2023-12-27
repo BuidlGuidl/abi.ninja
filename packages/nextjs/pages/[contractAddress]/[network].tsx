@@ -5,6 +5,7 @@ import { Abi, isAddress } from "viem";
 import { Footer } from "~~/components/Footer";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -22,6 +23,13 @@ const ContractDetailPage = () => {
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const contractName = contractData.address;
+  const setMainChainId = useAbiNinjaState(state => state.setMainChainId);
+
+  useEffect(() => {
+    if (network) {
+      setMainChainId(parseInt(network));
+    }
+  }, [network, setMainChainId]);
 
   useEffect(() => {
     const fetchContractAbi = async () => {

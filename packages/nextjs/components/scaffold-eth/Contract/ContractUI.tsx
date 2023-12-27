@@ -5,20 +5,24 @@ import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Abi } from "viem";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useAbiNinjaState } from "~~/services/store/store";
+import { getNetworksWithEtherscaApi } from "~~/utils/abi";
 
 type ContractUIProps = {
   className?: string;
   deployedContractData: { address: string; abi: Abi };
 };
 
+const mainNetworks = getNetworksWithEtherscaApi();
+
 /**
  * UI component to interface with deployed contracts.
  **/
 export const ContractUI = ({ className = "", deployedContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { targetNetwork } = useTargetNetwork();
-  const networkColor = useNetworkColor();
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
+  const networkColor = useNetworkColor(mainNetwork);
 
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-6 px-6 lg:px-10 lg:gap-12 w-full max-w-7xl my-0 ${className}`}>
@@ -35,10 +39,10 @@ export const ContractUI = ({ className = "", deployedContractData }: ContractUIP
                 </div>
               </div>
             </div>
-            {targetNetwork && (
+            {mainNetwork && (
               <p className="my-0 text-sm">
                 <span className="font-bold">Network</span>:{" "}
-                <span style={{ color: networkColor }}>{targetNetwork.name}</span>
+                <span style={{ color: networkColor }}>{mainNetwork.name}</span>
               </p>
             )}
           </div>

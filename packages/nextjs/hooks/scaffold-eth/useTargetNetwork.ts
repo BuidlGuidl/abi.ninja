@@ -1,26 +1,14 @@
-import { useEffect } from "react";
-import { useNetwork } from "wagmi";
-import scaffoldConfig from "~~/scaffold.config";
-import { useGlobalState } from "~~/services/store/store";
+import { mainnet } from "wagmi";
+import { useAbiNinjaState } from "~~/services/store/store";
+import { getNetworksWithEtherscaApi } from "~~/utils/abi";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
-import { NETWORKS_EXTRA_DATA } from "~~/utils/scaffold-eth";
 
+const mainNetworks = getNetworksWithEtherscaApi();
 export function useTargetNetwork(): { targetNetwork: ChainWithAttributes } {
-  const { chain } = useNetwork();
-  const targetNetwork = useGlobalState(({ targetNetwork }) => targetNetwork);
-  const setTargetNetwork = useGlobalState(({ setTargetNetwork }) => setTargetNetwork);
-
-  useEffect(() => {
-    const newSelectedNetwork = scaffoldConfig.targetNetworks.find(targetNetwork => targetNetwork.id === chain?.id);
-    if (newSelectedNetwork && newSelectedNetwork.id !== targetNetwork.id) {
-      setTargetNetwork(newSelectedNetwork);
-    }
-  }, [chain?.id, setTargetNetwork, targetNetwork.id]);
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
 
   return {
-    targetNetwork: {
-      ...targetNetwork,
-      ...NETWORKS_EXTRA_DATA[targetNetwork.id],
-    },
+    targetNetwork: mainNetwork || mainnet,
   };
 }

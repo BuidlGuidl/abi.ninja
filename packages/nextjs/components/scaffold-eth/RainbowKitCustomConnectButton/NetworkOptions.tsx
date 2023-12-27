@@ -1,10 +1,11 @@
 import { useDarkMode } from "usehooks-ts";
-import { useNetwork, useSwitchNetwork } from "wagmi";
+import { useSwitchNetwork } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import { getNetworkColor } from "~~/hooks/scaffold-eth";
-import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { useAbiNinjaState } from "~~/services/store/store";
+import { getNetworksWithEtherscaApi } from "~~/utils/abi";
 
-const allowedNetworks = getTargetNetworks();
+const allowedNetworks = getNetworksWithEtherscaApi();
 
 type NetworkOptionsProps = {
   hidden?: boolean;
@@ -13,12 +14,12 @@ type NetworkOptionsProps = {
 export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
   const { isDarkMode } = useDarkMode();
   const { switchNetwork } = useSwitchNetwork();
-  const { chain } = useNetwork();
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
 
   return (
     <>
       {allowedNetworks
-        .filter(allowedNetwork => allowedNetwork.id !== chain?.id)
+        .filter(allowedNetwork => allowedNetwork.id === mainChainId)
         .map(allowedNetwork => (
           <li key={allowedNetwork.id} className={hidden ? "hidden" : ""}>
             <button

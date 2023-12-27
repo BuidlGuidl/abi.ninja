@@ -20,6 +20,11 @@ type GlobalState = {
   setContractAbi: (newAbi: string) => void;
 };
 
+type AbiNinjaState = {
+  mainChainId: number;
+  setMainChainId: (newMainChainId: number) => void;
+};
+
 export const useGlobalState = create<GlobalState>(set => ({
   nativeCurrencyPrice: 0,
   setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
@@ -27,4 +32,9 @@ export const useGlobalState = create<GlobalState>(set => ({
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
   contractAbi: "", // default value for contract ABI
   setContractAbi: (newAbi: string): void => set({ contractAbi: newAbi }),
+}));
+
+export const useAbiNinjaState = create<AbiNinjaState>(set => ({
+  mainChainId: 1,
+  setMainChainId: (newValue: number): void => set(() => ({ mainChainId: newValue })),
 }));
