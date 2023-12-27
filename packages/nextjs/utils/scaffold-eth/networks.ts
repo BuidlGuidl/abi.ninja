@@ -157,6 +157,8 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.optimism.id]: {
     color: "#f01a37",
+    etherscanEndpoint: "https://api-goerli-optimism.etherscan.io",
+    etherscanApiKey: MAIN_ETHERSCAN_API_KEY,
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
