@@ -19,14 +19,14 @@ type ContractData = {
 
 const ContractDetailPage = () => {
   const router = useRouter();
-  const { contractAddress } = router.query as ParsedQueryContractDetailsPage;
+  const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const contractName = contractData.address;
 
   useEffect(() => {
     const fetchContractAbi = async () => {
       try {
-        const abi = await fetchContractABIFromEtherscan(contractAddress);
+        const abi = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
         setContractData({ abi: JSON.parse(abi), address: contractAddress });
       } catch (e) {
         console.error("Error while getting abi: ", e);
@@ -36,7 +36,7 @@ const ContractDetailPage = () => {
     if (isAddress(contractAddress)) {
       fetchContractAbi();
     }
-  }, [contractAddress]);
+  }, [contractAddress, network]);
 
   return (
     <div className="bg-base-100 min-h-screen">

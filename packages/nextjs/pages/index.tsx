@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { isAddress } from "viem";
+import * as chains from "viem/chains";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
-import { fetchContractABIFromEtherscan } from "~~/utils/abi";
+import { fetchContractABIFromEtherscan, getNetworksWithEtherscaApi } from "~~/utils/abi";
+import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
   verifiedContract,
@@ -15,12 +17,15 @@ enum TabName {
 }
 const tabValues = Object.values(TabName) as TabName[];
 
+const networks = getNetworksWithEtherscaApi();
+
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
-  const [network, setNetwork] = useState("mainnet");
+  const [network, setNetwork] = useState(chains.mainnet.id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [abiContractAddress, setAbiContractAddress] = useState("");
   const [contractAbi, setContractAbi] = useState("");
+  const [isFetchingAbi, setIsFetchingAbi] = useState(false);
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
@@ -28,20 +33,27 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const fetchContractAbi = async () => {
+      setIsFetchingAbi(true);
       try {
-        const abi = await fetchContractABIFromEtherscan(verifiedContractAddress);
+        const abi = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
         console.log("data: ", abi);
         setIsAbiAvailable(true);
-      } catch (e) {
-        console.error("Error while getting abi: ", e);
+      } catch (e: any) {
         setIsAbiAvailable(false);
+        if (e.message) {
+          notification.error(e.message);
+          return;
+        }
+        notification.error("Error occured while fetching abi");
+      } finally {
+        setIsFetchingAbi(false);
       }
     };
 
     if (isAddress(verifiedContractAddress)) {
       fetchContractAbi();
     }
-  }, [verifiedContractAddress]);
+  }, [verifiedContractAddress, network]);
 
   const handleLoadContract = () => {
     if (activeTab === TabName.verifiedContract) {
@@ -66,9 +78,11 @@ const Home: NextPage = () => {
                 value={network}
                 onChange={e => setNetwork(e.target.value)}
               >
-                <option value="localhost">Localhost</option>
-                <option value="mainnet">Mainnet</option>
-                <option value="optimism">Optimism</option>
+                {networks.map(network => (
+                  <option key={network.id} value={network.id}>
+                    {network.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -121,21 +135,21 @@ const Home: NextPage = () => {
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
                           <div className="flex justify-around">
                             <Link
-                              href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/mainnet"
+                              href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >
                               DAI
                             </Link>
                             <Link
-                              href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/mainnet"
+                              href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >
                               Gitcoin
                             </Link>
                             <Link
-                              href="/0x00000000006c3852cbef3e08e8df289169ede581/mainnet"
+                              href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
                               passHref
                               className="link w-1/3 text-center text-purple-700 no-underline"
                             >
@@ -168,7 +182,7 @@ const Home: NextPage = () => {
               onClick={handleLoadContract}
               disabled={!isAbiAvailable || !isAddress(verifiedContractAddress)}
             >
-              Load Contract
+              {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
             </button>
           </div>
           <MiniFooter />
