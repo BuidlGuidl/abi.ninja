@@ -3,29 +3,54 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import { isAddress } from "viem";
+import { Address, createPublicClient, http, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
-import { fetchContractABIFromEtherscan, getNetworksWithEtherscaApi } from "~~/utils/abi";
+import { useAbiNinjaState } from "~~/services/store/store";
+import { fetchContractABIFromEtherscan, getNetworksWithEtherscanApi } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
+
+export const publicClient = createPublicClient({
+  chain: chains.mainnet,
+  transport: http(),
+});
 
 enum TabName {
   verifiedContract,
   addressAbi,
 }
+
 const tabValues = Object.values(TabName) as TabName[];
 
-const networks = getNetworksWithEtherscaApi();
+const networks = getNetworksWithEtherscanApi();
+
+const isContractAddress = async (address: Address) => {
+  if (!isAddress(address)) return false;
+
+  const bytecode = await publicClient.getBytecode({
+    address,
+  });
+
+  console.log("bytecode: ", bytecode);
+
+  return bytecode !== "0x";
+};
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(chains.mainnet.id.toString());
-  const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
-  const [abiContractAddress, setAbiContractAddress] = useState("");
-  const [contractAbi, setContractAbi] = useState("");
+  const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
+  const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
+  const [localContractAbi, setLocalContractAbi] = useState([]);
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
+  const [isContract, setIsContract] = useState(false);
+
+  const { setContractAbi, setAbiContractAddress } = useAbiNinjaState(state => ({
+    setContractAbi: state.setContractAbi,
+    setAbiContractAddress: state.setAbiContractAddress,
+  }));
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
@@ -55,11 +80,23 @@ const Home: NextPage = () => {
     }
   }, [verifiedContractAddress, network]);
 
+  useEffect(() => {
+    const checkContract = async () => {
+      const result = await isContractAddress(localAbiContractAddress);
+      console.log("isContract: ", result);
+      setIsContract(result);
+    };
+
+    checkContract();
+  }, [localAbiContractAddress]);
+
   const handleLoadContract = () => {
     if (activeTab === TabName.verifiedContract) {
       router.push(`/${verifiedContractAddress}/${network}`);
-    } else {
-      console.log("Loading Address + ABI");
+    } else if (activeTab === TabName.addressAbi) {
+      setContractAbi(localContractAbi);
+      setAbiContractAddress(localAbiContractAddress);
+      router.push(`/${localAbiContractAddress}/${network}`);
     }
   };
 
@@ -162,13 +199,13 @@ const Home: NextPage = () => {
                       <div className="my-4 flex w-full flex-col gap-3">
                         <AddressInput
                           placeholder="Contract address"
-                          value={abiContractAddress}
-                          onChange={setAbiContractAddress}
+                          value={localAbiContractAddress}
+                          onChange={setLocalAbiContractAddress}
                         />
                         <InputBase
                           placeholder="Contract ABI (json format)"
-                          value={contractAbi}
-                          onChange={setContractAbi}
+                          value={localContractAbi}
+                          onChange={setLocalContractAbi}
                         />
                       </div>
                     )}
@@ -180,7 +217,11 @@ const Home: NextPage = () => {
             <button
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
-              disabled={!isAbiAvailable || !isAddress(verifiedContractAddress)}
+              disabled={
+                (activeTab === TabName.verifiedContract && !isAbiAvailable) ||
+                (activeTab === TabName.addressAbi &&
+                  (!isContract || !localContractAbi || localContractAbi.length === 0))
+              }
             >
               {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
             </button>
