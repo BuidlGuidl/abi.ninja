@@ -20,6 +20,6 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: str
   }
 };
 
-export const getNetworksWithEtherscaApi = () => {
+export const getNetworksWithEtherscanApi = () => {
   return getTargetNetworks().filter(network => network.etherscanApiKey);
 };
