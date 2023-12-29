@@ -17,6 +17,9 @@ const scaffoldConfig = {
     chains.goerli,
     chains.optimismGoerli,
     chains.optimism,
+    chains.polygon,
+    chains.polygonMumbai,
+    chains.arbitrum,
     chains.gnosis,
   ],
 
