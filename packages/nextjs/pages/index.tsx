@@ -94,7 +94,13 @@ const Home: NextPage = () => {
     if (activeTab === TabName.verifiedContract) {
       router.push(`/${verifiedContractAddress}/${network}`);
     } else if (activeTab === TabName.addressAbi) {
-      setContractAbi(localContractAbi);
+      try {
+        const parsedAbi = JSON.parse(JSON.stringify(localContractAbi));
+        setContractAbi(parsedAbi);
+      } catch (error) {
+        notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
+        return;
+      }
       setAbiContractAddress(localAbiContractAddress);
       router.push(`/${localAbiContractAddress}/${network}`);
     }
