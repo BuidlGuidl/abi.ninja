@@ -9,7 +9,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromEtherscan, getNetworksWithEtherscanApi } from "~~/utils/abi";
+import { fetchContractABIFromEtherscan, getNetworksWithEtherscanApi, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 export const publicClient = createPublicClient({
@@ -99,7 +99,7 @@ const Home: NextPage = () => {
       router.push(`/${verifiedContractAddress}/${network}`);
     } else if (activeTab === TabName.addressAbi) {
       try {
-        setContractAbi(JSON.parse(localContractAbi));
+        setContractAbi(parseAndCorrectJSON(localContractAbi));
       } catch (error) {
         notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
         return;
