@@ -33,8 +33,6 @@ const isContractAddress = async (address: Address) => {
     address,
   });
 
-  console.log("bytecode: ", bytecode);
-
   return bytecode !== "0x";
 };
 
@@ -43,7 +41,7 @@ const Home: NextPage = () => {
   const [network, setNetwork] = useState(chains.mainnet.id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
-  const [localContractAbi, setLocalContractAbi] = useState([]);
+  const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
   const [isContract, setIsContract] = useState(false);
 
@@ -61,7 +59,7 @@ const Home: NextPage = () => {
       setIsFetchingAbi(true);
       try {
         const abi = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-        console.log("data: ", abi);
+        console.log("data: ", abi); // @todo remove this
         setIsAbiAvailable(true);
       } catch (e: any) {
         setIsAbiAvailable(false);
@@ -90,13 +88,18 @@ const Home: NextPage = () => {
     checkContract();
   }, [localAbiContractAddress]);
 
+  useEffect(() => {
+    if (router.pathname === "/") {
+      setContractAbi([]);
+    }
+  }, [router.pathname, setContractAbi]);
+
   const handleLoadContract = () => {
     if (activeTab === TabName.verifiedContract) {
       router.push(`/${verifiedContractAddress}/${network}`);
     } else if (activeTab === TabName.addressAbi) {
       try {
-        const parsedAbi = JSON.parse(JSON.stringify(localContractAbi));
-        setContractAbi(parsedAbi);
+        setContractAbi(JSON.parse(localContractAbi));
       } catch (error) {
         notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
         return;
