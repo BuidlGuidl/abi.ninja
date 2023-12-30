@@ -25,13 +25,12 @@ export const getNetworksWithEtherscanApi = () => {
 };
 
 export function parseAndCorrectJSON(input: string): any {
-  // Step 1: Add double quotes around keys
+  // Add double quotes around keys
   let correctedJSON = input.replace(/(\w+)(?=\s*:)/g, '"$1"');
 
-  // Step 2: Remove trailing commas
+  // Remove trailing commas
   correctedJSON = correctedJSON.replace(/,(?=\s*[}\]])/g, "");
 
-  // Step 3: Try parsing the JSON
   try {
     return JSON.parse(correctedJSON);
   } catch (error) {
