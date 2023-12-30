@@ -29,7 +29,10 @@ const ContractDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const contractName = contractData.address;
-  const setMainChainId = useAbiNinjaState(state => state.setMainChainId);
+  const { contractAbi: storedAbi, setMainChainId } = useAbiNinjaState(state => ({
+    contractAbi: state.contractAbi,
+    setMainChainId: state.setMainChainId,
+  }));
 
   const getNetworkName = (chainId: string) => {
     const chain = Object.values(chains).find(chain => chain.id === parseInt(chainId));
@@ -44,13 +47,19 @@ const ContractDetailPage = () => {
 
   useEffect(() => {
     const fetchContractAbi = async () => {
+      setIsLoading(true);
       try {
-        const abi = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
-        setContractData({ abi: JSON.parse(abi), address: contractAddress });
+        if (storedAbi && storedAbi.length > 0) {
+          setContractData({ abi: storedAbi, address: contractAddress });
+        } else {
+          const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
+          const abi = JSON.parse(abiString);
+          setContractData({ abi, address: contractAddress });
+        }
         setError(null);
-        setIsLoading(false);
       } catch (e: any) {
         setError(e.message);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -58,7 +67,7 @@ const ContractDetailPage = () => {
     if (isAddress(contractAddress)) {
       fetchContractAbi();
     }
-  }, [contractAddress, network]);
+  }, [contractAddress, network, storedAbi]);
 
   return (
     <div className="bg-base-100 min-h-screen">
