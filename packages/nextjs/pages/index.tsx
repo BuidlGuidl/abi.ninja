@@ -58,8 +58,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const abi = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-        console.log("data: ", abi); // @todo remove this
+        await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
         setIsAbiAvailable(true);
       } catch (e: any) {
         setIsAbiAvailable(false);
