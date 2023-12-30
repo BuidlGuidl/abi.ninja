@@ -79,9 +79,7 @@ const ContractDetailPage = () => {
             <p className="pb-2">Make sure the data is correct and you are connected to the right network.</p>
 
             <button className="btn btn-primary text-center p-2 text-base border-2 mb-4">
-              <Link href="/">
-                <a>Go back to homepage</a>
-              </Link>
+              <Link href="/">Go back to homepage</Link>
             </button>
           </div>
         )}
