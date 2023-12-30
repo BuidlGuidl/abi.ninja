@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
+import * as chains from "viem/chains";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Footer } from "~~/components/Footer";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { Spinner } from "~~/components/assets/Spinner";
@@ -24,8 +27,14 @@ const ContractDetailPage = () => {
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const contractName = contractData.address;
   const setMainChainId = useAbiNinjaState(state => state.setMainChainId);
+
+  const getNetworkName = (chainId: string) => {
+    const chain = Object.values(chains).find(chain => chain.id === parseInt(chainId));
+    return chain ? chain.name : "Unknown Network";
+  };
 
   useEffect(() => {
     if (network) {
@@ -38,9 +47,10 @@ const ContractDetailPage = () => {
       try {
         const abi = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
         setContractData({ abi: JSON.parse(abi), address: contractAddress });
+        setError(null);
         setIsLoading(false);
-      } catch (e) {
-        console.error("Error while getting abi: ", e);
+      } catch (e: any) {
+        setError(e.message);
         setIsLoading(false);
       }
     };
@@ -59,7 +69,21 @@ const ContractDetailPage = () => {
         ) : contractData.abi?.length > 0 ? (
           <ContractUI key={contractName} deployedContractData={contractData} />
         ) : (
-          <h1 className="text-2xl">Contract not found</h1>
+          <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
+            <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
+            <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
+            <p className="break-all">
+              There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
+              <strong>{getNetworkName(network)}</strong>.
+            </p>
+            <p className="pb-2">Make sure the data is correct and you are connected to the right network.</p>
+
+            <button className="btn btn-primary text-center p-2 text-base border-2 mb-4">
+              <Link href="/">
+                <a>Go back to homepage</a>
+              </Link>
+            </button>
+          </div>
         )}
       </div>
       <Footer />
