@@ -7,7 +7,6 @@ import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Footer } from "~~/components/Footer";
 import { MiniHeader } from "~~/components/MiniHeader";
-import { Spinner } from "~~/components/assets/Spinner";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromEtherscan } from "~~/utils/abi";
@@ -74,7 +73,7 @@ const ContractDetailPage = () => {
       <MiniHeader />
       <div className="flex flex-col gap-y-6 lg:gap-y-8 justify-center items-center">
         {isLoading ? (
-          <Spinner />
+          <span className="loading loading-spinner text-primary h-14 w-14"></span>
         ) : contractData.abi?.length > 0 ? (
           <ContractUI key={contractName} deployedContractData={contractData} />
         ) : (
