@@ -26,7 +26,7 @@ const ContractDetailPage = () => {
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
   const { contractAbi: storedAbi, setMainChainId } = useAbiNinjaState(state => ({
     contractAbi: state.contractAbi,
@@ -65,6 +65,9 @@ const ContractDetailPage = () => {
 
     if (isAddress(contractAddress)) {
       fetchContractAbi();
+    } else {
+      setIsLoading(false);
+      setError("Please enter a valid address");
     }
   }, [contractAddress, network, storedAbi]);
 
