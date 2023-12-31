@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, createPublicClient, http, isAddress } from "viem";
 import * as chains from "viem/chains";
+import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
@@ -26,16 +27,6 @@ const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getNetworksWithEtherscanApi();
 
-const isContractAddress = async (address: Address) => {
-  if (!isAddress(address)) return false;
-
-  const bytecode = await publicClient.getBytecode({
-    address,
-  });
-
-  return bytecode !== "0x";
-};
-
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(chains.mainnet.id.toString());
@@ -44,6 +35,10 @@ const Home: NextPage = () => {
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
   const [isContract, setIsContract] = useState(false);
+
+  const publicClient = usePublicClient({
+    chainId: parseInt(network),
+  });
 
   const { setContractAbi, setAbiContractAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
@@ -79,13 +74,24 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const checkContract = async () => {
-      const result = await isContractAddress(localAbiContractAddress);
-      console.log("isContract: ", result);
-      setIsContract(result);
+      if (!isAddress(localAbiContractAddress)) {
+        setIsContract(false);
+        return;
+      }
+
+      const bytecode = await publicClient.getBytecode({
+        address: localAbiContractAddress,
+      });
+      const isContract = Boolean(bytecode) && bytecode !== "0x";
+      setIsContract(isContract);
+
+      if (!isContract) {
+        notification.error("Address is not a contract");
+      }
     };
 
     checkContract();
-  }, [localAbiContractAddress]);
+  }, [localAbiContractAddress, publicClient]);
 
   useEffect(() => {
     if (router.pathname === "/") {
