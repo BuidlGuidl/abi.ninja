@@ -29,6 +29,7 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
+  const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
 
   const publicClient = usePublicClient({
@@ -74,14 +75,22 @@ const Home: NextPage = () => {
         return;
       }
 
-      const bytecode = await publicClient.getBytecode({
-        address: localAbiContractAddress,
-      });
-      const isContract = Boolean(bytecode) && bytecode !== "0x";
-      setIsContract(isContract);
+      setIsCheckingContractAddress(true);
+      try {
+        const bytecode = await publicClient.getBytecode({
+          address: localAbiContractAddress,
+        });
+        const isContract = Boolean(bytecode) && bytecode !== "0x";
+        setIsContract(isContract);
 
-      if (!isContract) {
-        notification.error("Address is not a contract");
+        if (!isContract) {
+          notification.error("Address is not a contract");
+        }
+      } catch (e) {
+        notification.error("Error while checking for contract address");
+        setIsContract(false);
+      } finally {
+        setIsCheckingContractAddress(false);
       }
     };
 
@@ -232,7 +241,11 @@ const Home: NextPage = () => {
                   (!isContract || !localContractAbi || localContractAbi.length === 0))
               }
             >
-              {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
+              {isFetchingAbi || isCheckingContractAddress ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                "Load Contract"
+              )}
             </button>
           </div>
           <MiniFooter />
