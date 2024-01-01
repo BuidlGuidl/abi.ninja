@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import { Address, createPublicClient, http, isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -12,11 +12,6 @@ import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromEtherscan, getNetworksWithEtherscanApi, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
-
-export const publicClient = createPublicClient({
-  chain: chains.mainnet,
-  transport: http(),
-});
 
 enum TabName {
   verifiedContract,
