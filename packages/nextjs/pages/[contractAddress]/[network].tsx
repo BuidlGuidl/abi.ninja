@@ -64,11 +64,13 @@ const ContractDetailPage = () => {
       }
     };
 
-    if (isAddress(contractAddress)) {
-      fetchContractAbi();
-    } else {
-      setIsLoading(false);
-      setError("Please enter a valid address");
+    if (contractAddress && network) {
+      if (isAddress(contractAddress)) {
+        fetchContractAbi();
+      } else {
+        setIsLoading(false);
+        setError("Please enter a valid address");
+      }
     }
   }, [contractAddress, network, storedAbi]);
 
