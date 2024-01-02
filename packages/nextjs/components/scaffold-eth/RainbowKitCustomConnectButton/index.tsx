@@ -6,6 +6,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
 import { useAutoConnect, useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
 /**
@@ -13,6 +14,8 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
  */
 export const RainbowKitCustomConnectButton = () => {
   useAutoConnect();
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  console.log("mainChainId: ", mainChainId);
   const networkColor = useNetworkColor();
   const { targetNetwork } = useTargetNetwork();
 
@@ -35,14 +38,14 @@ export const RainbowKitCustomConnectButton = () => {
                 );
               }
 
-              if (chain.unsupported || chain.id !== targetNetwork.id) {
+              if (chain.id !== mainChainId) {
                 return <WrongNetworkDropdown />;
               }
 
               return (
                 <>
                   <div className="flex flex-col items-center mr-1">
-                    <Balance address={account.address as Address} className="min-h-0 h-auto" />
+                    <Balance address={account.address as Address} className="min-h-0 h-auto text-black" />
                     <span className="text-xs" style={{ color: networkColor }}>
                       {chain.name}
                     </span>

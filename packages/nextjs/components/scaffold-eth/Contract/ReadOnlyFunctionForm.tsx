@@ -11,6 +11,7 @@ import {
   getParsedContractFunctionArgs,
   getParsedError,
 } from "~~/components/scaffold-eth";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 type ReadOnlyFunctionFormProps = {
@@ -26,6 +27,7 @@ export const ReadOnlyFunctionForm = ({
   inheritedFrom,
   abi,
 }: ReadOnlyFunctionFormProps) => {
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [result, setResult] = useState<unknown>();
 
@@ -35,6 +37,7 @@ export const ReadOnlyFunctionForm = ({
     abi: abi,
     args: getParsedContractFunctionArgs(form),
     enabled: false,
+    chainId: mainChainId,
     onError: (error: any) => {
       const parsedErrror = getParsedError(error);
       notification.error(parsedErrror);

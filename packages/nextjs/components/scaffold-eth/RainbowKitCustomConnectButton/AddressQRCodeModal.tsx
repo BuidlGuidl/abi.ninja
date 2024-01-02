@@ -10,7 +10,7 @@ type AddressQRCodeModalProps = {
 export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps) => {
   return (
     <>
-      <div>
+      <div className="text-black">
         <input type="checkbox" id={`${modalId}`} className="modal-toggle" />
         <label htmlFor={`${modalId}`} className="modal cursor-pointer">
           <label className="modal-box relative">

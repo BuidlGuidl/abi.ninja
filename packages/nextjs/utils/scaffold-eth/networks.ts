@@ -7,9 +7,16 @@ type ChainAttributes = {
   // Used to fetch price by providing mainnet token address
   // for networks having native currency other than ETH
   nativeCurrencyTokenAddress?: string;
+  etherscanEndpoint?: string;
+  etherscanApiKey?: string;
 };
 
 export type ChainWithAttributes = chains.Chain & Partial<ChainAttributes>;
+
+const MAINNET_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+const OPTIMISM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY || "";
+const POLYGON_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY || "";
+const ARBITRUM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY || "";
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.hardhat.id]: {
@@ -17,35 +24,53 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.mainnet.id]: {
     color: "#ff8b9e",
+    etherscanEndpoint: "https://api.etherscan.io",
+    etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
   },
   [chains.sepolia.id]: {
     color: ["#5f4bb6", "#87ff65"],
+    etherscanEndpoint: "https://api-sepolia.etherscan.io",
+    etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
   },
   [chains.goerli.id]: {
     color: "#0975F6",
+    etherscanEndpoint: "https://api-goerli.etherscan.io",
+    etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
   },
   [chains.gnosis.id]: {
     color: "#48a9a6",
+    etherscanEndpoint: "https://api.gnosisscan.io",
+    etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
   },
   [chains.polygon.id]: {
     color: "#2bbdf7",
     nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+    etherscanEndpoint: "https://api.polygonscan.com",
+    etherscanApiKey: POLYGON_ETHERSCAN_API_KEY,
   },
   [chains.polygonMumbai.id]: {
     color: "#92D9FA",
     nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
+    etherscanEndpoint: "https://api-testnet.polygonscan.com",
+    etherscanApiKey: POLYGON_ETHERSCAN_API_KEY,
   },
   [chains.optimismGoerli.id]: {
     color: "#f01a37",
+    etherscanEndpoint: "https://api-goerli-optimistic.etherscan.io",
+    etherscanApiKey: OPTIMISM_ETHERSCAN_API_KEY,
   },
   [chains.optimism.id]: {
     color: "#f01a37",
+    etherscanEndpoint: "https://api-optimistic.etherscan.io",
+    etherscanApiKey: OPTIMISM_ETHERSCAN_API_KEY,
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
   },
   [chains.arbitrum.id]: {
     color: "#28a0f0",
+    etherscanEndpoint: "https://api.arbiscan.io",
+    etherscanApiKey: ARBITRUM_ETHERSCAN_API_KEY,
   },
   [chains.fantom.id]: {
     color: "#1969ff",

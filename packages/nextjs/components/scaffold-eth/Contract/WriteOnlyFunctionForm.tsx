@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
-import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
+import { useAccount, useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
 import {
   ContractInput,
   IntegerInput,
@@ -13,7 +14,7 @@ import {
   getParsedError,
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 type WriteOnlyFunctionFormProps = {
@@ -31,12 +32,14 @@ export const WriteOnlyFunctionForm = ({
   contractAddress,
   inheritedFrom,
 }: WriteOnlyFunctionFormProps) => {
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [txValue, setTxValue] = useState<string | bigint>("");
   const { chain } = useNetwork();
   const writeTxn = useTransactor();
-  const { targetNetwork } = useTargetNetwork();
-  const writeDisabled = !chain || chain?.id !== targetNetwork.id;
+  const { address: connectedAddress } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const wrongNetwork = !chain || chain?.id !== mainChainId;
 
   const {
     data: result,
@@ -45,6 +48,7 @@ export const WriteOnlyFunctionForm = ({
   } = useContractWrite({
     address: contractAddress,
     functionName: abiFunction.name,
+    chainId: mainChainId,
     abi: abi,
     args: getParsedContractFunctionArgs(form),
   });
@@ -112,18 +116,24 @@ export const WriteOnlyFunctionForm = ({
               {displayedTxResult ? <TxReceipt txResult={displayedTxResult} /> : null}
             </div>
           )}
-          <div
-            className={`flex ${
-              writeDisabled &&
-              "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
-            }`}
-            data-tip={`${writeDisabled && "Wallet not connected or in the wrong network"}`}
-          >
-            <button className="btn btn-secondary btn-sm" disabled={writeDisabled || isLoading} onClick={handleWrite}>
-              {isLoading && <span className="loading loading-spinner loading-xs"></span>}
-              Send 💸
+          {connectedAddress ? (
+            <div
+              className={`flex ${
+                wrongNetwork &&
+                "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
+              }`}
+              data-tip={`${wrongNetwork && "Wrong netowrk"}`}
+            >
+              <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isLoading} onClick={handleWrite}>
+                {isLoading && <span className="loading loading-spinner loading-xs"></span>}
+                Send 💸
+              </button>
+            </div>
+          ) : (
+            <button className="btn btn-secondary btn-sm" onClick={openConnectModal}>
+              Connect Wallet
             </button>
-          </div>
+          )}
         </div>
       </div>
       {zeroInputs && txResult ? (

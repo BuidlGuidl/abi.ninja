@@ -5,7 +5,6 @@ import { Address, useDisconnect } from "wagmi";
 import {
   ArrowLeftOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
-  ArrowsRightLeftIcon,
   CheckCircleIcon,
   ChevronDownIcon,
   DocumentDuplicateIcon,
@@ -13,9 +12,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-import { getTargetNetworks } from "~~/utils/scaffold-eth";
-
-const allowedNetworks = getTargetNetworks();
 
 type AddressInfoDropdownProps = {
   address: Address;
@@ -52,7 +48,7 @@ export const AddressInfoDropdown = ({
         </summary>
         <ul
           tabIndex={0}
-          className="dropdown-content menu z-[2] p-2 mt-2 shadow-center shadow-accent bg-base-200 rounded-box gap-1"
+          className="dropdown-content menu z-[2] p-2 mt-2 bg-white border shadow-xl rounded-2xl text-black gap-1"
         >
           <NetworkOptions hidden={!selectingNetwork} />
           <li className={selectingNetwork ? "hidden" : ""}>
@@ -103,19 +99,6 @@ export const AddressInfoDropdown = ({
               </a>
             </button>
           </li>
-          {allowedNetworks.length > 1 ? (
-            <li className={selectingNetwork ? "hidden" : ""}>
-              <button
-                className="btn-sm !rounded-xl flex gap-3 py-3"
-                type="button"
-                onClick={() => {
-                  setSelectingNetwork(true);
-                }}
-              >
-                <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Switch Network</span>
-              </button>
-            </li>
-          ) : null}
           <li className={selectingNetwork ? "hidden" : ""}>
             <button
               className="menu-item text-error btn-sm !rounded-xl flex gap-3 py-3"

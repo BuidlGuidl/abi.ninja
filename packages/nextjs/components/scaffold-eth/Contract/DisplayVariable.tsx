@@ -6,6 +6,7 @@ import { useContractRead } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { displayTxResult } from "~~/components/scaffold-eth";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
+import { useAbiNinjaState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 type DisplayVariableProps = {
@@ -23,6 +24,7 @@ export const DisplayVariable = ({
   abi,
   inheritedFrom,
 }: DisplayVariableProps) => {
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const {
     data: result,
     isFetching,
@@ -31,6 +33,7 @@ export const DisplayVariable = ({
     address: contractAddress,
     functionName: abiFunction.name,
     abi: abi,
+    chainId: mainChainId,
     onError: error => {
       notification.error(error.message);
     },

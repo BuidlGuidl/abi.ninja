@@ -2,92 +2,78 @@ import { useReducer } from "react";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
-import { Spinner } from "~~/components/assets/Spinner";
+import { Abi } from "viem";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import { useDeployedContractInfo, useNetworkColor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { ContractName } from "~~/utils/scaffold-eth/contract";
+import { useNetworkColor } from "~~/hooks/scaffold-eth";
+import { useAbiNinjaState } from "~~/services/store/store";
+import { getNetworksWithEtherscanApi } from "~~/utils/abi";
 
 type ContractUIProps = {
-  contractName: ContractName;
   className?: string;
+  deployedContractData: { address: string; abi: Abi };
 };
+
+const mainNetworks = getNetworksWithEtherscanApi();
 
 /**
  * UI component to interface with deployed contracts.
  **/
-export const ContractUI = ({ contractName, className = "" }: ContractUIProps) => {
+export const ContractUI = ({ className = "", deployedContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { targetNetwork } = useTargetNetwork();
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName);
-  const networkColor = useNetworkColor();
-
-  if (deployedContractLoading) {
-    return (
-      <div className="mt-14">
-        <Spinner width="50px" height="50px" />
-      </div>
-    );
-  }
-
-  if (!deployedContractData) {
-    return (
-      <p className="text-3xl mt-14">
-        {`No contract found by the name of "${contractName}" on chain "${targetNetwork.name}"!`}
-      </p>
-    );
-  }
+  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
+  const networkColor = useNetworkColor(mainNetwork);
 
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-6 px-6 lg:px-10 lg:gap-12 w-full max-w-7xl my-0 ${className}`}>
-      <div className="col-span-5 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+      <div className="col-span-5 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
         <div className="col-span-1 flex flex-col">
-          <div className="bg-base-100 border-base-300 border shadow-md shadow-secondary rounded-3xl px-6 lg:px-8 mb-6 space-y-1 py-4">
+          <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 mb-6 space-y-1 py-4">
             <div className="flex">
               <div className="flex flex-col gap-1">
-                <span className="font-bold">{contractName}</span>
+                <span className="font-bold">Contract Data</span>
                 <Address address={deployedContractData.address} />
-                <div className="flex gap-1 items-center">
-                  <span className="font-bold text-sm">Balance:</span>
-                  <Balance address={deployedContractData.address} className="px-0 h-1.5 min-h-[0.375rem]" />
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-bold">Balance:</span>
+                  <Balance address={deployedContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
                 </div>
               </div>
             </div>
-            {targetNetwork && (
+            {mainNetwork && (
               <p className="my-0 text-sm">
                 <span className="font-bold">Network</span>:{" "}
-                <span style={{ color: networkColor }}>{targetNetwork.name}</span>
+                <span style={{ color: networkColor }}>{mainNetwork.name}</span>
               </p>
             )}
           </div>
-          <div className="bg-base-300 rounded-3xl px-6 lg:px-8 py-4 shadow-lg shadow-base-300">
+          <div className="bg-white shadow-xl rounded-2xl px-6 lg:px-8 py-4">
             <ContractVariables
               refreshDisplayVariables={refreshDisplayVariables}
               deployedContractData={deployedContractData}
             />
           </div>
         </div>
-        <div className="col-span-1 lg:col-span-2 flex flex-col gap-6">
+        <div className="col-span-1 flex flex-col gap-6 lg:col-span-2">
           <div className="z-10">
-            <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-              <div className="h-[5rem] w-[5.5rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+            <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
+              <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                 <div className="flex items-center justify-center space-x-2">
-                  <p className="my-0 text-sm">Read</p>
+                  <p className="my-0 text-sm font-bold">Read</p>
                 </div>
               </div>
-              <div className="p-5 divide-y divide-base-300">
+              <div className="divide-y divide-base-300 p-5">
                 <ContractReadMethods deployedContractData={deployedContractData} />
               </div>
             </div>
           </div>
           <div className="z-10">
-            <div className="bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 flex flex-col mt-10 relative">
-              <div className="h-[5rem] w-[5.5rem] bg-base-300 absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+            <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
+              <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                 <div className="flex items-center justify-center space-x-2">
-                  <p className="my-0 text-sm">Write</p>
+                  <p className="my-0 text-sm font-bold">Write</p>
                 </div>
               </div>
-              <div className="p-5 divide-y divide-base-300">
+              <div className="divide-y divide-base-300 p-5">
                 <ContractWriteMethods
                   deployedContractData={deployedContractData}
                   onChange={triggerRefreshDisplayVariables}
