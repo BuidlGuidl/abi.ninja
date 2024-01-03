@@ -4,8 +4,9 @@ import { PaginationButton, TransactionsTable } from "~~/components/blockexplorer
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useFetchBlocks } from "~~/hooks/scaffold-eth";
 
-const AddressPage = ({ address }: { address: AddressType }) => {
+const AddressPage = () => {
   const router = useRouter();
+  const { address } = router.query as { address?: AddressType };
   const { blocks, transactionReceipts, currentPage, totalBlocks, setCurrentPage } = useFetchBlocks();
 
   const filteredBlocks = blocks.filter(block =>
@@ -13,7 +14,7 @@ const AddressPage = ({ address }: { address: AddressType }) => {
       if (typeof tx === "string") {
         return false;
       }
-      return tx.from.toLowerCase() === address.toLowerCase() || tx.to?.toLowerCase() === address.toLowerCase();
+      return tx.from.toLowerCase() === address?.toLowerCase() || tx.to?.toLowerCase() === address?.toLowerCase();
     }),
   );
 
