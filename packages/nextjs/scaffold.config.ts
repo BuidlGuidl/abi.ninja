@@ -9,9 +9,15 @@ export type ScaffoldConfig = {
   walletAutoConnect: boolean;
 };
 
+const localhost = {
+  ...chains.localhost,
+  id: 31337,
+} as const;
+
 const scaffoldConfig = {
   // The networks on which your DApp is live
   targetNetworks: [
+    localhost,
     chains.mainnet,
     chains.sepolia,
     chains.goerli,

@@ -27,7 +27,7 @@ export const useGlobalState = create<GlobalState>(set => ({
 }));
 
 export const useAbiNinjaState = create<AbiNinjaState>(set => ({
-  mainChainId: 1,
+  mainChainId: scaffoldConfig.targetNetworks[0].id,
   setMainChainId: (newValue: number): void => set(() => ({ mainChainId: newValue })),
   contractAbi: [],
   setContractAbi: (newAbi: Abi): void => set({ contractAbi: newAbi }),

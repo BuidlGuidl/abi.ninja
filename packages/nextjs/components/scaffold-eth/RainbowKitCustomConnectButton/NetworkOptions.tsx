@@ -3,9 +3,9 @@ import { useSwitchNetwork } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import { getNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { getNetworksWithEtherscanApi } from "~~/utils/abi";
+import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
-const allowedNetworks = getNetworksWithEtherscanApi();
+const allowedNetworks = getTargetNetworks();
 
 type NetworkOptionsProps = {
   hidden?: boolean;
