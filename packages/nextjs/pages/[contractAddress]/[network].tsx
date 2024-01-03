@@ -35,6 +35,7 @@ const ContractDetailPage = () => {
   }));
 
   const getNetworkName = (chainId: string) => {
+    if (chainId === "31337") return "Localhost";
     const chain = Object.values(chains).find(chain => chain.id === parseInt(chainId));
     return chain ? chain.name : "Unknown Network";
   };
