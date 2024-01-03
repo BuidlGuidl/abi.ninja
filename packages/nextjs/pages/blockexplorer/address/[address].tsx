@@ -1,51 +1,12 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import fs from "fs";
-import { GetServerSideProps } from "next";
-import path from "path";
-import { Address as AddressType, createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
-import {
-  AddressCodeTab,
-  AddressLogsTab,
-  AddressStorageTab,
-  PaginationButton,
-  TransactionsTable,
-} from "~~/components/blockexplorer/";
+import { Address as AddressType } from "viem";
+import { PaginationButton, TransactionsTable } from "~~/components/blockexplorer/";
 import { Address, Balance } from "~~/components/scaffold-eth";
-import deployedContracts from "~~/contracts/deployedContracts";
 import { useFetchBlocks } from "~~/hooks/scaffold-eth";
-import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-type AddressCodeTabProps = {
-  bytecode: string;
-  assembly: string;
-};
-
-type PageProps = {
-  address: AddressType;
-  contractData: AddressCodeTabProps | null;
-};
-
-const publicClient = createPublicClient({
-  chain: hardhat,
-  transport: http(),
-});
-
-const AddressPage = ({ address, contractData }: PageProps) => {
+const AddressPage = ({ address }: { address: AddressType }) => {
   const router = useRouter();
   const { blocks, transactionReceipts, currentPage, totalBlocks, setCurrentPage } = useFetchBlocks();
-  const [activeTab, setActiveTab] = useState("transactions");
-  const [isContract, setIsContract] = useState(false);
-
-  useEffect(() => {
-    const checkIsContract = async () => {
-      const contractCode = await publicClient.getBytecode({ address: address });
-      setIsContract(contractCode !== undefined && contractCode !== "0x");
-    };
-
-    checkIsContract();
-  }, [address]);
 
   const filteredBlocks = blocks.filter(block =>
     block.transactions.some(tx => {
@@ -78,118 +39,12 @@ const AddressPage = ({ address, contractData }: PageProps) => {
           </div>
         </div>
       </div>
-      {isContract && (
-        <div className="tabs">
-          <button
-            className={`tab tab-lifted ${activeTab === "transactions" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("transactions")}
-          >
-            Transactions
-          </button>
-          <button
-            className={`tab tab-lifted ${activeTab === "code" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("code")}
-          >
-            Code
-          </button>
-          <button
-            className={`tab tab-lifted ${activeTab === "storage" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("storage")}
-          >
-            Storage
-          </button>
-          <button
-            className={`tab tab-lifted ${activeTab === "logs" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("logs")}
-          >
-            Logs
-          </button>
-        </div>
-      )}
-      {activeTab === "transactions" && (
-        <div className="pt-4">
-          <TransactionsTable blocks={filteredBlocks} transactionReceipts={transactionReceipts} />
-          <PaginationButton
-            currentPage={currentPage}
-            totalItems={Number(totalBlocks)}
-            setCurrentPage={setCurrentPage}
-          />
-        </div>
-      )}
-      {activeTab === "code" && contractData && (
-        <AddressCodeTab bytecode={contractData.bytecode} assembly={contractData.assembly} />
-      )}
-      {activeTab === "storage" && <AddressStorageTab address={address} />}
-      {activeTab === "logs" && <AddressLogsTab address={address} />}
+      <div className="pt-4">
+        <TransactionsTable blocks={filteredBlocks} transactionReceipts={transactionReceipts} />
+        <PaginationButton currentPage={currentPage} totalItems={Number(totalBlocks)} setCurrentPage={setCurrentPage} />
+      </div>
     </div>
   );
 };
 
 export default AddressPage;
-
-async function fetchByteCodeAndAssembly(buildInfoDirectory: string, contractPath: string) {
-  const buildInfoFiles = fs.readdirSync(buildInfoDirectory);
-  let bytecode = "";
-  let assembly = "";
-
-  for (let i = 0; i < buildInfoFiles.length; i++) {
-    const filePath = path.join(buildInfoDirectory, buildInfoFiles[i]);
-
-    const buildInfo = JSON.parse(fs.readFileSync(filePath, "utf8"));
-
-    if (buildInfo.output.contracts[contractPath]) {
-      for (const contract in buildInfo.output.contracts[contractPath]) {
-        bytecode = buildInfo.output.contracts[contractPath][contract].evm.bytecode.object;
-        assembly = buildInfo.output.contracts[contractPath][contract].evm.bytecode.opcodes;
-        break;
-      }
-    }
-
-    if (bytecode && assembly) {
-      break;
-    }
-  }
-
-  return { bytecode, assembly };
-}
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  const address = (context.params?.address as string).toLowerCase();
-  const contracts = deployedContracts as GenericContractsDeclaration | null;
-  const chainId = hardhat.id;
-  let contractPath = "";
-
-  const buildInfoDirectory = path.join(
-    __dirname,
-    "..",
-    "..",
-    "..",
-    "..",
-    "..",
-    "..",
-    "hardhat",
-    "artifacts",
-    "build-info",
-  );
-
-  if (!fs.existsSync(buildInfoDirectory)) {
-    throw new Error(`Directory ${buildInfoDirectory} not found.`);
-  }
-
-  const deployedContractsOnChain = contracts ? contracts[chainId] : {};
-  for (const [contractName, contractInfo] of Object.entries(deployedContractsOnChain)) {
-    if (contractInfo.address.toLowerCase() === address) {
-      contractPath = `contracts/${contractName}.sol`;
-      break;
-    }
-  }
-
-  if (!contractPath) {
-    // No contract found at this address
-    return { props: { address, contractData: null } };
-  }
-
-  const { bytecode, assembly } = await fetchByteCodeAndAssembly(buildInfoDirectory, contractPath);
-
-  return { props: { address, contractData: { bytecode, assembly } } };
-};
