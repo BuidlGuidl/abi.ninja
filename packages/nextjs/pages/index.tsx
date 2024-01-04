@@ -64,7 +64,7 @@ const Home: NextPage = () => {
 
     if (isAddress(verifiedContractAddress)) {
       if (network === "31337") {
-        notification.error("To interact with Localhost contracts, pleasae use Address + ABI tab");
+        notification.error("To interact with Localhost contracts, please use Address + ABI tab");
         return;
       }
       fetchContractAbi();
