@@ -4,14 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
-import * as chains from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromEtherscan, getNetworksWithEtherscanApi, parseAndCorrectJSON } from "~~/utils/abi";
-import { notification } from "~~/utils/scaffold-eth";
+import { fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
   verifiedContract,
@@ -20,11 +19,11 @@ enum TabName {
 
 const tabValues = Object.values(TabName) as TabName[];
 
-const networks = getNetworksWithEtherscanApi();
+const networks = getTargetNetworks();
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
-  const [network, setNetwork] = useState(chains.mainnet.id.toString());
+  const [network, setNetwork] = useState(networks[1].id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
@@ -64,6 +63,10 @@ const Home: NextPage = () => {
     };
 
     if (isAddress(verifiedContractAddress)) {
+      if (network === "31337") {
+        notification.error("To interact with Localhost contracts, please use Address + ABI tab");
+        return;
+      }
       fetchContractAbi();
     }
   }, [verifiedContractAddress, network]);

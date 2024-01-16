@@ -6,14 +6,14 @@ import { Abi } from "viem";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { getNetworksWithEtherscanApi } from "~~/utils/abi";
+import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type ContractUIProps = {
   className?: string;
   deployedContractData: { address: string; abi: Abi };
 };
 
-const mainNetworks = getNetworksWithEtherscanApi();
+const mainNetworks = getTargetNetworks();
 
 /**
  * UI component to interface with deployed contracts.

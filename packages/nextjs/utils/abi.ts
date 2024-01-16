@@ -1,4 +1,4 @@
-import { NETWORKS_EXTRA_DATA, getTargetNetworks } from "./scaffold-eth";
+import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string, chainId: number) => {
   const chain = NETWORKS_EXTRA_DATA[chainId];
@@ -18,10 +18,6 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: str
     if (data.result) throw new Error(data.result);
     throw new Error("Got non-1 status from Etherscan API");
   }
-};
-
-export const getNetworksWithEtherscanApi = () => {
-  return getTargetNetworks().filter(network => network.etherscanApiKey);
 };
 
 export function parseAndCorrectJSON(input: string): any {
