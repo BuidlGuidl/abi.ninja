@@ -10,7 +10,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromEtherscan } from "~~/utils/abi";
+import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
   contractAddress: string;
@@ -53,9 +53,14 @@ const ContractDetailPage = () => {
         if (storedAbi && storedAbi.length > 0) {
           setContractData({ abi: storedAbi, address: contractAddress });
         } else {
-          const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
-          const abi = JSON.parse(abiString);
-          setContractData({ abi, address: contractAddress });
+          const abi = await fetchContractABIFromAnyABI(contractAddress, parseInt(network));
+          if (abi) {
+            setContractData({ abi, address: contractAddress });
+          } else {
+            const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
+            const abi = JSON.parse(abiString);
+            setContractData({ abi, address: contractAddress });
+          }
         }
         setError(null);
       } catch (e: any) {
