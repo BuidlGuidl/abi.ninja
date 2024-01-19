@@ -9,7 +9,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -49,8 +49,16 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-        setIsAbiAvailable(true);
+        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
+        if (abi) {
+          setContractAbi(abi);
+          setIsAbiAvailable(true);
+        } else {
+          const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
+          const abi = JSON.parse(abiString);
+          setContractAbi(abi);
+          setIsAbiAvailable(true);
+        }
       } catch (e: any) {
         setIsAbiAvailable(false);
         if (e.message) {
