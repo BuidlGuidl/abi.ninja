@@ -25,6 +25,7 @@ const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(networks[1].id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
+  const [verifiedContractInput, setVerifiedContractInput] = useState("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
@@ -121,6 +122,15 @@ const Home: NextPage = () => {
     }
   };
 
+  const handleVerifiedContractInput = (input: string) => {
+    setVerifiedContractInput(input);
+    if (isAddress(input)) {
+      setVerifiedContractAddress(input);
+    } else {
+      setVerifiedContractAddress("");
+    }
+  };
+
   return (
     <>
       <MetaHeader />
@@ -185,9 +195,9 @@ const Home: NextPage = () => {
                     {tabValue === TabName.verifiedContract ? (
                       <div className="my-4">
                         <AddressInput
-                          value={verifiedContractAddress}
+                          value={verifiedContractInput}
                           placeholder="Verified contract address"
-                          onChange={setVerifiedContractAddress}
+                          onChange={handleVerifiedContractInput}
                         />
                         <div className="flex flex-col text-sm">
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
@@ -239,7 +249,7 @@ const Home: NextPage = () => {
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
               disabled={
-                (activeTab === TabName.verifiedContract && !isAbiAvailable) ||
+                (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
                 (activeTab === TabName.addressAbi &&
                   (!isContract || !localContractAbi || localContractAbi.length === 0))
               }
