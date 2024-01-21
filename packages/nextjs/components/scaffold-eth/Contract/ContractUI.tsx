@@ -62,9 +62,43 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   };
 
   return (
-    <div className="drawer lg:drawer-open">
+    <div className="drawer lg:drawer-open h-full">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col items-center justify-center">
+      <div className="drawer-side h-full z-50">
+        <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
+        <ul className="menu p-6 bg-white h-full flex flex-col justify-between">
+          <MethodSelector abi={methodsWithInputs} onMethodSelect={handleMethodSelect} />
+          <div className="flex justify-center items-center gap-1 text-xs w-full">
+            <div className="mb-1">
+              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+                Fork me
+              </a>
+            </div>
+            <span>·</span>
+            <div className="flex justify-center items-center gap-2">
+              <p className="m-0 text-center">
+                Built with <HeartIcon className="inline-block h-4 w-4" /> at
+              </p>
+              <a
+                className="flex justify-center items-center gap-1"
+                href="https://buidlguidl.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
+                <span className="link">BuidlGuidl</span>
+              </a>
+            </div>
+            <span>·</span>
+            <div className="text-center">
+              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
+                Support
+              </a>
+            </div>
+          </div>
+        </ul>
+      </div>
+      <div className="drawer-content flex flex-col items-center justify-center overflow-auto">
         <div className={`grid grid-cols-1 lg:grid-cols-6 w-full my-0 ${className} h-full flex-grow`}>
           <div className="col-span-5 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10 p-10">
             <div className="col-span-1 flex flex-col gap-6 lg:col-span-2 mx-4">
@@ -129,40 +163,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
             </div>
           </div>
         </div>
-      </div>
-      <div className="drawer-side z-50 ">
-        <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-6 w-80 min-h-full bg-white text-base-content flex flex-col justify-between">
-          <MethodSelector abi={methodsWithInputs} onMethodSelect={handleMethodSelect} />
-          <div className="flex justify-center items-center gap-1 text-xs w-full">
-            <div className="mb-1">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div className="flex justify-center items-center gap-2">
-              <p className="m-0 text-center">
-                Built with <HeartIcon className="inline-block h-4 w-4" /> at
-              </p>
-              <a
-                className="flex justify-center items-center gap-1"
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
-                <span className="link">BuidlGuidl</span>
-              </a>
-            </div>
-            <span>·</span>
-            <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
-              </a>
-            </div>
-          </div>
-        </ul>
       </div>
     </div>
   );

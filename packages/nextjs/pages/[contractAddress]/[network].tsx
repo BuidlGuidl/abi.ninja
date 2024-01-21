@@ -5,7 +5,6 @@ import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { Footer } from "~~/components/Footer";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
@@ -77,9 +76,9 @@ const ContractDetailPage = () => {
   return (
     <>
       <MetaHeader />
-      <div className="bg-base-100 min-h-screen flex flex-col">
+      <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
-        <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow ">
+        <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
           {isLoading ? (
             <span className="loading loading-spinner text-primary h-14 w-14"></span>
           ) : contractData.abi?.length > 0 ? (
@@ -100,7 +99,6 @@ const ContractDetailPage = () => {
             </div>
           )}
         </div>
-        <Footer />
       </div>
     </>
   );
