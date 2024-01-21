@@ -3,6 +3,8 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { Abi } from "viem";
+import { HeartIcon } from "@heroicons/react/24/outline";
+import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
@@ -128,10 +130,38 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
           </div>
         </div>
       </div>
-      <div className="drawer-side z-50">
+      <div className="drawer-side z-50 ">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-6 w-80 min-h-full bg-white text-base-content gap-6">
+        <ul className="menu p-6 w-80 min-h-full bg-white text-base-content flex flex-col justify-between">
           <MethodSelector abi={methodsWithInputs} onMethodSelect={handleMethodSelect} />
+          <div className="flex justify-center items-center gap-1 text-xs w-full">
+            <div className="mb-1">
+              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+                Fork me
+              </a>
+            </div>
+            <span>·</span>
+            <div className="flex justify-center items-center gap-2">
+              <p className="m-0 text-center">
+                Built with <HeartIcon className="inline-block h-4 w-4" /> at
+              </p>
+              <a
+                className="flex justify-center items-center gap-1"
+                href="https://buidlguidl.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
+                <span className="link">BuidlGuidl</span>
+              </a>
+            </div>
+            <span>·</span>
+            <div className="text-center">
+              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
+                Support
+              </a>
+            </div>
+          </div>
         </ul>
       </div>
     </div>

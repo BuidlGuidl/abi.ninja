@@ -22,7 +22,7 @@ export const MethodSelector = ({ abi, onMethodSelect }: MethodSelectorProps) => 
   );
 
   return (
-    <>
+    <div className="space-y-4">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
       <label htmlFor="sidebar" className="cursor-pointer block lg:hidden">
         <XMarkIcon className="h-5 w-5" />
@@ -47,6 +47,6 @@ export const MethodSelector = ({ abi, onMethodSelect }: MethodSelectorProps) => 
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
