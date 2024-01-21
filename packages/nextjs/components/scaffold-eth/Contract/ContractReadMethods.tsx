@@ -1,8 +1,15 @@
 import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
 import { Abi, AbiFunction } from "abitype";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
-export const ContractReadMethods = ({ deployedContractData }: { deployedContractData: Contract<ContractName> }) => {
+export const ContractReadMethods = ({
+  deployedContractData,
+  removeMethod,
+}: {
+  deployedContractData: Contract<ContractName>;
+  removeMethod: (methodName: string) => void;
+}) => {
   if (!deployedContractData) {
     return null;
   }
@@ -24,19 +31,23 @@ export const ContractReadMethods = ({ deployedContractData }: { deployedContract
     .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
 
   if (!functionsToDisplay.length) {
-    return <>No read methods</>;
+    return <>Please add a read method.</>;
   }
 
   return (
     <>
       {functionsToDisplay.map(({ fn, inheritedFrom }) => (
-        <ReadOnlyFunctionForm
-          abi={deployedContractData.abi as Abi}
-          contractAddress={deployedContractData.address}
-          abiFunction={fn}
-          key={fn.name}
-          inheritedFrom={inheritedFrom}
-        />
+        <div key={fn.name} className="relative mb-4">
+          <ReadOnlyFunctionForm
+            abi={deployedContractData.abi as Abi}
+            contractAddress={deployedContractData.address}
+            abiFunction={fn}
+            inheritedFrom={inheritedFrom}
+          />
+          <button onClick={() => removeMethod(fn.name)} className="absolute top-1 right-0 btn btn-ghost btn-xs">
+            <XMarkIcon className="h-4 w-4" />
+          </button>
+        </div>
       ))}
     </>
   );
