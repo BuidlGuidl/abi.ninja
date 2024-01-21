@@ -1,4 +1,5 @@
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
+import router from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
@@ -29,6 +30,18 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
   const networkColor = useNetworkColor(mainNetwork);
 
+  const updateUrlWithSelectedMethods = (selectedMethods: string[]) => {
+    const currentQuery = new URLSearchParams(window.location.search);
+    if (selectedMethods.length > 0) {
+      currentQuery.set("methods", selectedMethods.join(","));
+    } else {
+      currentQuery.delete("methods");
+    }
+    const newPath = `/${initialContractData.address}/${mainChainId}`;
+
+    router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
+  };
+
   // include all functions with inputs
   const methodsWithInputs = initialContractData.abi.filter(
     (method): method is AbiFunction =>
@@ -50,16 +63,29 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
   const handleMethodSelect = (methodName: string) => {
     const methodToAdd = initialContractData.abi.find(
-      (method): method is AbiFunction => method.type === "function" && "name" in method && method.name === methodName,
-    );
+      method => method.type === "function" && "name" in method && method.name === methodName,
+    ) as AbiFunction | undefined; // Cast it to AbiFunction | undefined
+
     if (methodToAdd && !abi.some(method => method.name === methodName)) {
-      setAbi([...abi, methodToAdd]);
+      const updatedAbi = [...abi, methodToAdd];
+      setAbi(updatedAbi);
+      updateUrlWithSelectedMethods(updatedAbi.map(m => m.name));
     }
   };
 
   const removeMethod = (methodName: string) => {
-    setAbi(currentAbi => currentAbi.filter(fn => fn.name !== methodName));
+    const updatedAbi = abi.filter(fn => fn.name !== methodName);
+    setAbi(updatedAbi);
+    updateUrlWithSelectedMethods(updatedAbi.map(m => m.name));
   };
+
+  useEffect(() => {
+    const selectedMethodNames = (router.query.methods as string)?.split(",") || [];
+    const selectedMethods = initialContractData.abi.filter(
+      method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.name),
+    ) as AbiFunction[]; // Cast it to AbiFunction[]
+    setAbi(selectedMethods);
+  }, [router.query.methods, initialContractData.abi]);
 
   return (
     <div className="drawer lg:drawer-open h-full">
