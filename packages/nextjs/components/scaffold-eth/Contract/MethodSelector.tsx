@@ -1,4 +1,5 @@
 import { Abi } from "viem";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type AbiFunction = Extract<Abi[number], { type: "function" }>;
 
@@ -22,9 +23,13 @@ export const MethodSelector = ({ abi, onMethodSelect }: MethodSelectorProps) => 
 
   return (
     <>
+      <input id="sidebar" type="checkbox" className="drawer-toggle" />
+      <label htmlFor="sidebar" className="cursor-pointer block lg:hidden">
+        <XMarkIcon className="h-5 w-5" />
+      </label>
       <div>
         <h3 className="font-semibold">Read</h3>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-1">
           {readMethods.map((method, index) => (
             <button key={index} className="btn btn-xs btn-ghost" onClick={() => onMethodSelect(method.name)}>
               {method.name}
@@ -34,7 +39,7 @@ export const MethodSelector = ({ abi, onMethodSelect }: MethodSelectorProps) => 
       </div>
       <div>
         <h3 className="font-semibold">Write</h3>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-1">
           {writeMethods.map((method, index) => (
             <button key={index} className="btn btn-xs btn-ghost" onClick={() => onMethodSelect(method.name)}>
               {method.name}
