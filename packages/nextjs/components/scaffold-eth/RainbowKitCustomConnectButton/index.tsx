@@ -15,7 +15,6 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 export const RainbowKitCustomConnectButton = () => {
   useAutoConnect();
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
-  console.log("mainChainId: ", mainChainId);
   const networkColor = useNetworkColor();
   const { targetNetwork } = useTargetNetwork();
 

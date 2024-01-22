@@ -9,7 +9,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -48,15 +48,23 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
+        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
+        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
+        setContractAbi(abi);
         setIsAbiAvailable(true);
-      } catch (e: any) {
-        setIsAbiAvailable(false);
-        if (e.message) {
-          notification.error(e.message);
-          return;
+      } catch (error) {
+        console.error("Error fetching ABI from AnyABI: ", error);
+        console.log("Trying to fetch ABI from Etherscan...");
+        try {
+          const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
+          const abi = JSON.parse(abiString);
+          setContractAbi(abi);
+          setIsAbiAvailable(true);
+        } catch (etherscanError: any) {
+          setIsAbiAvailable(false);
+          console.error("Error fetching ABI from Etherscan: ", etherscanError);
+          notification.error(etherscanError.message || "Error occurred while fetching ABI");
         }
-        notification.error("Error occured while fetching abi");
       } finally {
         setIsFetchingAbi(false);
       }
@@ -68,8 +76,10 @@ const Home: NextPage = () => {
         return;
       }
       fetchContractAbi();
+    } else {
+      setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network]);
+  }, [verifiedContractAddress, network, setContractAbi]);
 
   useEffect(() => {
     const checkContract = async () => {
@@ -239,7 +249,7 @@ const Home: NextPage = () => {
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
               disabled={
-                (activeTab === TabName.verifiedContract && !isAbiAvailable) ||
+                (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
                 (activeTab === TabName.addressAbi &&
                   (!isContract || !localContractAbi || localContractAbi.length === 0))
               }
