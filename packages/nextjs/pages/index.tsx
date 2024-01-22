@@ -50,22 +50,22 @@ const Home: NextPage = () => {
       setIsFetchingAbi(true);
       try {
         const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
-        if (abi) {
-          setContractAbi(abi);
-          setIsAbiAvailable(true);
-        } else {
+        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
+        setContractAbi(abi);
+        setIsAbiAvailable(true);
+      } catch (error) {
+        console.error("Error fetching ABI from AnyABI: ", error);
+        console.log("Trying to ABI fetch from Etherscan...");
+        try {
           const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
           const abi = JSON.parse(abiString);
           setContractAbi(abi);
           setIsAbiAvailable(true);
+        } catch (etherscanError: any) {
+          setIsAbiAvailable(false);
+          console.error("Error fetching ABI from Etherscan: ", etherscanError);
+          notification.error(etherscanError.message || "Error occurred while fetching ABI");
         }
-      } catch (e: any) {
-        setIsAbiAvailable(false);
-        if (e.message) {
-          notification.error(e.message);
-          return;
-        }
-        notification.error("Error occured while fetching abi");
       } finally {
         setIsFetchingAbi(false);
       }
