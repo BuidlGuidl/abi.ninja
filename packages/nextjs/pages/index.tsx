@@ -25,7 +25,6 @@ const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(networks[1].id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
-  const [verifiedContractInput, setVerifiedContractInput] = useState("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
@@ -77,6 +76,8 @@ const Home: NextPage = () => {
         return;
       }
       fetchContractAbi();
+    } else {
+      setIsAbiAvailable(false);
     }
   }, [verifiedContractAddress, network, setContractAbi]);
 
@@ -127,15 +128,6 @@ const Home: NextPage = () => {
       }
       setAbiContractAddress(localAbiContractAddress);
       router.push(`/${localAbiContractAddress}/${network}`);
-    }
-  };
-
-  const handleVerifiedContractInput = (input: string) => {
-    setVerifiedContractInput(input);
-    if (isAddress(input)) {
-      setVerifiedContractAddress(input);
-    } else {
-      setVerifiedContractAddress("");
     }
   };
 
@@ -203,9 +195,9 @@ const Home: NextPage = () => {
                     {tabValue === TabName.verifiedContract ? (
                       <div className="my-4">
                         <AddressInput
-                          value={verifiedContractInput}
+                          value={verifiedContractAddress}
                           placeholder="Verified contract address"
-                          onChange={handleVerifiedContractInput}
+                          onChange={setVerifiedContractAddress}
                         />
                         <div className="flex flex-col text-sm">
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
