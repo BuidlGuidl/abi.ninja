@@ -78,7 +78,7 @@ const Home: NextPage = () => {
       }
       fetchContractAbi();
     }
-  }, [verifiedContractAddress, network]);
+  }, [verifiedContractAddress, network, setContractAbi]);
 
   useEffect(() => {
     const checkContract = async () => {
