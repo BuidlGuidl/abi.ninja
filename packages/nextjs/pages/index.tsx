@@ -55,7 +55,7 @@ const Home: NextPage = () => {
         setIsAbiAvailable(true);
       } catch (error) {
         console.error("Error fetching ABI from AnyABI: ", error);
-        console.log("Trying to ABI fetch from Etherscan...");
+        console.log("Trying to fetch ABI from Etherscan...");
         try {
           const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
           const abi = JSON.parse(abiString);

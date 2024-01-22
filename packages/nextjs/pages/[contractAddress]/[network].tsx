@@ -49,22 +49,31 @@ const ContractDetailPage = () => {
   useEffect(() => {
     const fetchContractAbi = async () => {
       setIsLoading(true);
-      try {
-        if (storedAbi && storedAbi.length > 0) {
-          setContractData({ abi: storedAbi, address: contractAddress });
-        } else {
-          const abi = await fetchContractABIFromAnyABI(contractAddress, parseInt(network));
-          if (abi) {
-            setContractData({ abi, address: contractAddress });
-          } else {
-            const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
-            const abi = JSON.parse(abiString);
-            setContractData({ abi, address: contractAddress });
-          }
-        }
+
+      if (storedAbi && storedAbi.length > 0) {
+        setContractData({ abi: storedAbi, address: contractAddress });
         setError(null);
-      } catch (e: any) {
-        setError(e.message);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const abi = await fetchContractABIFromAnyABI(contractAddress, parseInt(network));
+        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
+        setContractData({ abi, address: contractAddress });
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching ABI from AnyABI: ", error);
+        console.log("Trying to fetch ABI from Etherscan...");
+        try {
+          const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
+          const parsedAbi = JSON.parse(abiString);
+          setContractData({ abi: parsedAbi, address: contractAddress });
+          setError(null);
+        } catch (etherscanError: any) {
+          console.error("Error fetching ABI from Etherscan: ", etherscanError);
+          setError(etherscanError.message || "Error occurred while fetching ABI");
+        }
       } finally {
         setIsLoading(false);
       }
