@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
@@ -11,6 +10,12 @@ import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
+
+const QUICK_ACCESS_ITEMS = [
+  { address: "0x6B175474E89094C44Da98b954EedeAC495271d0F", name: "DAI" },
+  { address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f", name: "Gitcoin" },
+  { address: "0x00000000006c3852cbef3e08e8df289169ede581", name: "Opensea" },
+];
 
 enum TabName {
   verifiedContract,
@@ -45,40 +50,46 @@ const Home: NextPage = () => {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchContractAbi = async () => {
-      setIsFetchingAbi(true);
-      try {
-        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
-        if (abi) {
-          setContractAbi(abi);
-          setIsAbiAvailable(true);
-        } else {
-          const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-          const abi = JSON.parse(abiString);
-          setContractAbi(abi);
-          setIsAbiAvailable(true);
-        }
-      } catch (e: any) {
-        setIsAbiAvailable(false);
-        if (e.message) {
-          notification.error(e.message);
-          return;
-        }
-        notification.error("Error occured while fetching abi");
-      } finally {
-        setIsFetchingAbi(false);
-      }
-    };
+  const navigateToContract = (contractAddress: Address, netId: string) => {
+    router.push(`/${contractAddress}/${netId}`);
+  };
 
-    if (isAddress(verifiedContractAddress)) {
-      if (network === "31337") {
-        notification.error("To interact with Localhost contracts, please use Address + ABI tab");
-        return;
-      }
-      fetchContractAbi();
+  const handleQuickAccess = async (address: Address, name: string) => {
+    const abiFetched = await fetchAndStoreContractAbi(address, network);
+    if (abiFetched) {
+      navigateToContract(address, network);
+    } else {
+      notification.error(`Failed to load ABI for ${name}`);
     }
-  }, [verifiedContractAddress, network]);
+  };
+
+  const fetchAndStoreContractAbi = async (contractAddress: Address, netId: string) => {
+    setIsFetchingAbi(true);
+    try {
+      const parsedNetId = parseInt(netId);
+      const abi = await fetchContractABIFromAnyABI(contractAddress, parsedNetId);
+      if (abi) {
+        setContractAbi(abi);
+        setIsAbiAvailable(true);
+      } else {
+        const abiString = await fetchContractABIFromEtherscan(contractAddress, parsedNetId);
+        const parsedAbi = JSON.parse(abiString);
+        setContractAbi(parsedAbi);
+        setIsAbiAvailable(true);
+      }
+      return true;
+    } catch (e: unknown) {
+      setIsAbiAvailable(false);
+      if (e instanceof Error) {
+        notification.error(e.message || "Error occurred while fetching ABI");
+      } else {
+        notification.error("An unknown error occurred while fetching ABI");
+      }
+      return false;
+    } finally {
+      setIsFetchingAbi(false);
+    }
+  };
 
   useEffect(() => {
     const checkContract = async () => {
@@ -116,26 +127,27 @@ const Home: NextPage = () => {
   }, [router.pathname, setContractAbi]);
 
   const handleLoadContract = () => {
-    if (activeTab === TabName.verifiedContract) {
+    if (activeTab === TabName.verifiedContract && isAbiAvailable) {
       router.push(`/${verifiedContractAddress}/${network}`);
-    } else if (activeTab === TabName.addressAbi) {
+    } else if (activeTab === TabName.addressAbi && isContract) {
       try {
         setContractAbi(parseAndCorrectJSON(localContractAbi));
+        setAbiContractAddress(localAbiContractAddress);
+        router.push(`/${localAbiContractAddress}/${network}`);
       } catch (error) {
         notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
-        return;
       }
-      setAbiContractAddress(localAbiContractAddress);
-      router.push(`/${localAbiContractAddress}/${network}`);
     }
   };
 
-  const handleVerifiedContractInput = (input: string) => {
+  const handleVerifiedContractInput = async (input: string) => {
     setVerifiedContractInput(input);
     if (isAddress(input)) {
       setVerifiedContractAddress(input);
+      await fetchAndStoreContractAbi(input, network);
     } else {
       setVerifiedContractAddress("");
+      setIsAbiAvailable(false);
     }
   };
 
@@ -210,27 +222,15 @@ const Home: NextPage = () => {
                         <div className="flex flex-col text-sm">
                           <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
                           <div className="flex justify-around">
-                            <Link
-                              href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              DAI
-                            </Link>
-                            <Link
-                              href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              Gitcoin
-                            </Link>
-                            <Link
-                              href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              Opensea
-                            </Link>
+                            {QUICK_ACCESS_ITEMS.map(item => (
+                              <button
+                                key={item.address}
+                                className="link w-1/3 text-center text-purple-700 no-underline"
+                                onClick={() => handleQuickAccess(item.address, item.name)}
+                              >
+                                {item.name}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -257,7 +257,7 @@ const Home: NextPage = () => {
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
               onClick={handleLoadContract}
               disabled={
-                (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
+                (activeTab === TabName.verifiedContract && !isAbiAvailable) ||
                 (activeTab === TabName.addressAbi &&
                   (!isContract || !localContractAbi || localContractAbi.length === 0))
               }
