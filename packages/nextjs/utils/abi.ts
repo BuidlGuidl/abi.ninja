@@ -1,5 +1,22 @@
 import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
 
+export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string, chainId: number) => {
+  const chain = NETWORKS_EXTRA_DATA[chainId];
+
+  if (!chain) throw new Error(`ChainId ${chainId} not found in supported networks`);
+
+  const url = `https://anyabi.xyz/api/get-abi/${chainId}/${verifiedContractAddress}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data.abi) {
+    return data.abi;
+  } else {
+    console.error("Could not fetch ABI from AnyABI:", data.error);
+    return;
+  }
+};
+
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string, chainId: number) => {
   const chain = NETWORKS_EXTRA_DATA[chainId];
 
