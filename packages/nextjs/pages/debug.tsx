@@ -51,7 +51,7 @@ const Debug: NextPage = () => {
               <ContractUI
                 key={contractName}
                 className={contractName === selectedContract ? "" : "hidden"}
-                deployedContractData={{ address: "0x0", abi: [] }}
+                initialContractData={{ address: "0x0", abi: [] }}
               />
             ))}
           </>

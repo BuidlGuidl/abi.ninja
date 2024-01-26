@@ -56,7 +56,7 @@ const Blockexplorer: NextPage = () => {
     <>
       <MetaHeader title="Block Explorer" />
       <MiniHeader />
-      <div className="container mx-auto">
+      <div className="container mx-auto mt-5">
         <SearchBar />
         <TransactionsTable blocks={blocks} transactionReceipts={transactionReceipts} />
         <PaginationButton currentPage={currentPage} totalItems={Number(totalBlocks)} setCurrentPage={setCurrentPage} />

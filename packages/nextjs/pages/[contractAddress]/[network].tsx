@@ -35,7 +35,6 @@ const ContractDetailPage = () => {
   }));
 
   const getNetworkName = (chainId: string) => {
-    if (chainId === "31337") return "Localhost";
     const chain = Object.values(chains).find(chain => chain.id === parseInt(chainId));
     return chain ? chain.name : "Unknown Network";
   };
@@ -92,13 +91,13 @@ const ContractDetailPage = () => {
   return (
     <>
       <MetaHeader />
-      <div className="bg-base-100 min-h-screen">
+      <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
-        <div className="flex flex-col gap-y-6 lg:gap-y-8 justify-center items-center">
+        <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
           {isLoading ? (
             <span className="loading loading-spinner text-primary h-14 w-14"></span>
           ) : contractData.abi?.length > 0 ? (
-            <ContractUI key={contractName} deployedContractData={contractData} />
+            <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
             <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
               <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
