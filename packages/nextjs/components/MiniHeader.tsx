@@ -5,7 +5,7 @@ import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export const MiniHeader = () => {
   return (
-    <div className="sticky lg:static top-0 navbar bg-white min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
+    <div className="sticky lg:static top-0 navbar bg-white border-b border-secondary min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
         <label htmlFor="sidebar" className="btn btn-ghost drawer-button lg:hidden ml-2">
           <Bars3Icon className="h-1/2" />

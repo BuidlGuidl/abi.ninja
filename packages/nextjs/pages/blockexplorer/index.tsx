@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
+import { MetaHeader } from "~~/components/MetaHeader";
+import { MiniHeader } from "~~/components/MiniHeader";
 import { PaginationButton } from "~~/components/blockexplorer/PaginationButton";
 import { SearchBar } from "~~/components/blockexplorer/SearchBar";
 import { TransactionsTable } from "~~/components/blockexplorer/TransactionsTable";
@@ -51,11 +53,15 @@ const Blockexplorer: NextPage = () => {
   }, [error, targetNetwork]);
 
   return (
-    <div className="container mx-auto my-10">
-      <SearchBar />
-      <TransactionsTable blocks={blocks} transactionReceipts={transactionReceipts} />
-      <PaginationButton currentPage={currentPage} totalItems={Number(totalBlocks)} setCurrentPage={setCurrentPage} />
-    </div>
+    <>
+      <MetaHeader title="Block Explorer" />
+      <MiniHeader />
+      <div className="container mx-auto">
+        <SearchBar />
+        <TransactionsTable blocks={blocks} transactionReceipts={transactionReceipts} />
+        <PaginationButton currentPage={currentPage} totalItems={Number(totalBlocks)} setCurrentPage={setCurrentPage} />
+      </div>
+    </>
   );
 };
 
