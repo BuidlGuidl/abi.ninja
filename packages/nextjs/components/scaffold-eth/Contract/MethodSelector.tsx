@@ -24,7 +24,7 @@ export const MethodSelector = ({
   );
 
   const writeMethods = readMethodsWithInputsAndWriteMethods.filter(
-    (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
+    (method): method is AbiFunction => method.stateMutability !== "view" && method.stateMutability !== "pure",
   );
 
   const handleMethodSelect = (methodName: string) => {
