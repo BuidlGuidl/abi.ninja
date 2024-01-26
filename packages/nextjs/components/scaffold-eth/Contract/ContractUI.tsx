@@ -40,7 +40,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
   };
 
-  // include all functions with inputs
   const readMethodsWithInputsAndWriteMethods = initialContractData.abi.filter((method): method is AbiFunction => {
     if (method.type !== "function") return false;
 
@@ -56,7 +55,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     }
   });
 
-  // include non-payable functions with no inputs
+  // local abi state for for dispalying selected methods
   const [abi, setAbi] = useState<AbiFunction[]>([]);
 
   const handleMethodSelect = (methodName: string) => {
