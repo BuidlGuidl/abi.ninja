@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { AbiFallback, AbiFunction } from "abitype";
+import { AbiFunction } from "abitype";
 import { Abi } from "viem";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-type SelectableAbiType = AbiFunction | AbiFallback;
-
 interface MethodSelectorProps {
-  methodsWithInputs: SelectableAbiType[];
+  methodsWithInputs: AbiFunction[];
   abi: Abi;
   onMethodSelect: (selectedMethods: string) => void;
   removeMethod: (methodName: string) => void;
