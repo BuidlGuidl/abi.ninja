@@ -5,6 +5,7 @@ import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { Footer } from "~~/components/Footer";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
@@ -113,6 +114,7 @@ const ContractDetailPage = () => {
             </div>
           )}
         </div>
+        <Footer />
       </div>
     </>
   );
