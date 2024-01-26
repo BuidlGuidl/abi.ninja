@@ -15,11 +15,11 @@ export const MethodSelector = ({ methodsWithInputs, abi, onMethodSelect, removeM
   const [isWriteCollapsed, setIsWriteCollapsed] = useState(false);
 
   const readMethods = methodsWithInputs.filter(
-    (method): method is AbiFunction => method.type === "function" && method.stateMutability === "view",
+    (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
   );
 
   const writeMethods = methodsWithInputs.filter(
-    (method): method is AbiFunction => method.type === "function" && method.stateMutability !== "view",
+    (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
   );
 
   const handleMethodSelect = (methodName: string) => {
