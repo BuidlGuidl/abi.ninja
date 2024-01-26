@@ -75,7 +75,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.name),
     ) as AbiFunction[]; // Cast it to AbiFunction[]
     setAbi(selectedMethods);
-  }, [router.query.methods, initialContractData.abi]);
+  }, [initialContractData.abi]);
 
   return (
     <div className="drawer sm:drawer-open h-full">
