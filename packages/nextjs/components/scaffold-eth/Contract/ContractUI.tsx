@@ -51,15 +51,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   );
 
   // include non-payable functions with no inputs
-  const [abi, setAbi] = useState<AbiFunction[]>(
-    initialContractData.abi.filter(
-      (method): method is AbiFunction =>
-        method.type === "function" &&
-        "inputs" in method &&
-        method.inputs.length === 0 &&
-        method.stateMutability !== "payable",
-    ),
-  );
+  const [abi, setAbi] = useState<AbiFunction[]>([]);
 
   const handleMethodSelect = (methodName: string) => {
     const methodToAdd = initialContractData.abi.find(
@@ -188,7 +180,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
               <div className="bg-white shadow-xl rounded-2xl px-6 lg:px-8 py-4">
                 <ContractVariables
                   refreshDisplayVariables={refreshDisplayVariables}
-                  deployedContractData={{ address: initialContractData.address, abi }}
+                  deployedContractData={initialContractData}
                 />
               </div>
             </div>
