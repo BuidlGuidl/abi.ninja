@@ -1,10 +1,7 @@
 import { useState } from "react";
+import { AbiFallback, AbiFunction } from "abitype";
 import { Abi } from "viem";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
-
-type AbiFunction = Extract<Abi[number], { type: "function" }>;
-
-type AbiFallback = Extract<Abi[number], { type: "fallback" }>;
 
 type SelectableAbiType = AbiFunction | AbiFallback;
 

@@ -3,6 +3,7 @@ import router from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
+import { AbiFunction } from "abitype";
 import { Abi } from "viem";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
@@ -10,9 +11,6 @@ import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
-
-type ExtractAbiFunction<T> = T extends { type: "function" } ? T : never; // @todo duplicate in MethodSelector
-type AbiFunction = ExtractAbiFunction<Abi[number]>;
 
 type ContractUIProps = {
   className?: string;
