@@ -41,12 +41,20 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   };
 
   // include all functions with inputs
-  const methodsWithInputs = initialContractData.abi.filter(
-    (method): method is AbiFunction =>
-      method.type === "function" &&
-      "inputs" in method &&
-      (method.inputs.length > 0 || method.stateMutability === "payable"),
-  );
+  const readMethodsWithInputsAndWriteMethods = initialContractData.abi.filter((method): method is AbiFunction => {
+    if (method.type !== "function") return false;
+
+    // Check for read functions
+    if (method.stateMutability === "view" || method.stateMutability === "pure") {
+      // Check for read inputs length
+      if (method.inputs.length > 0) {
+        return true;
+      } else return false;
+    } else {
+      // Else condition defines write methods
+      return true;
+    }
+  });
 
   // include non-payable functions with no inputs
   const [abi, setAbi] = useState<AbiFunction[]>([]);
@@ -84,7 +92,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
         <ul className="menu p-6 pr-0 bg-white h-full justify-between">
           <MethodSelector
-            methodsWithInputs={methodsWithInputs}
+            readMethodsWithInputsAndWriteMethods={readMethodsWithInputsAndWriteMethods}
             abi={abi}
             onMethodSelect={handleMethodSelect}
             removeMethod={removeMethod}

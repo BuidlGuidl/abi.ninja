@@ -4,21 +4,26 @@ import { Abi } from "viem";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface MethodSelectorProps {
-  methodsWithInputs: AbiFunction[];
+  readMethodsWithInputsAndWriteMethods: AbiFunction[];
   abi: Abi;
   onMethodSelect: (selectedMethods: string) => void;
   removeMethod: (methodName: string) => void;
 }
 
-export const MethodSelector = ({ methodsWithInputs, abi, onMethodSelect, removeMethod }: MethodSelectorProps) => {
+export const MethodSelector = ({
+  readMethodsWithInputsAndWriteMethods,
+  abi,
+  onMethodSelect,
+  removeMethod,
+}: MethodSelectorProps) => {
   const [isReadCollapsed, setIsReadCollapsed] = useState(false);
   const [isWriteCollapsed, setIsWriteCollapsed] = useState(false);
 
-  const readMethods = methodsWithInputs.filter(
+  const readMethods = readMethodsWithInputsAndWriteMethods.filter(
     (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
   );
 
-  const writeMethods = methodsWithInputs.filter(
+  const writeMethods = readMethodsWithInputsAndWriteMethods.filter(
     (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
   );
 
