@@ -88,7 +88,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   }, [router.query.methods, initialContractData.abi]);
 
   return (
-    <div className="drawer lg:drawer-open h-full">
+    <div className="drawer sm:drawer-open h-full">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
       <div className="drawer-side h-full z-50">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
@@ -131,8 +131,8 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       </div>
       <div className="drawer-content flex flex-col items-center justify-center overflow-auto">
         <div className={`grid grid-cols-1 lg:grid-cols-6 w-full my-0 ${className} h-full flex-grow`}>
-          <div className="col-span-6 grid grid-cols-1 gap-8 lg:grid-cols-6 lg:gap-10 p-10 mx-4">
-            <div className="col-span-3 flex flex-col gap-6 lg:col-span-3">
+          <div className="col-span-6 grid grid-cols-1 gap-8 laptop:grid-cols-6 lg:gap-10 px-2 md:px-10 py-10 mx-4">
+            <div className="col-span-3 flex flex-col gap-6">
               <div className="z-10">
                 <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
                   <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">

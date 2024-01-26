@@ -80,6 +80,7 @@ module.exports = {
       },
       screens: {
         lg: "800px", // Change to 800 from 1024
+        laptop: "1024px",
       },
     },
   },
