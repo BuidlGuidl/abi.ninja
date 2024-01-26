@@ -44,13 +44,13 @@ const TransactionPage: NextPage = () => {
     <>
       <MetaHeader title="Block explorer - Transaction details" />
       <MiniHeader />
-      <div className="container mx-auto mb-20 px-10 md:px-0">
+      <div className="container mx-auto mb-10 mt-5 px-10 md:px-0">
         <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
           Back
         </button>
         {transaction ? (
           <div className="overflow-x-auto">
-            <h2 className="text-3xl font-bold mb-4 text-center text-primary-content">Transaction Details</h2>{" "}
+            <h2 className="text-3xl font-bold mb-4 text-center text-primary">Transaction Details</h2>{" "}
             <table className="table rounded-lg bg-base-100 w-full shadow-lg md:table-lg table-md">
               <tbody>
                 <tr>

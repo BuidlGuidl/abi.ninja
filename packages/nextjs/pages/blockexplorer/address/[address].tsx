@@ -24,7 +24,7 @@ const AddressPage = () => {
     <>
       <MetaHeader title="Block explorer - Address details" />
       <MiniHeader />
-      <div className="mx-10 mb-20">
+      <div className="mx-10 mt-5 mb-20">
         <div className="flex justify-start mb-5">
           <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
             Back
