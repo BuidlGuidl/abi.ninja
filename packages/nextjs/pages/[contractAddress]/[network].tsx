@@ -95,7 +95,9 @@ const ContractDetailPage = () => {
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
           {isLoading ? (
-            <span className="loading loading-spinner text-primary h-14 w-14"></span>
+            <div className="flex justify-center h-full">
+              <span className="loading loading-spinner text-primary h-14 w-14"></span>
+            </div>
           ) : contractData.abi?.length > 0 ? (
             <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
