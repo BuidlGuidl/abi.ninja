@@ -5,6 +5,7 @@ import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { AbiFunction } from "abitype";
 import { Abi } from "viem";
+import { useContractRead } from "wagmi";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
@@ -27,6 +28,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
   const networkColor = useNetworkColor(mainNetwork);
+  const [contractName, setContractName] = useState<string>("");
 
   const updateUrlWithSelectedMethods = (selectedMethods: string[]) => {
     const currentQuery = new URLSearchParams(window.location.search);
@@ -83,6 +85,27 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     ) as AbiFunction[]; // Cast it to AbiFunction[]
     setAbi(selectedMethods);
   }, [initialContractData.abi]);
+
+  const {
+    data: contractNameData,
+    isLoading,
+    isError,
+  } = useContractRead({
+    address: initialContractData.address,
+    abi: initialContractData.abi,
+    chainId: mainChainId,
+    functionName: "name",
+  });
+
+  useEffect(() => {
+    if (isLoading) {
+      setContractName("Loading...");
+    } else if (isError) {
+      setContractName("Contract");
+    } else if (contractNameData && typeof contractNameData === "string") {
+      setContractName(contractNameData);
+    }
+  }, [contractNameData, isLoading, isError]);
 
   return (
     <div className="drawer sm:drawer-open h-full">
@@ -167,8 +190,11 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
               <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 mb-6 space-y-1 py-4">
                 <div className="flex">
                   <div className="flex flex-col gap-1">
-                    <span className="font-bold">Contract Data</span>
-                    <Address address={initialContractData.address} />
+                    <span className="font-bold pb-2">Contract Overview</span>
+                    <div className="flex pb-1">
+                      <span className="font-medium text-base mr-4"> {contractName} </span>
+                      <Address address={initialContractData.address} />
+                    </div>
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-bold">Balance:</span>
                       <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
@@ -183,6 +209,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                 )}
               </div>
               <div className="bg-white shadow-xl rounded-2xl px-6 lg:px-8 py-4">
+                <span className="block font-bold pb-3">Contract Data</span>
                 <ContractVariables
                   refreshDisplayVariables={refreshDisplayVariables}
                   deployedContractData={initialContractData}
