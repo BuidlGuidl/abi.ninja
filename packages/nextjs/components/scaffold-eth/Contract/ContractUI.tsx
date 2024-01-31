@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import router from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
@@ -28,7 +28,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
   const networkColor = useNetworkColor(mainNetwork);
-  const [contractName, setContractName] = useState<string>("");
 
   const updateUrlWithSelectedMethods = (selectedMethods: string[]) => {
     const currentQuery = new URLSearchParams(window.location.search);
@@ -86,26 +85,21 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     setAbi(selectedMethods);
   }, [initialContractData.abi]);
 
-  const {
-    data: contractNameData,
-    isLoading,
-    isError,
-  } = useContractRead({
+  const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
     abi: initialContractData.abi,
     chainId: mainChainId,
     functionName: "name",
   });
 
-  useEffect(() => {
-    if (isLoading) {
-      setContractName("Loading...");
-    } else if (isError) {
-      setContractName("Contract");
-    } else if (contractNameData && typeof contractNameData === "string") {
-      setContractName(contractNameData);
+  const displayContractName = useMemo(() => {
+    if (isContractNameLoading) return "Loading...";
+    if (contractNameData && typeof contractNameData === "string") {
+      return contractNameData;
     }
-  }, [contractNameData, isLoading, isError]);
+    // Default to "Contract" for errors or any other cases
+    return "Contract";
+  }, [isContractNameLoading, contractNameData]);
 
   return (
     <div className="drawer sm:drawer-open h-full">
@@ -192,7 +186,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                   <div className="flex flex-col gap-1">
                     <span className="font-bold pb-2">Contract Overview</span>
                     <div className="flex pb-1">
-                      <span className="font-medium text-base mr-4"> {contractName} </span>
+                      <span className="font-medium text-base mr-4"> {displayContractName} </span>
                       <Address address={initialContractData.address} />
                     </div>
                     <div className="flex items-center gap-1">
