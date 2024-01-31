@@ -23,23 +23,38 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
   const inputProps = {
     name: stateObjectKey,
     value: form?.[stateObjectKey],
-    placeholder: paramType.name ? `${paramType.type} ${paramType.name}` : paramType.type,
+    placeholder: paramType.type,
     onChange: (value: any) => {
       setForm(form => ({ ...form, [stateObjectKey]: value }));
     },
   };
 
-  if (paramType.type === "address") {
-    return <AddressInput {...inputProps} />;
-  } else if (paramType.type === "bytes32") {
-    return <Bytes32Input {...inputProps} />;
-  } else if (paramType.type === "bytes") {
-    return <BytesInput {...inputProps} />;
-  } else if (paramType.type === "string") {
-    return <InputBase {...inputProps} />;
-  } else if (paramType.type.includes("int") && !paramType.type.includes("[")) {
-    return <IntegerInput {...inputProps} variant={paramType.type as IntegerVariant} />;
-  }
+  const renderInput = () => {
+    switch (paramType.type) {
+      case "address":
+        return <AddressInput {...inputProps} />;
+      case "bytes32":
+        return <Bytes32Input {...inputProps} />;
+      case "bytes":
+        return <BytesInput {...inputProps} />;
+      case "string":
+        return <InputBase {...inputProps} />;
+      default:
+        if (paramType.type.includes("int") && !paramType.type.includes("[")) {
+          return <IntegerInput {...inputProps} variant={paramType.type as IntegerVariant} />;
+        } else {
+          return <InputBase {...inputProps} />;
+        }
+    }
+  };
 
-  return <InputBase {...inputProps} />;
+  return (
+    <div className="flex flex-col gap-1 w-full pl-2">
+      <div className="flex items-center">
+        {paramType.name && <span className="text-xs font-medium mr-2">{paramType.name}</span>}
+        <span className="block text-xs font-thin">{paramType.type}</span>
+      </div>
+      {renderInput()}
+    </div>
+  );
 };
