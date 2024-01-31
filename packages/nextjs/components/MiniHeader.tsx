@@ -13,7 +13,7 @@ export const MiniHeader = () => {
         <Link href="/" passHref className="flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex items-center">
             <Image alt="Abi Ninja logo" src="/logo.png" width={50} height={50} />
-            <span className="ml-2">
+            <span className="hidden sm:flex ml-2">
               <strong>ABI</strong> <span>Ninja</span>
             </span>
           </div>
