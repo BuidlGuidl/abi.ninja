@@ -145,8 +145,8 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       </div>
       <div className="drawer-content flex flex-col items-center justify-center overflow-auto">
         <div className={`grid grid-cols-1 lg:grid-cols-6 w-full my-0 ${className} h-full flex-grow`}>
-          <div className="col-span-6 grid grid-cols-1 gap-6 laptop:grid-cols-12 px-6 py-10 ">
-            <div className="col-span-7 flex flex-col gap-6">
+          <div className="col-span-6 grid grid-cols-1 gap-6 laptop:grid-cols-[repeat(13,_minmax(0,_1fr))] px-6 py-10">
+            <div className="laptop:col-span-8 flex flex-col gap-6">
               <div className="z-10">
                 <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
                   <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
@@ -180,7 +180,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
               </div>
             </div>
 
-            <div className="col-span-5 flex flex-col mt-10">
+            <div className="laptop:col-span-5 flex flex-col mt-10">
               <div className="bg-white border shadow-xl rounded-2xl px-6 mb-6 space-y-1 py-4">
                 <div className="flex">
                   <div className="flex flex-col gap-1">
