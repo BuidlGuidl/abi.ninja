@@ -36,10 +36,10 @@ export const MethodSelector = ({
   };
 
   return (
-    <div className="space-y-4 overflow-auto h-[80vh]">
+    <div className="overflow-auto h-[80vh]">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
-      <label htmlFor="sidebar" className="cursor-pointer block lg:hidden">
-        <XMarkIcon className="h-5 w-5" />
+      <label htmlFor="sidebar" className="cursor-pointer block sm:hidden">
+        <XMarkIcon className="h-5 w-5 mb-5" />
       </label>
       <div>
         <h3

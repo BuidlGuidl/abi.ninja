@@ -32,7 +32,7 @@ export const ContractWriteMethods = ({
     .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
 
   if (!functionsToDisplay.length) {
-    return <>Please add a write method.</>;
+    return <>Please select write methods from the sidebar.</>;
   }
 
   console.log("functionsToDisplay", functionsToDisplay);

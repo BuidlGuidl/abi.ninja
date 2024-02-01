@@ -101,14 +101,20 @@ export const WriteOnlyFunctionForm = ({
         </p>
         {inputs}
         {abiFunction.stateMutability === "payable" ? (
-          <IntegerInput
-            value={txValue}
-            onChange={updatedTxValue => {
-              setDisplayedTxResult(undefined);
-              setTxValue(updatedTxValue);
-            }}
-            placeholder="value (wei)"
-          />
+          <div className="flex flex-col gap-1 w-full pl-2">
+            <div className="flex items-center">
+              <span className="text-xs font-medium mr-2">value</span>
+              <span className="block text-xs font-thin">(wei)</span>
+            </div>
+            <IntegerInput
+              value={txValue}
+              onChange={updatedTxValue => {
+                setDisplayedTxResult(undefined);
+                setTxValue(updatedTxValue);
+              }}
+              placeholder="wei"
+            />
+          </div>
         ) : null}
         <div className="flex justify-between gap-2">
           {!zeroInputs && (

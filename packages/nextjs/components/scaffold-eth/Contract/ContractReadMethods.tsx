@@ -31,7 +31,7 @@ export const ContractReadMethods = ({
     .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
 
   if (!functionsToDisplay.length) {
-    return <>Please add a read method.</>;
+    return <>Please select read methods from the sidebar.</>;
   }
 
   return (
