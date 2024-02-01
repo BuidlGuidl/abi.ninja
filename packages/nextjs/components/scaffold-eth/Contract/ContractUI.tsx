@@ -106,14 +106,14 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
       <div className="drawer-side h-full z-50">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-6 pr-0 bg-white h-full justify-between">
+        <ul className="menu p-6 pr-0 pb-3 bg-white h-full justify-between flex-nowrap">
           <MethodSelector
             readMethodsWithInputsAndWriteMethods={readMethodsWithInputsAndWriteMethods}
             abi={abi}
             onMethodSelect={handleMethodSelect}
             removeMethod={removeMethod}
           />
-          <div className="flex justify-center items-center gap-1 text-xs w-full pr-6">
+          <div className="flex justify-center items-center gap-1 text-xs w-full pr-6 pt-4">
             <div className="mb-1">
               <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
                 Fork me
