@@ -1922,6 +1922,7 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
     next: ^13.1.6
+    next-plausible: ^3.12.0
     nextjs-progressbar: ^0.0.16
     postcss: ^8.4.16
     prettier: ^2.8.4
@@ -9978,6 +9979,17 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
+"next-plausible@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "next-plausible@npm:3.12.0"
+  peerDependencies:
+    next: ^11.1.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e59070f36b9c98d141b5e18e97ef91a90247b9ba13cccdae542d05248785011db4c7a24fd81d34691222deda3adfd39148c56a1beef335a8d6c4e5462ab8efae
   languageName: node
   linkType: hard
 
