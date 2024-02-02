@@ -104,7 +104,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   return (
     <div className="drawer sm:drawer-open h-full">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-side h-full z-50">
+      <div className="drawer-side h-full z-50 sm:z-10">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
         <ul className="menu p-6 pr-0 pb-3 bg-white h-full justify-between flex-nowrap">
           <MethodSelector
