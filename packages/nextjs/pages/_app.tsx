@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import PlausibleProvider from "next-plausible";
 import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
 import { useDarkMode } from "usehooks-ts";
@@ -48,16 +49,18 @@ const ScaffoldEthAppWithProviders = (props: AppProps) => {
   }, [isDarkMode]);
 
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <NextNProgress />
-      <RainbowKitProvider
-        chains={appChains.chains}
-        avatar={BlockieAvatar}
-        theme={isDarkTheme ? darkTheme() : lightTheme()}
-      >
-        <ScaffoldEthApp {...props} />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <PlausibleProvider domain="abi.ninja">
+      <WagmiConfig config={wagmiConfig}>
+        <NextNProgress />
+        <RainbowKitProvider
+          chains={appChains.chains}
+          avatar={BlockieAvatar}
+          theme={isDarkTheme ? darkTheme() : lightTheme()}
+        >
+          <ScaffoldEthApp {...props} />
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </PlausibleProvider>
   );
 };
 
