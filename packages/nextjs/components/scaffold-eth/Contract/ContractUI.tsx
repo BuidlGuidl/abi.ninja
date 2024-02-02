@@ -115,7 +115,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
           />
           <div className="flex justify-center items-center gap-1 text-xs w-full pr-6 pt-4">
             <div className="mb-1">
-              <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+              <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
                 Fork me
               </a>
             </div>
@@ -132,12 +132,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
               >
                 <BuidlGuidlLogo className="w-3 h-5 pb-1" />
                 <span className="link">BuidlGuidl</span>
-              </a>
-            </div>
-            <span>·</span>
-            <div className="text-center">
-              <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-                Support
               </a>
             </div>
           </div>
