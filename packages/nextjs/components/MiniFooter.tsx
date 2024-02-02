@@ -7,7 +7,7 @@ export const MiniFooter = () => {
       <ul className="menu menu-horizontal w-full">
         <div className="flex w-full items-center justify-center gap-2 text-xs">
           <div className="text-center">
-            <a href="https://github.com/scaffold-eth/se-2" target="_blank" rel="noreferrer" className="link">
+            <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
               Fork me
             </a>
           </div>
@@ -24,12 +24,6 @@ export const MiniFooter = () => {
             >
               <BuidlGuidlLogo className="h-5 w-3 pb-1" />
               <span className="link">BuidlGuidl</span>
-            </a>
-          </div>
-          <span>·</span>
-          <div className="text-center">
-            <a href="https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA" target="_blank" rel="noreferrer" className="link">
-              Support
             </a>
           </div>
         </div>
