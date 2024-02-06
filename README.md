@@ -2,7 +2,7 @@
 
 Interact with any contract on Ethereum. You just need the Contract address (if it's verified) or its ABI + Contract address.
 
-Built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2)
+Built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
 
 ![ABINinja - Index](.github/img/ui1.png)
 
