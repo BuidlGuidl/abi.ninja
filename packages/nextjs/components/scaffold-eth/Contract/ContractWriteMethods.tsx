@@ -52,7 +52,7 @@ export const ContractWriteMethods = ({
           />
           <button
             onClick={() => removeMethod(fn.name)}
-            className="absolute top-0 right-0 p-1 btn btn-ghost btn-xs pt-[22px]"
+            className="absolute top-0 right-0 btn btn-ghost btn-xs mt-[21px]"
             aria-label="Remove method"
           >
             <XMarkIcon className="h-5 w-5" />
