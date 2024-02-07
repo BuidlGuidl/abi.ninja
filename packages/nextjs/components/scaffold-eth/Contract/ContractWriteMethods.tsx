@@ -32,13 +32,17 @@ export const ContractWriteMethods = ({
     .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
 
   if (!functionsToDisplay.length) {
-    return <span className="font-light text-gray-500">Please select write methods from the sidebar.</span>;
+    return (
+      <div className="py-5">
+        <span className="font-light text-gray-500">Please select write methods from the sidebar.</span>
+      </div>
+    );
   }
 
   return (
     <>
       {functionsToDisplay.map(({ fn, inheritedFrom }, idx) => (
-        <div key={`${fn.name}-${idx}`} className="relative mb-4">
+        <div key={`${fn.name}-${idx}`} className="relative mb-4 pt-5">
           <WriteOnlyFunctionForm
             abi={deployedContractData.abi as Abi}
             abiFunction={fn}
@@ -48,7 +52,7 @@ export const ContractWriteMethods = ({
           />
           <button
             onClick={() => removeMethod(fn.name)}
-            className="absolute top-0 right-0 p-1 rounded-full text-sm focus:outline-none text-gray-500 hover:text-gray-700"
+            className="absolute top-0 right-0 p-1 btn btn-ghost btn-xs pt-[22px]"
             aria-label="Remove method"
           >
             <XMarkIcon className="h-5 w-5" />
