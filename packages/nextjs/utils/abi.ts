@@ -1,7 +1,7 @@
-import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
+import { NETWORKS_EXTRA_DATA, getTargetNetworks } from "./scaffold-eth";
 
 export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string, chainId: number) => {
-  const chain = NETWORKS_EXTRA_DATA[chainId];
+  const chain = getTargetNetworks().find(network => network.id === chainId);
 
   if (!chain) throw new Error(`ChainId ${chainId} not found in supported networks`);
 
@@ -21,7 +21,7 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: str
   const chain = NETWORKS_EXTRA_DATA[chainId];
 
   if (!chain || (chain && !chain.etherscanApiKey) || !chain.etherscanEndpoint)
-    throw new Error(`ChainId ${chainId} not found in supported networks`);
+    throw new Error(`ChainId ${chainId} not found in supported etherscan networks`);
 
   const apiKey = chain.etherscanApiKey;
   const url = `${chain.etherscanEndpoint}/api?module=contract&action=getabi&address=${verifiedContractAddress}&apikey=${apiKey}`;
