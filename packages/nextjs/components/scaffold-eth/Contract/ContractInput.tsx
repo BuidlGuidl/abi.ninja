@@ -32,7 +32,8 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
   const renderInput = () => {
     switch (paramType.type) {
       case "address":
-        return <AddressInput {...inputProps} />;
+        const addressInputProps = { ...inputProps, placeholder: "address or ENS" };
+        return <AddressInput {...addressInputProps} />;
       case "bytes32":
         return <Bytes32Input {...inputProps} />;
       case "bytes":
@@ -49,7 +50,7 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full pl-2">
+    <div className="flex flex-col gap-1 w-full">
       <div className="flex items-center">
         {paramType.name && <span className="text-xs font-medium mr-2">{paramType.name}</span>}
         <span className="block text-xs font-extralight">{paramType.type}</span>

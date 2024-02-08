@@ -39,7 +39,7 @@ export const MethodSelector = ({
     <div className="overflow-auto h-[80vh]">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
       <label htmlFor="sidebar" className="cursor-pointer block sm:hidden">
-        <XMarkIcon className="h-5 w-5 mb-5" />
+        <XMarkIcon className="h-5 w-5 mb-5 hover:opacity-70" />
       </label>
       <div>
         <h3

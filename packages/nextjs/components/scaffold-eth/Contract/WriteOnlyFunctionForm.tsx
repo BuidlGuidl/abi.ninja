@@ -94,7 +94,7 @@ export const WriteOnlyFunctionForm = ({
 
   return (
     <div className="py-5 space-y-3 first:pt-0 last:pb-1">
-      <div className={`flex gap-3 ${zeroInputs ? "flex-row justify-between items-center" : "flex-col"}`}>
+      <div className={`flex gap-3 ${zeroInputs ? "flex-row justify-between" : "flex-col"}`}>
         <p className="font-medium my-0 break-words">
           {abiFunction.name}
           <InheritanceTooltip inheritedFrom={inheritedFrom} />
@@ -116,7 +116,7 @@ export const WriteOnlyFunctionForm = ({
             />
           </div>
         ) : null}
-        <div className="flex justify-between gap-2">
+        <div className={`flex justify-between gap-2 ${zeroInputs ? "mt-8" : "mt-0"}`}>
           {!zeroInputs && (
             <div className="flex-grow basis-0">
               {displayedTxResult ? <TxReceipt txResult={displayedTxResult} /> : null}

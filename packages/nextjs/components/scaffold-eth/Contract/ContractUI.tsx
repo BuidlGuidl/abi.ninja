@@ -148,7 +148,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                       <p className="my-0 text-sm font-bold">Read</p>
                     </div>
                   </div>
-                  <div className="divide-y divide-base-300 p-5">
+                  <div className="divide-y divide-base-300 px-5">
                     <ContractReadMethods
                       deployedContractData={{ address: initialContractData.address, abi }}
                       removeMethod={removeMethod}
@@ -163,7 +163,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                       <p className="my-0 text-sm font-bold">Write</p>
                     </div>
                   </div>
-                  <div className="divide-y divide-base-300 p-5">
+                  <div className="divide-y divide-base-300 px-5">
                     <ContractWriteMethods
                       deployedContractData={{ address: initialContractData.address, abi }}
                       onChange={triggerRefreshDisplayVariables}
