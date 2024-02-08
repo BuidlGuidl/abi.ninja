@@ -32,7 +32,8 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
   const renderInput = () => {
     switch (paramType.type) {
       case "address":
-        return <AddressInput {...inputProps} />;
+        const addressInputProps = { ...inputProps, placeholder: "address or ENS" };
+        return <AddressInput {...addressInputProps} />;
       case "bytes32":
         return <Bytes32Input {...inputProps} />;
       case "bytes":
