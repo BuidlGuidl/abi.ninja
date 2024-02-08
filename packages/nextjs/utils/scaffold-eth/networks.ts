@@ -17,9 +17,6 @@ const MAINNET_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || "
 const OPTIMISM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY || "";
 const POLYGON_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY || "";
 const ARBITRUM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY || "";
-const ZKSYNC_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ZKSYNC_ETHERSCAN_API_KEY || "";
-const BASE_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY || "";
-const SCROLL_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY || "";
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.hardhat.id]: {
@@ -75,34 +72,14 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     etherscanEndpoint: "https://api.arbiscan.io",
     etherscanApiKey: ARBITRUM_ETHERSCAN_API_KEY,
   },
-  [chains.zkSync.id]: {
-    color: "#5f4bb6",
-    etherscanEndpoint: "https://block-explorer-api.mainnet.zksync.io",
-    etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
+  [chains.fantom.id]: {
+    color: "#1969ff",
   },
-  [chains.zkSyncTestnet.id]: {
-    color: "#5f4bb6",
-    etherscanEndpoint: "https://block-explorer-api.testnets.zksync.dev",
-    etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
-  },
-  [chains.base.id]: {
-    color: "#1450EE",
-    etherscanEndpoint: "https://api-sepolia.basescan.org",
-    etherscanApiKey: BASE_ETHERSCAN_API_KEY,
-  },
-  [chains.baseSepolia.id]: {
-    color: "#1450EE",
-    etherscanApiKey: BASE_ETHERSCAN_API_KEY,
-  },
-  [chains.scroll.id]: {
-    color: "#fbebd4",
-    etherscanEndpoint: "https://api.scrollscan.com",
-    etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
+  [chains.fantomTestnet.id]: {
+    color: "#1969ff",
   },
   [chains.scrollSepolia.id]: {
     color: "#fbebd4",
-    etherscanEndpoint: "https://api-sepolia.scrollscan.com",
-    etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
   },
 };
 
