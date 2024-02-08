@@ -15,7 +15,7 @@ const localhost = {
 } as const;
 
 const scaffoldConfig = {
-  // The networks on which your DApp is live
+  // After adding a new chain here we should also add it to the networks.ts file
   targetNetworks: [
     localhost,
     chains.mainnet,
