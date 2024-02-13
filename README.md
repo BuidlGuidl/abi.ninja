@@ -17,6 +17,7 @@ Before you begin, you need to install the following tools:
 - [Git](https://git-scm.com/downloads)
 
 1. Clone this repo & install dependencies
+
 ```
 git clone https://github.com/BuidlGuidl/abi.ninja.git
 cd abi.ninja
@@ -24,6 +25,7 @@ yarn install
 ```
 
 2. Start the frontend
+
 ```
 yarn start
 ```
@@ -34,4 +36,4 @@ Visit your local instance of ABI Ninja at: `http://localhost:3000`.
 
 We welcome contributions to ABI Ninja!
 
-We follow the same approach as in Scaffold-ETH so please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines.
+Please see [CONTRIBUTING.MD](https://github.com/BuidlGuidl/abi.ninja/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to ABI Ninja.
