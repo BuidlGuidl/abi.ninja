@@ -1,14 +1,14 @@
-# Welcome to Abi Ninja Contributing Guide
+# Welcome to ABI Ninja Contributing Guide
 
-Thank you for investing your time in contributing to Abi Ninja!
+Thank you for investing your time in contributing to ABI Ninja!
 
 This guide aims to provide an overview of the contribution workflow to help us make the contribution process effective for everyone involved.
 
 ## About the Project
 
-Abi Ninja is a tool to interact with any contract on Ethereum, using the Contract address (if it's verified) or its ABI + Contract address.
+ABI Ninja is a tool to interact with any contract on Ethereum, using the Contract address (if it's verified) or its ABI + Contract address.
 
-Current version is built with [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
+The current version is built with [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
 
 Read the [README](README.md) to get an overview of the project.
 
