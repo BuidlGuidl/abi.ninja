@@ -36,4 +36,4 @@ Visit your local instance of ABI Ninja at: `http://localhost:3000`.
 
 We welcome contributions to ABI Ninja!
 
-Please see [CONTRIBUTING.MD](https://github.com/BuidlGuidl/abi.ninja/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Abi Ninja.
+Please see [CONTRIBUTING.MD](https://github.com/BuidlGuidl/abi.ninja/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to ABI Ninja.
