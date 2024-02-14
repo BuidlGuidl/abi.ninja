@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
+import Select, { components } from "react-select";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -12,6 +13,17 @@ import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
+const { Option } = components;
+
+const IconOption = (props: any) => (
+  <Option {...props}>
+    <div className="flex items-center">
+      <img src={props.data.icon} className="w-6 h-6 mr-2" alt={props.data.label} />
+      {props.data.label}
+    </div>
+  </Option>
+);
+
 enum TabName {
   verifiedContract,
   addressAbi,
@@ -20,6 +32,25 @@ enum TabName {
 const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
+
+const groupedOptions = networks.reduce((groups: { [key: string]: { label: string; options: any[] } }, network) => {
+  const groupName = network.groupSelector;
+  if (!groupName) {
+    return groups;
+  }
+  if (!groups[groupName]) {
+    groups[groupName] = {
+      label: groupName,
+      options: [],
+    };
+  }
+  groups[groupName].options.push({
+    value: network.id,
+    label: network.name,
+    icon: network.icon,
+  });
+  return groups;
+}, {} as { [key: string]: { label: string; options: any[] } });
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
@@ -141,17 +172,23 @@ const Home: NextPage = () => {
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
             <div className="my-4">
-              <select
-                className="select select-sm w-36 max-w-xs bg-slate-50"
-                value={network}
-                onChange={e => setNetwork(e.target.value)}
-              >
-                {networks.map(network => (
-                  <option key={network.id} value={network.id}>
-                    {network.name}
-                  </option>
-                ))}
-              </select>
+              <Select
+                defaultValue={groupedOptions["Mainnets"].options[0]}
+                instanceId="network-select"
+                options={Object.values(groupedOptions)}
+                onChange={option => setNetwork(option ? option.value.toString() : "")}
+                components={{ Option: IconOption }}
+                className="text-sm w-44 max-w-xs bg-white relative"
+                theme={theme => ({
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    primary25: "#efeaff",
+                    primary50: "#c1aeff",
+                    primary: "#551d98",
+                  },
+                })}
+              />
             </div>
 
             <div role="tablist" className="flex w-full border-b">
