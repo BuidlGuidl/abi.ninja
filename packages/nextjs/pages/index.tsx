@@ -18,7 +18,7 @@ const { Option } = components;
 const IconOption = (props: any) => (
   <Option {...props}>
     <div className="flex items-center">
-      <img src={props.data.icon} className="w-6 h-6 mr-2" alt={props.data.label} />
+      <Image src={props.data.icon} alt={props.data.label} width={24} height={24} className="mr-2" />
       {props.data.label}
     </div>
   </Option>
