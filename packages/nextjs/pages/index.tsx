@@ -61,6 +61,7 @@ const Home: NextPage = () => {
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -74,6 +75,17 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(max-width: 640px)");
+      setIsMobile(mediaQuery.matches);
+
+      const handleResize = () => setIsMobile(mediaQuery.matches);
+      mediaQuery.addEventListener("change", handleResize);
+      return () => mediaQuery.removeEventListener("change", handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -178,6 +190,7 @@ const Home: NextPage = () => {
                 options={Object.values(groupedOptions)}
                 onChange={option => setNetwork(option ? option.value.toString() : "")}
                 components={{ Option: IconOption }}
+                isSearchable={!isMobile}
                 className="text-sm w-44 max-w-xs bg-white relative"
                 theme={theme => ({
                   ...theme,
