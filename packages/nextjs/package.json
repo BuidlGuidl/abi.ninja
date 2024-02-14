@@ -29,6 +29,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
+    "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
     "viem": "1.19.9",
