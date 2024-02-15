@@ -27,6 +27,7 @@ const ContractDetailPage = () => {
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const [isLoading, setIsLoading] = useState(true);
+  const [chainId, setChainId] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
   const { contractAbi: storedAbi, setMainChainId } = useAbiNinjaState(state => ({
@@ -34,59 +35,73 @@ const ContractDetailPage = () => {
     setMainChainId: state.setMainChainId,
   }));
 
-  const getNetworkName = (chainId: string) => {
-    const chain = Object.values(chains).find(chain => chain.id === parseInt(chainId));
+  const getNetworkName = (chainId: number) => {
+    const chain = Object.values(chains).find(chain => chain.id === chainId);
     return chain ? chain.name : "Unknown Network";
   };
 
   useEffect(() => {
     if (network) {
-      setMainChainId(parseInt(network));
-    }
-  }, [network, setMainChainId]);
-
-  useEffect(() => {
-    const fetchContractAbi = async () => {
-      setIsLoading(true);
-
-      if (storedAbi && storedAbi.length > 0) {
-        setContractData({ abi: storedAbi, address: contractAddress });
-        setError(null);
-        setIsLoading(false);
-        return;
+      let normalizedNetwork = network.toLowerCase();
+      if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
+        normalizedNetwork = "homestead"; // chain.network for mainnet in viem/chains
       }
 
-      try {
-        const abi = await fetchContractABIFromAnyABI(contractAddress, parseInt(network));
-        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
-        setContractData({ abi, address: contractAddress });
-        setError(null);
-      } catch (error) {
-        console.error("Error fetching ABI from AnyABI: ", error);
-        console.log("Trying to fetch ABI from Etherscan...");
-        try {
-          const abiString = await fetchContractABIFromEtherscan(contractAddress, parseInt(network));
-          const parsedAbi = JSON.parse(abiString);
-          setContractData({ abi: parsedAbi, address: contractAddress });
-          setError(null);
-        } catch (etherscanError: any) {
-          console.error("Error fetching ABI from Etherscan: ", etherscanError);
-          setError(etherscanError.message || "Error occurred while fetching ABI");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const chain = Object.values(chains).find(chain => chain.network === normalizedNetwork);
 
-    if (contractAddress && network) {
-      if (isAddress(contractAddress)) {
-        fetchContractAbi();
+      let parsedNetworkId = 1;
+      if (chain) {
+        parsedNetworkId = chain.id;
       } else {
-        setIsLoading(false);
-        setError("Please enter a valid address");
+        parsedNetworkId = parseInt(network);
+      }
+
+      setMainChainId(parsedNetworkId);
+      setChainId(parsedNetworkId);
+
+      const fetchContractAbi = async () => {
+        setIsLoading(true);
+
+        if (storedAbi && storedAbi.length > 0) {
+          setContractData({ abi: storedAbi, address: contractAddress });
+          setError(null);
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          const abi = await fetchContractABIFromAnyABI(contractAddress, parsedNetworkId);
+          if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
+          setContractData({ abi, address: contractAddress });
+          setError(null);
+        } catch (error: any) {
+          console.error("Error fetching ABI from AnyABI: ", error);
+          setError(error.message || "Error occurred while fetching ABI");
+          console.log("Trying to fetch ABI from Etherscan...");
+          try {
+            const abiString = await fetchContractABIFromEtherscan(contractAddress, parsedNetworkId);
+            const parsedAbi = JSON.parse(abiString);
+            setContractData({ abi: parsedAbi, address: contractAddress });
+            setError(null);
+          } catch (etherscanError: any) {
+            console.error("Error fetching ABI from Etherscan: ", etherscanError);
+            setError(etherscanError.message || "Error occurred while fetching ABI");
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      if (contractAddress && network) {
+        if (isAddress(contractAddress)) {
+          fetchContractAbi();
+        } else {
+          setIsLoading(false);
+          setError("Please enter a valid address");
+        }
       }
     }
-  }, [contractAddress, network, storedAbi]);
+  }, [contractAddress, network, storedAbi, setMainChainId]);
 
   return (
     <>
@@ -106,7 +121,7 @@ const ContractDetailPage = () => {
               <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
               <p className="break-all">
                 There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
-                <strong>{getNetworkName(network)}</strong>.
+                <strong>{getNetworkName(chainId)}</strong>.
               </p>
               <p className="pb-2">Make sure the data is correct and you are connected to the right network.</p>
 
