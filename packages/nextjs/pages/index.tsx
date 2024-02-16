@@ -7,6 +7,7 @@ import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
+import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
@@ -141,17 +142,7 @@ const Home: NextPage = () => {
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
             <div className="my-4">
-              <select
-                className="select select-sm w-36 max-w-xs bg-slate-50"
-                value={network}
-                onChange={e => setNetwork(e.target.value)}
-              >
-                {networks.map(network => (
-                  <option key={network.id} value={network.id}>
-                    {network.name}
-                  </option>
-                ))}
-              </select>
+              <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
             </div>
 
             <div role="tablist" className="flex w-full border-b">

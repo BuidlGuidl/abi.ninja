@@ -9,6 +9,8 @@ type ChainAttributes = {
   nativeCurrencyTokenAddress?: string;
   etherscanEndpoint?: string;
   etherscanApiKey?: string;
+  icon?: string;
+  groupSelector?: string;
 };
 
 export type ChainWithAttributes = chains.Chain & Partial<ChainAttributes>;
@@ -24,85 +26,102 @@ const SCROLL_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KE
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.hardhat.id]: {
     color: "#b8af0c",
+    icon: "/hardhat.png",
   },
   [chains.mainnet.id]: {
     color: "#ff8b9e",
     etherscanEndpoint: "https://api.etherscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
+    icon: "/mainnet.svg",
   },
   [chains.sepolia.id]: {
     color: ["#5f4bb6", "#87ff65"],
     etherscanEndpoint: "https://api-sepolia.etherscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
+    icon: "/mainnet.svg",
   },
   [chains.goerli.id]: {
     color: "#0975F6",
     etherscanEndpoint: "https://api-goerli.etherscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
+    icon: "/mainnet.svg",
   },
   [chains.gnosis.id]: {
     color: "#48a9a6",
     etherscanEndpoint: "https://api.gnosisscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
+    icon: "/gnosis.svg",
   },
   [chains.polygon.id]: {
     color: "#2bbdf7",
     nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
     etherscanEndpoint: "https://api.polygonscan.com",
     etherscanApiKey: POLYGON_ETHERSCAN_API_KEY,
+    icon: "/polygon.svg",
   },
   [chains.polygonMumbai.id]: {
     color: "#92D9FA",
     nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
     etherscanEndpoint: "https://api-testnet.polygonscan.com",
     etherscanApiKey: POLYGON_ETHERSCAN_API_KEY,
+    icon: "/polygon.svg",
   },
   [chains.optimismGoerli.id]: {
     color: "#f01a37",
     etherscanEndpoint: "https://api-goerli-optimistic.etherscan.io",
     etherscanApiKey: OPTIMISM_ETHERSCAN_API_KEY,
+    icon: "/optimism.svg",
   },
   [chains.optimism.id]: {
     color: "#f01a37",
     etherscanEndpoint: "https://api-optimistic.etherscan.io",
     etherscanApiKey: OPTIMISM_ETHERSCAN_API_KEY,
+    icon: "/optimism.svg",
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
+    icon: "/arbitrum.jpg",
   },
   [chains.arbitrum.id]: {
     color: "#28a0f0",
     etherscanEndpoint: "https://api.arbiscan.io",
     etherscanApiKey: ARBITRUM_ETHERSCAN_API_KEY,
+    icon: "/arbitrum.jpg",
   },
   [chains.zkSync.id]: {
     color: "#5f4bb6",
     etherscanEndpoint: "https://block-explorer-api.mainnet.zksync.io",
     etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
+    icon: "/zkSync.jpg",
   },
   [chains.zkSyncTestnet.id]: {
     color: "#5f4bb6",
     etherscanEndpoint: "https://block-explorer-api.testnets.zksync.dev",
     etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
+    icon: "/zkSync.jpg",
   },
   [chains.base.id]: {
     color: "#1450EE",
     etherscanEndpoint: "https://api-sepolia.basescan.org",
     etherscanApiKey: BASE_ETHERSCAN_API_KEY,
+    icon: "/base.jpg",
   },
   [chains.baseSepolia.id]: {
     color: "#1450EE",
     etherscanApiKey: BASE_ETHERSCAN_API_KEY,
+    icon: "/base.jpg",
   },
   [chains.scroll.id]: {
     color: "#fbebd4",
     etherscanEndpoint: "https://api.scrollscan.com",
     etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
+    icon: "/scroll.jpg",
   },
   [chains.scrollSepolia.id]: {
     color: "#fbebd4",
     etherscanEndpoint: "https://api-sepolia.scrollscan.com",
     etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
+    icon: "/scroll.jpg",
   },
 };
 
