@@ -3,26 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import Select, { components } from "react-select";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
+import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
-
-const { Option } = components;
-
-const IconOption = (props: any) => (
-  <Option {...props}>
-    <div className="flex items-center">
-      <Image src={props.data.icon} alt={props.data.label} width={24} height={24} className="mr-2" />
-      {props.data.label}
-    </div>
-  </Option>
-);
 
 enum TabName {
   verifiedContract,
@@ -33,25 +22,6 @@ const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
 
-const groupedOptions = networks.reduce((groups: { [key: string]: { label: string; options: any[] } }, network) => {
-  const groupName = network.groupSelector;
-  if (!groupName) {
-    return groups;
-  }
-  if (!groups[groupName]) {
-    groups[groupName] = {
-      label: groupName,
-      options: [],
-    };
-  }
-  groups[groupName].options.push({
-    value: network.id,
-    label: network.name,
-    icon: network.icon,
-  });
-  return groups;
-}, {} as { [key: string]: { label: string; options: any[] } });
-
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(networks[1].id.toString());
@@ -61,7 +31,6 @@ const Home: NextPage = () => {
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -75,17 +44,6 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const mediaQuery = window.matchMedia("(max-width: 640px)");
-      setIsMobile(mediaQuery.matches);
-
-      const handleResize = () => setIsMobile(mediaQuery.matches);
-      mediaQuery.addEventListener("change", handleResize);
-      return () => mediaQuery.removeEventListener("change", handleResize);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -184,24 +142,7 @@ const Home: NextPage = () => {
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
             <div className="my-4">
-              <Select
-                defaultValue={groupedOptions["Mainnets"].options[0]}
-                instanceId="network-select"
-                options={Object.values(groupedOptions)}
-                onChange={option => setNetwork(option ? option.value.toString() : "")}
-                components={{ Option: IconOption }}
-                isSearchable={!isMobile}
-                className="text-sm w-44 max-w-xs bg-white relative"
-                theme={theme => ({
-                  ...theme,
-                  colors: {
-                    ...theme.colors,
-                    primary25: "#efeaff",
-                    primary50: "#c1aeff",
-                    primary: "#551d98",
-                  },
-                })}
-              />
+              <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
             </div>
 
             <div role="tablist" className="flex w-full border-b">
