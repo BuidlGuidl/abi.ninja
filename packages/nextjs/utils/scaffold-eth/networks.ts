@@ -38,13 +38,13 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: ["#5f4bb6", "#87ff65"],
     etherscanEndpoint: "https://api-sepolia.etherscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
-    icon: "/sepolia.svg",
+    icon: "/mainnet.svg",
   },
   [chains.goerli.id]: {
     color: "#0975F6",
     etherscanEndpoint: "https://api-goerli.etherscan.io",
     etherscanApiKey: MAINNET_ETHERSCAN_API_KEY,
-    icon: "/goerli.svg",
+    icon: "/mainnet.svg",
   },
   [chains.gnosis.id]: {
     color: "#48a9a6",
@@ -64,13 +64,13 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     nativeCurrencyTokenAddress: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
     etherscanEndpoint: "https://api-testnet.polygonscan.com",
     etherscanApiKey: POLYGON_ETHERSCAN_API_KEY,
-    icon: "/polygonMumbai.svg",
+    icon: "/polygon.svg",
   },
   [chains.optimismGoerli.id]: {
     color: "#f01a37",
     etherscanEndpoint: "https://api-goerli-optimistic.etherscan.io",
     etherscanApiKey: OPTIMISM_ETHERSCAN_API_KEY,
-    icon: "/optimismGoerli.svg",
+    icon: "/optimism.svg",
   },
   [chains.optimism.id]: {
     color: "#f01a37",
@@ -80,7 +80,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.arbitrumGoerli.id]: {
     color: "#28a0f0",
-    icon: "/arbitrumGoerli.jpg",
+    icon: "/arbitrum.jpg",
   },
   [chains.arbitrum.id]: {
     color: "#28a0f0",
@@ -98,7 +98,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#5f4bb6",
     etherscanEndpoint: "https://block-explorer-api.testnets.zksync.dev",
     etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
-    icon: "/zkSyncTestnet.jpg",
+    icon: "/zkSync.jpg",
   },
   [chains.base.id]: {
     color: "#1450EE",
@@ -109,7 +109,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.baseSepolia.id]: {
     color: "#1450EE",
     etherscanApiKey: BASE_ETHERSCAN_API_KEY,
-    icon: "/baseSepolia.jpg",
+    icon: "/base.jpg",
   },
   [chains.scroll.id]: {
     color: "#fbebd4",
@@ -121,7 +121,7 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#fbebd4",
     etherscanEndpoint: "https://api-sepolia.scrollscan.com",
     etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
-    icon: "/scrollSepolia.jpg",
+    icon: "/scroll.jpg",
   },
 };
 
