@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useState } from "react";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
@@ -28,6 +28,8 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
   const networkColor = useNetworkColor(mainNetwork);
+  const router = useRouter();
+  const { network } = router.query as { network?: string };
 
   const updateUrlWithSelectedMethods = (selectedMethods: string[]) => {
     const currentQuery = new URLSearchParams(window.location.search);
@@ -36,7 +38,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     } else {
       currentQuery.delete("methods");
     }
-    const newPath = `/${initialContractData.address}/${mainChainId}`;
+    const newPath = `/${initialContractData.address}/${network}`;
 
     router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
   };
@@ -83,7 +85,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.name),
     ) as AbiFunction[]; // Cast it to AbiFunction[]
     setAbi(selectedMethods);
-  }, [initialContractData.abi]);
+  }, [initialContractData.abi, router?.query?.methods]);
 
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
