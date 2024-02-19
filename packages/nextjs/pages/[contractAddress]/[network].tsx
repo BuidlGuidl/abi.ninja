@@ -27,12 +27,16 @@ const ContractDetailPage = () => {
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const [isLoading, setIsLoading] = useState(true);
-  const [chainId, setChainId] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
-  const { contractAbi: storedAbi, setMainChainId } = useAbiNinjaState(state => ({
+  const {
+    contractAbi: storedAbi,
+    setMainChainId,
+    chainId,
+  } = useAbiNinjaState(state => ({
     contractAbi: state.contractAbi,
     setMainChainId: state.setMainChainId,
+    chainId: state.mainChainId,
   }));
 
   const getNetworkName = (chainId: number) => {
@@ -57,7 +61,6 @@ const ContractDetailPage = () => {
       }
 
       setMainChainId(parsedNetworkId);
-      setChainId(parsedNetworkId);
 
       const fetchContractAbi = async () => {
         setIsLoading(true);
@@ -76,7 +79,6 @@ const ContractDetailPage = () => {
           setError(null);
         } catch (error: any) {
           console.error("Error fetching ABI from AnyABI: ", error);
-          setError(error.message || "Error occurred while fetching ABI");
           console.log("Trying to fetch ABI from Etherscan...");
           try {
             const abiString = await fetchContractABIFromEtherscan(contractAddress, parsedNetworkId);
