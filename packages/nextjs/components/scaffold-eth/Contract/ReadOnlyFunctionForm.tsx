@@ -10,6 +10,7 @@ import {
   getInitialFormState,
   getParsedContractFunctionArgs,
   getParsedError,
+  transformAbiFunction,
 } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
@@ -44,7 +45,8 @@ export const ReadOnlyFunctionForm = ({
     },
   });
 
-  const inputElements = abiFunction.inputs.map((input, inputIndex) => {
+  const transformedFunction = transformAbiFunction(abiFunction);
+  const inputElements = transformedFunction.inputs.map((input, inputIndex) => {
     const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
     return (
       <ContractInput
