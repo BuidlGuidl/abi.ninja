@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Extract the first path segment after the initial slash, if any.
-  const pathSegments = pathname.split("/").filter(Boolean); // Removes empty strings from the result.
+  const pathSegments = pathname.split("/").filter(Boolean);
 
   // Check if there is exactly one path segment and if it matches the address regex.
   if (pathSegments.length === 1 && addressRegex.test(pathSegments[0])) {
