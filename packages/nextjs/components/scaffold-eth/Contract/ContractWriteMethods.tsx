@@ -17,7 +17,7 @@ export const ContractWriteMethods = ({
   }
 
   const functionsToDisplay = (
-    (deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[]
+    (deployedContractData.abi as Abi).filter(part => part.type === "function") as (AbiFunction & { uid: string })[]
   )
     .filter(fn => {
       const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
@@ -51,7 +51,7 @@ export const ContractWriteMethods = ({
             inheritedFrom={inheritedFrom}
           />
           <button
-            onClick={() => removeMethod(fn.name)}
+            onClick={() => removeMethod(fn.uid)}
             className="absolute top-0 right-0 btn btn-ghost btn-xs mt-[21px]"
             aria-label="Remove method"
           >

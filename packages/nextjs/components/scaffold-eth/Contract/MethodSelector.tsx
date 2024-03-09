@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { AbiFunction } from "abitype";
-import { Abi } from "viem";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface MethodSelectorProps {
-  readMethodsWithInputsAndWriteMethods: AbiFunction[];
-  abi: Abi;
-  onMethodSelect: (selectedMethods: string) => void;
-  removeMethod: (methodName: string) => void;
+  readMethodsWithInputsAndWriteMethods: (AbiFunction & { uid: string })[];
+  abi: (AbiFunction & { uid: string })[];
+  onMethodSelect: (uid: string) => void; // Changed to accept UID
+  removeMethod: (uid: string) => void; // Changed to accept UID
 }
 
 export const MethodSelector = ({
@@ -20,19 +19,21 @@ export const MethodSelector = ({
   const [isWriteCollapsed, setIsWriteCollapsed] = useState(false);
 
   const readMethods = readMethodsWithInputsAndWriteMethods.filter(
-    (method): method is AbiFunction => method.stateMutability === "view" || method.stateMutability === "pure",
+    method => method.stateMutability === "view" || method.stateMutability === "pure",
   );
 
   const writeMethods = readMethodsWithInputsAndWriteMethods.filter(
-    (method): method is AbiFunction => method.stateMutability !== "view" && method.stateMutability !== "pure",
+    method => method.stateMutability !== "view" && method.stateMutability !== "pure",
   );
 
-  const handleMethodSelect = (methodName: string) => {
-    onMethodSelect(methodName);
+  const handleMethodSelection = (uid: string) => {
+    console.log("handleMethodSelection", uid);
+    onMethodSelect(uid);
   };
 
-  const isMethodSelected = (methodName: string) => {
-    return abi.some(method => "name" in method && method.name === methodName);
+  // Check if a method is selected by UID
+  const isMethodSelected = (uid: string) => {
+    return abi.some(method => method.uid === uid);
   };
 
   return (
@@ -57,19 +58,19 @@ export const MethodSelector = ({
         </h3>
         {!isReadCollapsed && (
           <div className="flex flex-col items-start gap-1 pb-4">
-            {readMethods.map((method, index) => (
-              <div key={index} className="flex items-center gap-2 w-full pr-4">
+            {readMethods.map(method => (
+              <div key={method.uid} className="flex items-center gap-2 w-full pr-4">
                 <button
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
-                    isMethodSelected(method.name) ? "bg-purple-100 pointer-events-none" : ""
+                    isMethodSelected(method.uid) ? "bg-purple-100 pointer-events-none" : ""
                   }`}
-                  onClick={() => handleMethodSelect(method.name)}
+                  onClick={() => handleMethodSelection(method.uid)}
                 >
                   {method.name}
-                  {isMethodSelected(method.name) && (
+                  {isMethodSelected(method.uid) && (
                     <button
                       className="ml-4 text-xs hover:bg-gray-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.name)}
+                      onClick={() => removeMethod(method.uid)}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
@@ -102,13 +103,13 @@ export const MethodSelector = ({
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.name) ? "bg-purple-100 pointer-events-none" : ""
                   }`}
-                  onClick={() => handleMethodSelect(method.name)}
+                  onClick={() => handleMethodSelection(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.name) && (
                     <button
                       className="ml-4 text-xs hover:bg-gray-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.name)}
+                      onClick={() => removeMethod(method.uid)}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
