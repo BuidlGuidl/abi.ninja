@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { InfuraProvider } from "@ethersproject/providers";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
@@ -11,6 +12,7 @@ import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import detectProxyTarget from "~~/utils/abi.ninja/proxyContracts";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -45,10 +47,28 @@ const Home: NextPage = () => {
 
   const router = useRouter();
 
+  const infuraProvider = new InfuraProvider(parseInt(network));
+  const requestFunc = ({ method, params }: { method: string; params: any[] }) => infuraProvider.send(method, params);
+
+  const getImplementationAddress = async (proxyAddress: Address) => {
+    try {
+      const target = await detectProxyTarget(proxyAddress, requestFunc);
+      return target;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
+        const implementationAddress = await getImplementationAddress(verifiedContractAddress);
+        if (implementationAddress) {
+          setVerifiedContractAddress(implementationAddress);
+          notification.success("Proxy contract detected. Using implementation address...");
+        }
+
         const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
         if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
         setContractAbi(abi);
@@ -80,6 +100,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verifiedContractAddress, network, setContractAbi]);
 
   useEffect(() => {
