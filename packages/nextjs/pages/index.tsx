@@ -154,11 +154,23 @@ const Home: NextPage = () => {
             <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
-            <div className="my-4">
+            <div className="mt-4">
               <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
             </div>
-
-            <div className="relative min-h-[150px] w-full overflow-hidden">
+            {activeTab === TabName.addressAbi && (
+              <div
+                className="text-sm link link-primary my-2"
+                onClick={() => {
+                  setActiveTab(TabName.verifiedContract);
+                  setVerifiedContractAddress("");
+                }}
+              >
+                ← go back
+              </div>
+            )}
+            {/* placeholder to match height @todo make this better, bad practice! */}
+            {activeTab === TabName.verifiedContract && <div className="text-sm text-white my-2">‎</div>}
+            <div className="relative min-h-[150px] overflow-hidden w-[375px]">
               <div className="flex">
                 {tabValues.map(tabValue => (
                   <div
@@ -208,11 +220,10 @@ const Home: NextPage = () => {
                     ) : (
                       <div className="flex w-full flex-col gap-3">
                         {/* Tab navigation */}
-
                         <div className="flex w-full border-b">
                           <div
                             role="tab"
-                            className={`inline-block px-4 py-2 text-xs font-medium text-center w-1/2 cursor-pointer ${
+                            className={`inline-block px-4 py-2 text-xs whitespace-nowrap font-medium text-center w-1/2 cursor-pointer ${
                               abiInputMethod === AbiInputMethod.Manual
                                 ? "border-b-2 border-purple-500 text-purple-500"
                                 : "border-b-2 border-transparent text-gray-500 hover:text-purple-700"
@@ -269,18 +280,6 @@ const Home: NextPage = () => {
                 </div>
               )}
             </div>
-
-            {activeTab === TabName.addressAbi && (
-              <div
-                className="text-xs link link-primary absolute top-96"
-                onClick={() => {
-                  setActiveTab(TabName.verifiedContract);
-                  setVerifiedContractAddress("");
-                }}
-              >
-                ← go back
-              </div>
-            )}
 
             <button
               className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
