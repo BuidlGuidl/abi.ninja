@@ -18,7 +18,7 @@ type ContractUIProps = {
   initialContractData: { address: string; abi: Abi };
 };
 
-interface AugmentedAbiFunction extends AbiFunction {
+export interface AugmentedAbiFunction extends AbiFunction {
   uid: string;
 }
 
@@ -70,7 +70,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   );
 
   // local abi state for for dispalying selected methods
-  const [abi, setAbi] = useState<(AbiFunction & { uid: string })[]>([]);
+  const [abi, setAbi] = useState<AugmentedAbiFunction[]>([]);
 
   const handleMethodSelect = (uid: string) => {
     const methodToAdd = readMethodsWithInputsAndWriteMethods.find(method => method.uid === uid);
@@ -94,7 +94,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(
       method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.uid),
     ) as AbiFunction[];
-    setAbi(selectedMethods as (AbiFunction & { uid: string })[]);
+    setAbi(selectedMethods as AugmentedAbiFunction[]);
   }, [initialContractData.abi, router?.query?.methods]);
 
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({

@@ -1,5 +1,6 @@
+import { AugmentedAbiFunction } from "./ContractUI";
 import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
-import { Abi, AbiFunction } from "abitype";
+import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
@@ -17,7 +18,7 @@ export const ContractWriteMethods = ({
   }
 
   const functionsToDisplay = (
-    (deployedContractData.abi as Abi).filter(part => part.type === "function") as (AbiFunction & { uid: string })[]
+    (deployedContractData.abi as Abi).filter(part => part.type === "function") as AugmentedAbiFunction[]
   )
     .filter(fn => {
       const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";

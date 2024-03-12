@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { AbiFunction } from "abitype";
+import { AugmentedAbiFunction } from "./ContractUI";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface MethodSelectorProps {
-  readMethodsWithInputsAndWriteMethods: (AbiFunction & { uid: string })[];
-  abi: (AbiFunction & { uid: string })[];
+  readMethodsWithInputsAndWriteMethods: AugmentedAbiFunction[];
+  abi: AugmentedAbiFunction[];
   onMethodSelect: (uid: string) => void;
   removeMethod: (uid: string) => void;
 }
