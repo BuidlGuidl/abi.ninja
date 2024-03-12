@@ -1,11 +1,10 @@
-type BlockTag = number | "earliest" | "latest" | "pending";
+import { createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
 
-interface RequestArguments {
-  method: string;
-  params: unknown[];
-}
-
-type EIP1193ProviderRequestFunc = (args: RequestArguments) => Promise<unknown>;
+export const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
 
 const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
@@ -69,39 +68,33 @@ const parse1167Bytecode = (bytecode: string): string => {
   return address;
 };
 
-const detectProxyTarget = async (
-  proxyAddress: string,
-  jsonRpcRequest: EIP1193ProviderRequestFunc,
-  blockTag: BlockTag = "latest",
-): Promise<string | null> => {
+const detectProxyTarget = async (proxyAddress: string): Promise<string | null> => {
   const strategies = [
     async () => {
-      // EIP-1167 Minimal Proxy Contract
-      const code: any = await jsonRpcRequest({
-        method: "eth_getCode",
-        params: [proxyAddress, blockTag],
+      const bytecode = await publicClient.getBytecode({
+        address: proxyAddress,
       });
-      return parse1167Bytecode(code);
+      return parse1167Bytecode(bytecode as string);
     },
     async () => {
-      // EIP-1967 Logic Slot
-      const logicAddress = await jsonRpcRequest({
-        method: "eth_getStorageAt",
-        params: [proxyAddress, EIP_1967_LOGIC_SLOT, blockTag],
+      const data = await publicClient.getStorageAt({
+        address: proxyAddress,
+        slot: EIP_1967_LOGIC_SLOT,
       });
-      return readAddress(logicAddress);
+      return readAddress(data);
     },
     async () => {
-      // EIP-1967 Beacon Slot
-      const beaconAddress = await jsonRpcRequest({
-        method: "eth_getStorageAt",
-        params: [proxyAddress, EIP_1967_BEACON_SLOT, blockTag],
-      }).then(readAddress);
+      const data = await publicClient.getStorageAt({
+        address: proxyAddress,
+        slot: EIP_1967_BEACON_SLOT,
+      });
+
+      const beaconAdress = readAddress(data);
       for (const method of EIP_1167_BEACON_METHODS) {
         try {
-          const result = await jsonRpcRequest({
-            method: "eth_call",
-            params: [{ to: beaconAddress, data: method }, blockTag],
+          const result = await publicClient.call({
+            data: method as `0x${string}`,
+            to: beaconAdress,
           });
           return readAddress(result);
         } catch (error) {
@@ -111,58 +104,52 @@ const detectProxyTarget = async (
       throw new Error("Beacon address resolution failed");
     },
     async () => {
-      // OpenZeppelin Implementation Slot
-      const implementationAddress = await jsonRpcRequest({
-        method: "eth_getStorageAt",
-        params: [proxyAddress, OPEN_ZEPPELIN_IMPLEMENTATION_SLOT, blockTag],
+      const data = await publicClient.getStorageAt({
+        address: proxyAddress,
+        slot: OPEN_ZEPPELIN_IMPLEMENTATION_SLOT,
       });
-      return readAddress(implementationAddress);
+      return readAddress(data);
     },
     async () => {
-      // EIP-1822 Logic Slot
-      const uupsAddress = await jsonRpcRequest({
-        method: "eth_getStorageAt",
-        params: [proxyAddress, EIP_1822_LOGIC_SLOT, blockTag],
+      const data = await publicClient.getStorageAt({
+        address: proxyAddress,
+        slot: EIP_1822_LOGIC_SLOT,
       });
-      return readAddress(uupsAddress);
+      return readAddress(data);
     },
     async () => {
-      // EIP-897 DelegateProxy Pattern
-      const delegateProxyAddress = await jsonRpcRequest({
-        method: "eth_call",
-        params: [{ to: proxyAddress, data: EIP_897_INTERFACE[0] }, blockTag],
+      const data = await publicClient.call({
+        data: EIP_897_INTERFACE[0] as `0x${string}`,
+        to: proxyAddress,
       });
-      return readAddress(delegateProxyAddress);
+      return readAddress(data);
     },
     async () => {
-      // Gnosis Safe Proxy Pattern
-      const masterCopyAddress = await jsonRpcRequest({
-        method: "eth_call",
-        params: [{ to: proxyAddress, data: GNOSIS_SAFE_PROXY_INTERFACE[0] }, blockTag],
+      const data = await publicClient.call({
+        data: GNOSIS_SAFE_PROXY_INTERFACE[0] as `0x${string}`,
+        to: proxyAddress,
       });
-      return readAddress(masterCopyAddress);
+      return readAddress(data);
     },
     async () => {
-      // Comptroller Proxy Pattern
-      const comptrollerImplAddress = await jsonRpcRequest({
-        method: "eth_call",
-        params: [{ to: proxyAddress, data: COMPTROLLER_PROXY_INTERFACE[0] }, blockTag],
+      const data = await publicClient.call({
+        data: COMPTROLLER_PROXY_INTERFACE[0] as `0x${string}`,
+        to: proxyAddress,
       });
-      return readAddress(comptrollerImplAddress);
+      return readAddress(data);
     },
   ];
 
   for (const strategy of strategies) {
     try {
       const result = await strategy();
-      if (result) return result; // Return the first successful result
+      if (result) return result;
     } catch (error) {
-      // Log error or handle it as needed
       console.error(error);
     }
   }
 
-  return null; // Return null if all strategies fail
+  return null;
 };
 
 export default detectProxyTarget;
