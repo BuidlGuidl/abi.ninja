@@ -5,8 +5,8 @@ import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/2
 interface MethodSelectorProps {
   readMethodsWithInputsAndWriteMethods: (AbiFunction & { uid: string })[];
   abi: (AbiFunction & { uid: string })[];
-  onMethodSelect: (uid: string) => void; // Changed to accept UID
-  removeMethod: (uid: string) => void; // Changed to accept UID
+  onMethodSelect: (uid: string) => void;
+  removeMethod: (uid: string) => void;
 }
 
 export const MethodSelector = ({
@@ -26,12 +26,6 @@ export const MethodSelector = ({
     method => method.stateMutability !== "view" && method.stateMutability !== "pure",
   );
 
-  const handleMethodSelection = (uid: string) => {
-    console.log("handleMethodSelection", uid);
-    onMethodSelect(uid);
-  };
-
-  // Check if a method is selected by UID
   const isMethodSelected = (uid: string) => {
     return abi.some(method => method.uid === uid);
   };
@@ -64,7 +58,7 @@ export const MethodSelector = ({
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-purple-100 pointer-events-none" : ""
                   }`}
-                  onClick={() => handleMethodSelection(method.uid)}
+                  onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
@@ -103,7 +97,7 @@ export const MethodSelector = ({
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.name) ? "bg-purple-100 pointer-events-none" : ""
                   }`}
-                  onClick={() => handleMethodSelection(method.uid)}
+                  onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.name) && (
