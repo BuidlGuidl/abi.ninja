@@ -18,6 +18,10 @@ type ContractUIProps = {
   initialContractData: { address: string; abi: Abi };
 };
 
+export interface AugmentedAbiFunction extends AbiFunction {
+  uid: string;
+}
+
 const mainNetworks = getTargetNetworks();
 
 /**
@@ -43,49 +47,53 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
   };
 
-  const readMethodsWithInputsAndWriteMethods = initialContractData.abi.filter((method): method is AbiFunction => {
-    if (method.type !== "function") return false;
+  const augmentMethodsWithUid = (methods: AbiFunction[]): AugmentedAbiFunction[] => {
+    return methods.map((method, index) => ({
+      ...method,
+      uid: `${method.name}_${index}`, // Simple UID based on index
+    }));
+  };
 
-    // Check for read functions
-    if (method.stateMutability === "view" || method.stateMutability === "pure") {
-      // Check for read inputs length
-      if (method.inputs.length > 0) {
-        return true;
-      } else return false;
-    } else {
-      // Else condition defines write methods
-      return true;
-    }
-  });
+  const readMethodsWithInputsAndWriteMethods = useMemo(() => {
+    return augmentMethodsWithUid(
+      initialContractData.abi.filter((method): method is AbiFunction => {
+        if (method.type !== "function") return false;
+        if (method.stateMutability === "view" || method.stateMutability === "pure") {
+          return method.inputs.length > 0;
+        } else {
+          return true;
+        }
+      }),
+    );
+  }, [initialContractData.abi]);
 
   // local abi state for for dispalying selected methods
-  const [abi, setAbi] = useState<AbiFunction[]>([]);
+  const [abi, setAbi] = useState<AugmentedAbiFunction[]>([]);
 
-  const handleMethodSelect = (methodName: string) => {
-    const methodToAdd = initialContractData.abi.find(
-      method => method.type === "function" && "name" in method && method.name === methodName,
-    ) as AbiFunction | undefined; // Cast it to AbiFunction | undefined
+  const handleMethodSelect = (uid: string) => {
+    const methodToAdd = readMethodsWithInputsAndWriteMethods.find(method => method.uid === uid);
 
-    if (methodToAdd && !abi.some(method => method.name === methodName)) {
+    if (methodToAdd && !abi.some(method => method.uid === uid)) {
       const updatedAbi = [...abi, methodToAdd];
       setAbi(updatedAbi);
-      updateUrlWithSelectedMethods(updatedAbi.map(m => m.name));
+      updateUrlWithSelectedMethods(updatedAbi.map(m => m.uid));
     }
   };
 
-  const removeMethod = (methodName: string) => {
-    const updatedAbi = abi.filter(fn => fn.name !== methodName);
+  const removeMethod = (uid: string) => {
+    const updatedAbi = abi.filter(method => method.uid !== uid);
+
     setAbi(updatedAbi);
-    updateUrlWithSelectedMethods(updatedAbi.map(m => m.name));
+    updateUrlWithSelectedMethods(updatedAbi.map(m => m.uid));
   };
 
   useEffect(() => {
     const selectedMethodNames = (router.query.methods as string)?.split(",") || [];
-    const selectedMethods = initialContractData.abi.filter(
-      method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.name),
-    ) as AbiFunction[]; // Cast it to AbiFunction[]
-    setAbi(selectedMethods);
-  }, [initialContractData.abi, router?.query?.methods]);
+    const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(method =>
+      selectedMethodNames.includes(method.uid),
+    );
+    setAbi(selectedMethods as AugmentedAbiFunction[]);
+  }, [router.query.methods, readMethodsWithInputsAndWriteMethods]);
 
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
