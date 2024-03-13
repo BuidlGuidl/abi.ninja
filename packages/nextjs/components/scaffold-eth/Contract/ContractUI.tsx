@@ -54,20 +54,18 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     }));
   };
 
-  const readMethodsWithInputsAndWriteMethods = augmentMethodsWithUid(
-    initialContractData.abi.filter((method): method is AbiFunction => {
-      if (method.type !== "function") return false;
-
-      // Check for read functions
-      if (method.stateMutability === "view" || method.stateMutability === "pure") {
-        // Check for read inputs length
-        return method.inputs.length > 0;
-      } else {
-        // Else condition defines write methods
-        return true;
-      }
-    }),
-  );
+  const readMethodsWithInputsAndWriteMethods = useMemo(() => {
+    return augmentMethodsWithUid(
+      initialContractData.abi.filter((method): method is AbiFunction => {
+        if (method.type !== "function") return false;
+        if (method.stateMutability === "view" || method.stateMutability === "pure") {
+          return method.inputs.length > 0;
+        } else {
+          return true;
+        }
+      }),
+    );
+  }, [initialContractData.abi]);
 
   // local abi state for for dispalying selected methods
   const [abi, setAbi] = useState<AugmentedAbiFunction[]>([]);
@@ -91,11 +89,11 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
   useEffect(() => {
     const selectedMethodNames = (router.query.methods as string)?.split(",") || [];
-    const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(
-      method => method.type === "function" && "name" in method && selectedMethodNames.includes(method.uid),
-    ) as AbiFunction[];
+    const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(method =>
+      selectedMethodNames.includes(method.uid),
+    );
     setAbi(selectedMethods as AugmentedAbiFunction[]);
-  }, [initialContractData.abi, router?.query?.methods]);
+  }, [router.query.methods, readMethodsWithInputsAndWriteMethods]);
 
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
