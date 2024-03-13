@@ -130,7 +130,7 @@ const Home: NextPage = () => {
   const fetchAbiFromHeimdall = async (contractAddress: string) => {
     setIsFetchingAbi(true);
     try {
-      const response = await fetch(`https://heimdall-api-cool-frog-2068.fly.dev/${network}/${contractAddress}`);
+      const response = await fetch(`https://heimdall-api.fly.dev/${network}/${contractAddress}`);
       const abi = await response.json();
       setContractAbi(abi);
       setIsAbiAvailable(true);
