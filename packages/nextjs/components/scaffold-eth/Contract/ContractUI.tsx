@@ -22,6 +22,39 @@ export interface AugmentedAbiFunction extends AbiFunction {
   uid: string;
 }
 
+const augmentMethodsWithUid = (methods: AbiFunction[]): AugmentedAbiFunction[] => {
+  // Group methods by their name to identify overloaded functions
+  const methodsByName: Record<string, AbiFunction[]> = {};
+  methods.forEach(method => {
+    if (!methodsByName[method.name]) {
+      methodsByName[method.name] = [];
+    }
+    methodsByName[method.name].push(method);
+  });
+
+  // Process each method, adding UID with index only for overloaded functions
+  const augmentedMethods: AugmentedAbiFunction[] = [];
+  Object.entries(methodsByName).forEach(([, group]) => {
+    if (group.length > 1) {
+      // overloaded methods
+      group.forEach((method, index) => {
+        augmentedMethods.push({
+          ...method,
+          uid: `${method.name}_${index}`,
+        });
+      });
+    } else {
+      // regular methods
+      augmentedMethods.push({
+        ...group[0],
+        uid: group[0].name,
+      });
+    }
+  });
+
+  return augmentedMethods;
+};
+
 const mainNetworks = getTargetNetworks();
 
 /**
@@ -45,13 +78,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     const newPath = `/${initialContractData.address}/${network}`;
 
     router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
-  };
-
-  const augmentMethodsWithUid = (methods: AbiFunction[]): AugmentedAbiFunction[] => {
-    return methods.map((method, index) => ({
-      ...method,
-      uid: `${method.name}_${index}`, // Simple UID based on index
-    }));
   };
 
   const readMethodsWithInputsAndWriteMethods = useMemo(() => {
