@@ -102,7 +102,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network, setContractAbi]);
+  }, [verifiedContractAddress, network, setContractAbi, publicClient]);
 
   useEffect(() => {
     if (router.pathname === "/") {
