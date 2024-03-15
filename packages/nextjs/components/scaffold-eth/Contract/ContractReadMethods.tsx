@@ -1,5 +1,6 @@
+import { AugmentedAbiFunction } from "./ContractUI";
 import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
-import { Abi, AbiFunction } from "abitype";
+import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
@@ -15,7 +16,7 @@ export const ContractReadMethods = ({
   }
 
   const functionsToDisplay = (
-    ((deployedContractData.abi || []) as Abi).filter(part => part.type === "function") as AbiFunction[]
+    ((deployedContractData.abi || []) as Abi).filter(part => part.type === "function") as AugmentedAbiFunction[]
   )
     .filter(fn => {
       const isQueryableWithParams =
@@ -41,7 +42,7 @@ export const ContractReadMethods = ({
   return (
     <>
       {functionsToDisplay.map(({ fn, inheritedFrom }) => (
-        <div key={fn.name} className="relative mb-4 pt-5">
+        <div key={fn.uid} className="relative mb-4 pt-5">
           <ReadOnlyFunctionForm
             abi={deployedContractData.abi as Abi}
             contractAddress={deployedContractData.address}
@@ -49,7 +50,7 @@ export const ContractReadMethods = ({
             inheritedFrom={inheritedFrom}
           />
           <button
-            onClick={() => removeMethod(fn.name)}
+            onClick={() => removeMethod(fn.uid)}
             className="absolute top-0 right-0 btn btn-ghost btn-xs mt-[21px]"
             aria-label="Remove method"
           >
