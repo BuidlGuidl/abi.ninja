@@ -62,8 +62,11 @@ const mainNetworks = getTargetNetworks();
  **/
 export const ContractUI = ({ className = "", initialContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const mainChainId = useAbiNinjaState(state => state.mainChainId);
-  const mainNetwork = mainNetworks.find(network => network.id === mainChainId);
+  const { implementationAddress, chainId } = useAbiNinjaState(state => ({
+    chainId: state.mainChainId,
+    implementationAddress: state.implementationAddress,
+  }));
+  const mainNetwork = mainNetworks.find(network => network.id === chainId);
   const networkColor = useNetworkColor(mainNetwork);
   const router = useRouter();
   const { network } = router.query as { network?: string };
@@ -124,7 +127,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
     abi: initialContractData.abi,
-    chainId: mainChainId,
+    chainId: chainId,
     functionName: "name",
   });
 
@@ -218,6 +221,10 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                     <div className="flex pb-1">
                       <span className="font-medium text-base mr-4"> {displayContractName} </span>
                       <Address address={initialContractData.address} />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
+                      <Address address={implementationAddress} />
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-bold">Balance:</span>

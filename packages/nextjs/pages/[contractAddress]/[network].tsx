@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, isAddress } from "viem";
+import { Abi, Address, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Footer } from "~~/components/Footer";
@@ -11,6 +11,7 @@ import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
+import detectProxyTarget from "~~/utils/abi.ninja/proxyContracts";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
   contractAddress: string;
@@ -20,6 +21,15 @@ interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
 type ContractData = {
   abi: Abi;
   address: string;
+};
+
+const getImplementationAddress = async (proxyAddress: Address) => {
+  try {
+    const target = await detectProxyTarget(proxyAddress);
+    return target;
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 const ContractDetailPage = () => {
@@ -33,10 +43,12 @@ const ContractDetailPage = () => {
     contractAbi: storedAbi,
     setMainChainId,
     chainId,
+    setImplementationAddress,
   } = useAbiNinjaState(state => ({
     contractAbi: state.contractAbi,
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
+    setImplementationAddress: state.setImplementationAddress,
   }));
 
   const getNetworkName = (chainId: number) => {
@@ -73,7 +85,11 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const abi = await fetchContractABIFromAnyABI(contractAddress, parsedNetworkId);
+          const implementationAddress = await getImplementationAddress(contractAddress);
+          if (implementationAddress) {
+            setImplementationAddress(implementationAddress);
+          }
+          const abi = await fetchContractABIFromAnyABI(implementationAddress || contractAddress, parsedNetworkId);
           if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
           setContractData({ abi, address: contractAddress });
           setError(null);

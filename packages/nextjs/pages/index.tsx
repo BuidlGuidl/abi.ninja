@@ -46,9 +46,10 @@ const Home: NextPage = () => {
     chainId: parseInt(network),
   });
 
-  const { setContractAbi, setAbiContractAddress } = useAbiNinjaState(state => ({
+  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
+    setImplementationAddress: state.setImplementationAddress,
   }));
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
@@ -60,6 +61,9 @@ const Home: NextPage = () => {
       setIsFetchingAbi(true);
       try {
         const implementationAddress = await getImplementationAddress(verifiedContractAddress);
+        if (implementationAddress) {
+          setImplementationAddress(implementationAddress);
+        }
         const abi = await fetchContractABIFromAnyABI(
           implementationAddress || verifiedContractAddress,
           parseInt(network),
