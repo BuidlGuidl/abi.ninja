@@ -60,11 +60,10 @@ const Home: NextPage = () => {
       setIsFetchingAbi(true);
       try {
         const implementationAddress = await getImplementationAddress(verifiedContractAddress);
-        if (implementationAddress) {
-          setVerifiedContractAddress(implementationAddress);
-          notification.success("Proxy contract detected. Using implementation address...");
-        }
-        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
+        const abi = await fetchContractABIFromAnyABI(
+          implementationAddress || verifiedContractAddress,
+          parseInt(network),
+        );
         if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
         setContractAbi(abi);
         setIsAbiAvailable(true);
