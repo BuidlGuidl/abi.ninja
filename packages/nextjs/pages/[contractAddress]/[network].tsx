@@ -119,7 +119,7 @@ const ContractDetailPage = () => {
         }
       }
     }
-  }, [contractAddress, network, storedAbi, setMainChainId]);
+  }, [contractAddress, network, storedAbi, setMainChainId, setImplementationAddress]);
 
   return (
     <>
