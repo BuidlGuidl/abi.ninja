@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, Address, isAddress } from "viem";
+import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Footer } from "~~/components/Footer";
@@ -21,15 +21,6 @@ interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
 type ContractData = {
   abi: Abi;
   address: string;
-};
-
-const getImplementationAddress = async (proxyAddress: Address) => {
-  try {
-    const target = await detectProxyTarget(proxyAddress);
-    return target;
-  } catch (e) {
-    console.error(e);
-  }
 };
 
 const ContractDetailPage = () => {
@@ -85,7 +76,7 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const implementationAddress = await getImplementationAddress(contractAddress);
+          const implementationAddress = await detectProxyTarget(contractAddress);
           if (implementationAddress) {
             setImplementationAddress(implementationAddress);
           }

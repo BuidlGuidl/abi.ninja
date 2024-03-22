@@ -19,15 +19,6 @@ enum TabName {
   addressAbi,
 }
 
-const getImplementationAddress = async (proxyAddress: Address) => {
-  try {
-    const target = await detectProxyTarget(proxyAddress);
-    return target;
-  } catch (e) {
-    console.error(e);
-  }
-};
-
 const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
@@ -60,7 +51,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const implementationAddress = await getImplementationAddress(verifiedContractAddress);
+        const implementationAddress = await detectProxyTarget(verifiedContractAddress);
         if (implementationAddress) {
           setImplementationAddress(implementationAddress);
         }
