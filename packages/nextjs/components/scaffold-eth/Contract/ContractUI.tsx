@@ -222,10 +222,12 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                       <span className="font-medium text-base mr-4"> {displayContractName} </span>
                       <Address address={initialContractData.address} />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
-                      <Address address={implementationAddress} />
-                    </div>
+                    {implementationAddress && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
+                        <Address address={implementationAddress} />
+                      </div>
+                    )}
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-bold">Balance:</span>
                       <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
