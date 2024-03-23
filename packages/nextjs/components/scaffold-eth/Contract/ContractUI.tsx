@@ -139,9 +139,9 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   return (
     <div className="drawer sm:drawer-open h-full">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-side h-full z-50 sm:z-10">
+      <div className="bg-neutral drawer-side h-full z-50 sm:z-10">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-6 pr-0 pb-3 bg-white h-full justify-between flex-nowrap">
+        <ul className="menu p-6 pr-0 pb-3 h-full justify-between flex-nowrap">
           <MethodSelector
             readMethodsWithInputsAndWriteMethods={readMethodsWithInputsAndWriteMethods}
             abi={abi}
@@ -153,10 +153,10 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       </div>
       <div className="drawer-content flex flex-col items-center justify-center overflow-auto">
         <div className={`grid grid-cols-1 lg:grid-cols-6 w-full my-0 ${className} h-full flex-grow`}>
-          <div className="col-span-6 grid grid-cols-1 gap-6 laptop:grid-cols-[repeat(13,_minmax(0,_1fr))] px-6 py-10">
+          <div className=" col-span-6 grid grid-cols-1 gap-6 laptop:grid-cols-[repeat(13,_minmax(0,_1fr))] px-6 py-10">
             <div className="laptop:col-span-8 flex flex-col gap-6">
               <div className="z-10">
-                <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
+                <div className="bg-neutral rounded-2xl shadow-xl border flex flex-col mt-10 relative">
                   <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                     <div className="flex items-center justify-center space-x-2">
                       <p className="my-0 text-sm font-bold">Read</p>
@@ -171,7 +171,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                 </div>
               </div>
               <div className="z-10">
-                <div className="bg-white rounded-2xl shadow-xl border flex flex-col mt-10 relative">
+                <div className="bg-neutral rounded-2xl shadow-xl border flex flex-col mt-10 relative">
                   <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                     <div className="flex items-center justify-center space-x-2">
                       <p className="my-0 text-sm font-bold">Write</p>
@@ -189,7 +189,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
             </div>
 
             <div className="laptop:col-span-5 flex flex-col mt-10">
-              <div className="bg-white border shadow-xl rounded-2xl px-6 mb-6 space-y-1 py-4">
+              <div className="bg-neutral border shadow-xl rounded-2xl px-6 mb-6 space-y-1 py-4">
                 <div className="flex">
                   <div className="flex flex-col gap-1">
                     <span className="font-bold pb-2">Contract Overview</span>
@@ -210,7 +210,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                   </p>
                 )}
               </div>
-              <div className="bg-white shadow-xl rounded-2xl px-6 py-4">
+              <div className="bg-neutral border shadow-xl rounded-2xl px-6 py-4">
                 <span className="block font-bold pb-3">Contract Data</span>
                 <ContractVariables
                   refreshDisplayVariables={refreshDisplayVariables}

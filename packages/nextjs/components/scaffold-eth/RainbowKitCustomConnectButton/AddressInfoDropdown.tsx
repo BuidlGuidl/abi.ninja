@@ -48,7 +48,7 @@ export const AddressInfoDropdown = ({
         </summary>
         <ul
           tabIndex={0}
-          className="dropdown-content menu z-[2] p-2 mt-2 bg-white border shadow-xl rounded-2xl text-black gap-1"
+          className="dropdown-content menu z-[2] p-2 mt-2  border shadow-xl rounded-2xl text-black gap-1"
         >
           <NetworkOptions hidden={!selectingNetwork} />
           <li className={selectingNetwork ? "hidden" : ""}>

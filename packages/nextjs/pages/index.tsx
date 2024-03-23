@@ -136,7 +136,7 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen w-full flex-col items-center justify-center rounded-2xl bg-white p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+        <div className="flex h-screen w-full flex-col items-center justify-center rounded-2xl  p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
           <div className="mt-10 flex flex-col items-center justify-center lg:w-10/12">
             <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
@@ -237,7 +237,7 @@ const Home: NextPage = () => {
             </div>
 
             <button
-              className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
+              className="btn btn-primary px-8 text-base border-2 hover: hover:text-primary"
               onClick={handleLoadContract}
               disabled={
                 (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
