@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Select, { OptionProps, components } from "react-select";
+import { useDarkMode } from "usehooks-ts";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -58,6 +59,23 @@ const IconOption = (props: OptionProps<Options>) => (
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const { isDarkMode } = useDarkMode();
+
+  const lightThemeColors = {
+    border: "#551d98",
+    hover: "#c1aeff",
+    background: "#f4f8ff",
+    textColor: "#353535",
+  };
+
+  const darkThemeColors = {
+    border: "#c1aeff",
+    hover: "#503E9D",
+    background: "#303030",
+    textColor: "#cccccc",
+  };
+
+  const themeColors = isDarkMode ? darkThemeColors : lightThemeColors;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -78,14 +96,15 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       onChange={onChange}
       components={{ Option: IconOption }}
       isSearchable={!isMobile}
-      className="text-sm w-44 max-w-xs  relative"
+      className="text-sm w-44 max-w-xs relative"
       theme={theme => ({
         ...theme,
         colors: {
           ...theme.colors,
-          primary25: "#efeaff",
-          primary50: "#c1aeff",
-          primary: "#551d98",
+          primary: themeColors.border, // Used for the control's border color
+          primary25: themeColors.hover, // Background color for the option when hovered
+          neutral0: themeColors.background, // Used for the background color of the control
+          neutral80: themeColors.textColor, // Used for the text color
         },
       })}
     />
