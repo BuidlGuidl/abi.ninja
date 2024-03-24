@@ -252,7 +252,7 @@ const Home: NextPage = () => {
                 "Load Contract"
               )}
             </button>
-            <SwitchTheme className="mt-4" />
+            <SwitchTheme className="my-4" />
           </div>
           <MiniFooter />
         </div>
