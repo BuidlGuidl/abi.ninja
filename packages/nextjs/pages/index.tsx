@@ -8,6 +8,7 @@ import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
@@ -136,22 +137,22 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen w-full flex-col items-center justify-center rounded-2xl  p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+        <div className="flex h-screen bg-neutral w-full flex-col items-center justify-center rounded-2xl p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
           <div className="mt-10 flex flex-col items-center justify-center lg:w-10/12">
-            <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
+            <Image src="/logo_transparent.svg" alt="logo" width={128} height={128} className="mb-4" />
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
             <div className="my-4">
               <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
             </div>
 
-            <div role="tablist" className="flex w-full border-b">
+            <div role="tablist" className="flex w-full ">
               <a
                 role="tab"
                 className={`inline-block px-2 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
                   activeTab === TabName.verifiedContract
-                    ? "border-purple-500"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-primary"
+                    : "border-transparent text-neutral-content hover:text-primary hover:border-secondary"
                 }`}
                 onClick={() => setActiveTab(TabName.verifiedContract)}
               >
@@ -161,8 +162,8 @@ const Home: NextPage = () => {
                 role="tab"
                 className={`inline-block px-4 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
                   activeTab === TabName.addressAbi
-                    ? "border-purple-500"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-primary"
+                    : "border-transparent text-neutral-content hover:text-primary hover:border-primary"
                 }`}
                 onClick={() => setActiveTab(TabName.addressAbi)}
               >
@@ -196,21 +197,21 @@ const Home: NextPage = () => {
                             <Link
                               href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
                               passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
+                              className="link w-1/3 text-center text-neutral-content no-underline"
                             >
                               DAI
                             </Link>
                             <Link
                               href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
                               passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
+                              className="link w-1/3 text-center text-neutral-content no-underline"
                             >
                               Gitcoin
                             </Link>
                             <Link
                               href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
                               passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
+                              className="link w-1/3 text-center text-neutral-content no-underline"
                             >
                               Opensea
                             </Link>
@@ -237,7 +238,7 @@ const Home: NextPage = () => {
             </div>
 
             <button
-              className="btn btn-primary px-8 text-base border-2 hover: hover:text-primary"
+              className="btn btn-primary px-8 text-base border-2"
               onClick={handleLoadContract}
               disabled={
                 (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
@@ -251,6 +252,7 @@ const Home: NextPage = () => {
                 "Load Contract"
               )}
             </button>
+            <SwitchTheme className="mt-4" />
           </div>
           <MiniFooter />
         </div>

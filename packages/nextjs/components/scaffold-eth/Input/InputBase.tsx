@@ -35,7 +35,7 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
     <div className={`flex bg-base-100 rounded-lg text-accent ${modifier}`}>
       {prefix}
       <input
-        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-accent h-10 px-4 border w-full placeholder:text-gray-400 text-accent"
+        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-accent h-10 px-4 border w-full placeholder:text-gray-400 "
         placeholder={placeholder}
         name={name}
         value={value?.toString()}

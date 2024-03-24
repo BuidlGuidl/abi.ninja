@@ -38,3 +38,7 @@ p {
 .input:focus {
   @apply outline-none;
 }
+
+.btn[disabled]  {
+  @apply bg-base-200;
+}
