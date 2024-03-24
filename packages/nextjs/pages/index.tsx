@@ -152,7 +152,7 @@ const Home: NextPage = () => {
                 className={`inline-block px-2 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
                   activeTab === TabName.verifiedContract
                     ? "border-primary"
-                    : "border-transparent text-neutral-content hover:text-primary hover:border-secondary"
+                    : "border-transparent text-neutral-content hover:text-accent hover:border-primary"
                 }`}
                 onClick={() => setActiveTab(TabName.verifiedContract)}
               >
@@ -163,7 +163,7 @@ const Home: NextPage = () => {
                 className={`inline-block px-4 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
                   activeTab === TabName.addressAbi
                     ? "border-primary"
-                    : "border-transparent text-neutral-content hover:text-primary hover:border-primary"
+                    : "border-transparent text-neutral-content hover:text-accent hover:border-primary"
                 }`}
                 onClick={() => setActiveTab(TabName.addressAbi)}
               >
