@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AlchemyProvider } from "@ethersproject/providers";
+import detectProxyTarget from "evm-proxy-detection";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
@@ -9,9 +11,9 @@ import { Footer } from "~~/components/Footer";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
-import detectProxyTarget from "~~/utils/abi.ninja/proxyContracts";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
   contractAddress: string;
@@ -76,7 +78,10 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const implementationAddress = await detectProxyTarget(contractAddress);
+          const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+          const requestFunc = ({ method, params }: { method: string; params: any }) =>
+            alchemyProvider.send(method, params);
+          const implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
           if (implementationAddress) {
             setImplementationAddress(implementationAddress);
           }

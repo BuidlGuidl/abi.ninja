@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AlchemyProvider } from "@ethersproject/providers";
+import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
@@ -9,9 +11,9 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import detectProxyTarget from "~~/utils/abi.ninja/proxyContracts";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -33,6 +35,9 @@ const Home: NextPage = () => {
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
 
+  const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+  const requestFunc = ({ method, params }: { method: string; params: any }) => alchemyProvider.send(method, params);
+
   const publicClient = usePublicClient({
     chainId: parseInt(network),
   });
@@ -51,7 +56,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const implementationAddress = await detectProxyTarget(verifiedContractAddress);
+        const implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
         if (implementationAddress) {
           setImplementationAddress(implementationAddress);
         }
