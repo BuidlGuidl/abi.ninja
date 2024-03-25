@@ -6,8 +6,7 @@ import { ContractWriteMethods } from "./ContractWriteMethods";
 import { AbiFunction } from "abitype";
 import { Abi } from "viem";
 import { useContractRead } from "wagmi";
-import { HeartIcon } from "@heroicons/react/24/outline";
-import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
+import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
@@ -142,35 +141,14 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
       <div className="drawer-side h-full z-50 sm:z-10">
         <label htmlFor="sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu p-6 pr-0 pb-3 bg-white h-full justify-between flex-nowrap">
+        <ul className="menu p-6 pr-6 pb-3 bg-white h-full justify-between flex-nowrap">
           <MethodSelector
             readMethodsWithInputsAndWriteMethods={readMethodsWithInputsAndWriteMethods}
             abi={abi}
             onMethodSelect={handleMethodSelect}
             removeMethod={removeMethod}
           />
-          <div className="flex justify-center items-center gap-1 text-xs w-full pr-6 pt-4">
-            <div className="mb-1">
-              <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
-                Fork me
-              </a>
-            </div>
-            <span>·</span>
-            <div className="flex justify-center items-center gap-2">
-              <p className="m-0 text-center">
-                Built with <HeartIcon className="inline-block h-4 w-4" /> at
-              </p>
-              <a
-                className="flex justify-center items-center gap-1"
-                href="https://buidlguidl.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <BuidlGuidlLogo className="w-3 h-5 pb-1" />
-                <span className="link">BuidlGuidl</span>
-              </a>
-            </div>
-          </div>
+          <MiniFooter />
         </ul>
       </div>
       <div className="drawer-content flex flex-col items-center justify-center overflow-auto">
