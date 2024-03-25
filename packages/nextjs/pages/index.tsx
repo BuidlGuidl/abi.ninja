@@ -18,6 +18,11 @@ enum TabName {
   addressAbi,
 }
 
+enum AbiInputMethod {
+  Manual,
+  Heimdall,
+}
+
 const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
@@ -29,8 +34,7 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
-  const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
-  const [isContract, setIsContract] = useState(false);
+  const [abiInputMethod, setAbiInputMethod] = useState(AbiInputMethod.Manual);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -64,7 +68,25 @@ const Home: NextPage = () => {
         } catch (etherscanError: any) {
           setIsAbiAvailable(false);
           console.error("Error fetching ABI from Etherscan: ", etherscanError);
-          notification.error(etherscanError.message || "Error occurred while fetching ABI");
+
+          const bytecode = await publicClient.getBytecode({
+            address: verifiedContractAddress,
+          });
+          const isContract = Boolean(bytecode) && bytecode !== "0x";
+
+          if (isContract) {
+            notification.error(
+              "The contract is not verified on Etherscan. Please provide ABI manually or decompile ABI(experimental)",
+              {
+                duration: 10000,
+                position: "bottom-left",
+              },
+            );
+            setLocalAbiContractAddress(verifiedContractAddress);
+            setActiveTab(TabName.addressAbi);
+          } else {
+            notification.error("Address is not a contract, are you sure you are on the correct chain?");
+          }
         }
       } finally {
         setIsFetchingAbi(false);
@@ -80,36 +102,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network, setContractAbi]);
-
-  useEffect(() => {
-    const checkContract = async () => {
-      if (!isAddress(localAbiContractAddress)) {
-        setIsContract(false);
-        return;
-      }
-
-      setIsCheckingContractAddress(true);
-      try {
-        const bytecode = await publicClient.getBytecode({
-          address: localAbiContractAddress,
-        });
-        const isContract = Boolean(bytecode) && bytecode !== "0x";
-        setIsContract(isContract);
-
-        if (!isContract) {
-          notification.error("Address is not a contract");
-        }
-      } catch (e) {
-        notification.error("Error while checking for contract address");
-        setIsContract(false);
-      } finally {
-        setIsCheckingContractAddress(false);
-      }
-    };
-
-    checkContract();
-  }, [localAbiContractAddress, publicClient]);
+  }, [verifiedContractAddress, network, setContractAbi, publicClient]);
 
   useEffect(() => {
     if (router.pathname === "/") {
@@ -118,9 +111,9 @@ const Home: NextPage = () => {
   }, [router.pathname, setContractAbi]);
 
   const handleLoadContract = () => {
-    if (activeTab === TabName.verifiedContract) {
+    if (isAbiAvailable) {
       router.push(`/${verifiedContractAddress}/${network}`);
-    } else if (activeTab === TabName.addressAbi) {
+    } else if (localContractAbi.length > 0) {
       try {
         setContractAbi(parseAndCorrectJSON(localContractAbi));
       } catch (error) {
@@ -129,6 +122,26 @@ const Home: NextPage = () => {
       }
       setAbiContractAddress(localAbiContractAddress);
       router.push(`/${localAbiContractAddress}/${network}`);
+    } else {
+      fetchAbiFromHeimdall(localAbiContractAddress);
+    }
+  };
+
+  const fetchAbiFromHeimdall = async (contractAddress: string) => {
+    setIsFetchingAbi(true);
+    try {
+      const response = await fetch(`https://heimdall-api.fly.dev/${network}/${contractAddress}`);
+      const abi = await response.json();
+      setContractAbi(abi);
+      setIsAbiAvailable(true);
+      setAbiContractAddress(contractAddress);
+      router.push(`/${contractAddress}/${network}`);
+    } catch (error) {
+      console.error("Error fetching ABI from Heimdall: ", error);
+      notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
+      setIsAbiAvailable(false);
+    } finally {
+      setIsFetchingAbi(false);
     }
   };
 
@@ -141,36 +154,23 @@ const Home: NextPage = () => {
             <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
             <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
             <p className="">Interact with any contract on Ethereum</p>
-            <div className="my-4">
+            <div className="mt-4">
               <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
             </div>
-
-            <div role="tablist" className="flex w-full border-b">
-              <a
-                role="tab"
-                className={`inline-block px-2 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
-                  activeTab === TabName.verifiedContract
-                    ? "border-purple-500"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab(TabName.verifiedContract)}
+            {activeTab === TabName.addressAbi && (
+              <div
+                className="text-sm link link-primary my-2"
+                onClick={() => {
+                  setActiveTab(TabName.verifiedContract);
+                  setVerifiedContractAddress("");
+                }}
               >
-                Verified Contract
-              </a>
-              <a
-                role="tab"
-                className={`inline-block px-4 py-2 text-sm w-full font-medium text-center border-b-2 hover:cursor-pointer ${
-                  activeTab === TabName.addressAbi
-                    ? "border-purple-500"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-                onClick={() => setActiveTab(TabName.addressAbi)}
-              >
-                Address + ABI
-              </a>
-            </div>
-
-            <div className="relative min-h-[150px] w-full overflow-hidden">
+                ← go back
+              </div>
+            )}
+            {/* placeholder to match height @todo make this better, bad practice! */}
+            {activeTab === TabName.verifiedContract && <div className="text-sm text-white my-2">‎</div>}
+            <div className="relative min-h-[150px] overflow-hidden w-[375px]">
               <div className="flex">
                 {tabValues.map(tabValue => (
                   <div
@@ -187,7 +187,7 @@ const Home: NextPage = () => {
                       <div className="my-4">
                         <AddressInput
                           value={verifiedContractAddress}
-                          placeholder="Verified contract address"
+                          placeholder="Contract address"
                           onChange={setVerifiedContractAddress}
                         />
                         <div className="flex flex-col text-sm">
@@ -218,22 +218,67 @@ const Home: NextPage = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="my-4 flex w-full flex-col gap-3">
-                        <AddressInput
-                          placeholder="Contract address"
-                          value={localAbiContractAddress}
-                          onChange={setLocalAbiContractAddress}
-                        />
-                        <InputBase
-                          placeholder="Contract ABI (json format)"
-                          value={localContractAbi}
-                          onChange={setLocalContractAbi}
-                        />
+                      <div className="flex w-full flex-col gap-3">
+                        {/* Tab navigation */}
+                        <div className="flex w-full border-b">
+                          <div
+                            role="tab"
+                            className={`inline-block px-4 py-2 text-xs whitespace-nowrap font-medium text-center w-1/2 cursor-pointer ${
+                              abiInputMethod === AbiInputMethod.Manual
+                                ? "border-b-2 border-purple-500 text-purple-500"
+                                : "border-b-2 border-transparent text-gray-500 hover:text-purple-700"
+                            }`}
+                            onClick={() => setAbiInputMethod(AbiInputMethod.Manual)}
+                          >
+                            Input ABI Manually
+                          </div>
+                          <div
+                            role="tab"
+                            className={`inline-block px-4 py-2 text-xs font-medium text-center w-1/2 cursor-pointer ${
+                              abiInputMethod === AbiInputMethod.Heimdall
+                                ? "border-b-2 border-purple-500 text-purple-500"
+                                : "border-b-2 border-transparent text-gray-500 hover:text-purple-700"
+                            }`}
+                            onClick={() => setAbiInputMethod(AbiInputMethod.Heimdall)}
+                          >
+                            Decompile ABI
+                          </div>
+                        </div>
+
+                        {/* Content based on active tab */}
+                        {abiInputMethod === AbiInputMethod.Manual ? (
+                          <>
+                            <AddressInput
+                              placeholder="Contract address"
+                              value={localAbiContractAddress}
+                              onChange={setLocalAbiContractAddress}
+                            />
+                            <InputBase
+                              placeholder="Contract ABI (json format)"
+                              value={localContractAbi}
+                              onChange={setLocalContractAbi}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <AddressInput
+                              placeholder="Contract address"
+                              value={localAbiContractAddress}
+                              onChange={setLocalAbiContractAddress}
+                            />
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
+              {activeTab !== TabName.verifiedContract && abiInputMethod === AbiInputMethod.Heimdall && (
+                <div className="text-xs mt-24 text-center">
+                  Warning: this feature is experimental. You may lose funds if you interact with contracts using this
+                  feature.
+                </div>
+              )}
             </div>
 
             <button
@@ -242,14 +287,14 @@ const Home: NextPage = () => {
               disabled={
                 (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
                 (activeTab === TabName.addressAbi &&
-                  (!isContract || !localContractAbi || localContractAbi.length === 0))
+                  abiInputMethod === AbiInputMethod.Manual &&
+                  (!localContractAbi || localContractAbi.length === 0)) ||
+                (activeTab === TabName.addressAbi &&
+                  abiInputMethod === AbiInputMethod.Heimdall &&
+                  !isAddress(localAbiContractAddress))
               }
             >
-              {isFetchingAbi || isCheckingContractAddress ? (
-                <span className="loading loading-spinner"></span>
-              ) : (
-                "Load Contract"
-              )}
+              {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
             </button>
           </div>
           <MiniFooter />
