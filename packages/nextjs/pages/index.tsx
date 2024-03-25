@@ -129,8 +129,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (router.pathname === "/") {
       setContractAbi([]);
+      setImplementationAddress("");
     }
-  }, [router.pathname, setContractAbi]);
+  }, [router.pathname, setContractAbi, setImplementationAddress]);
 
   const handleLoadContract = () => {
     if (activeTab === TabName.verifiedContract) {
