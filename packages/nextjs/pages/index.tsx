@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { AlchemyProvider } from "@ethersproject/providers";
-import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
@@ -15,6 +14,7 @@ import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
+import detectProxyTarget from "~~/utils/testProxyContracts";
 
 enum TabName {
   verifiedContract,
