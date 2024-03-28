@@ -7,8 +7,6 @@ import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
 import { useDarkMode } from "usehooks-ts";
 import { WagmiConfig } from "wagmi";
-// import { Footer } from "~~/components/Footer";
-// import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
@@ -29,11 +27,9 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <div className="flex min-h-screen flex-col">
-        {/* <Header /> */}
         <main className="relative flex flex-1 flex-col">
           <Component {...pageProps} />
         </main>
-        {/* <Footer /> */}
       </div>
       <Toaster />
     </>

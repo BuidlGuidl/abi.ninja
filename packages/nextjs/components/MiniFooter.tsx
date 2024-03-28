@@ -3,31 +3,27 @@ import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 
 export const MiniFooter = () => {
   return (
-    <div className="mt-10">
-      <ul className="menu menu-horizontal w-full">
-        <div className="flex w-full items-center justify-center gap-2 text-xs">
-          <div className="text-center">
-            <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
-              Fork me
-            </a>
-          </div>
-          <span>·</span>
-          <div className="flex items-center justify-center gap-2">
-            <p className="m-0 text-center">
-              Built with <HeartIcon className="inline-block h-4 w-4" /> at
-            </p>
-            <a
-              className="flex items-center justify-center gap-1"
-              href="https://buidlguidl.com/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <BuidlGuidlLogo className="h-5 w-3 pb-1" />
-              <span className="link">BuidlGuidl</span>
-            </a>
-          </div>
-        </div>
-      </ul>
+    <div className="flex justify-center items-center gap-1 text-xs w-full mt-10">
+      <div className="mb-1">
+        <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
+          Fork me
+        </a>
+      </div>
+      <span>·</span>
+      <div className="flex justify-center items-center gap-2">
+        <p className="m-0 text-center">
+          Built with <HeartIcon className="inline-block h-4 w-4" /> at
+        </p>
+        <a
+          className="flex justify-center items-center gap-1"
+          href="https://buidlguidl.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <BuidlGuidlLogo className="w-3 h-5 pb-1" />
+          <span className="link">BuidlGuidl</span>
+        </a>
+      </div>
     </div>
   );
 };
