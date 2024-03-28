@@ -5,10 +5,11 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
+import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
-import { AddressInput, InputBase } from "~~/components/scaffold-eth";
+import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
@@ -16,11 +17,6 @@ import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 enum TabName {
   verifiedContract,
   addressAbi,
-}
-
-enum AbiInputMethod {
-  Manual,
-  Heimdall,
 }
 
 const tabValues = Object.values(TabName) as TabName[];
@@ -34,7 +30,6 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
-  const [abiInputMethod, setAbiInputMethod] = useState(AbiInputMethod.Manual);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -95,7 +90,7 @@ const Home: NextPage = () => {
 
     if (isAddress(verifiedContractAddress)) {
       if (network === "31337") {
-        notification.error("To interact with Localhost contracts, please use Address + ABI tab");
+        setActiveTab(TabName.addressAbi);
         return;
       }
       fetchContractAbi();
@@ -113,17 +108,21 @@ const Home: NextPage = () => {
   const handleLoadContract = () => {
     if (isAbiAvailable) {
       router.push(`/${verifiedContractAddress}/${network}`);
-    } else if (localContractAbi.length > 0) {
-      try {
-        setContractAbi(parseAndCorrectJSON(localContractAbi));
-      } catch (error) {
-        notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
-        return;
-      }
-      setAbiContractAddress(localAbiContractAddress);
+    }
+  };
+
+  const handleUserProvidedAbi = () => {
+    if (!localContractAbi) {
+      notification.error("Please provide an ABI.");
+      return;
+    }
+    try {
+      const parsedAbi = parseAndCorrectJSON(localContractAbi);
+      setContractAbi(parsedAbi);
       router.push(`/${localAbiContractAddress}/${network}`);
-    } else {
-      fetchAbiFromHeimdall(localAbiContractAddress);
+      notification.success("ABI successfully loaded.");
+    } catch (error) {
+      notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
     }
   };
 
@@ -149,155 +148,125 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen w-full flex-col items-center justify-center rounded-2xl bg-white p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
-          <div className="mt-10 flex flex-col items-center justify-center lg:w-10/12">
-            <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
-            <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
-            <p className="">Interact with any contract on Ethereum</p>
-            <div className="mt-4">
-              <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
-            </div>
-            {activeTab === TabName.addressAbi && (
+        <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+          <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
+            {tabValues.map(tabValue => (
               <div
-                className="text-sm link link-primary my-2"
-                onClick={() => {
-                  setActiveTab(TabName.verifiedContract);
-                  setVerifiedContractAddress("");
-                }}
+                key={tabValue}
+                className={`absolute flex flex-col justify-center inset-0 w-full transition-transform duration-300 ease-in-out px-1 ${
+                  activeTab === tabValue
+                    ? "translate-x-0"
+                    : activeTab < tabValue
+                    ? "translate-x-full"
+                    : "-translate-x-full"
+                }`}
               >
-                ← go back
-              </div>
-            )}
-            {/* placeholder to match height @todo make this better, bad practice! */}
-            {activeTab === TabName.verifiedContract && <div className="text-sm text-white my-2">‎</div>}
-            <div className="relative min-h-[150px] overflow-hidden w-[375px]">
-              <div className="flex">
-                {tabValues.map(tabValue => (
-                  <div
-                    key={tabValue}
-                    className={`absolute inset-0 w-full transition-transform duration-300 ease-in-out px-1 ${
-                      activeTab === tabValue
-                        ? "translate-x-0"
-                        : activeTab < tabValue
-                        ? "translate-x-full"
-                        : "-translate-x-full"
-                    }`}
-                  >
-                    {tabValue === TabName.verifiedContract ? (
-                      <div className="my-4">
-                        <AddressInput
-                          value={verifiedContractAddress}
-                          placeholder="Contract address"
-                          onChange={setVerifiedContractAddress}
-                        />
-                        <div className="flex flex-col text-sm">
-                          <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
-                          <div className="flex justify-around">
-                            <Link
-                              href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              DAI
-                            </Link>
-                            <Link
-                              href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              Gitcoin
-                            </Link>
-                            <Link
-                              href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
-                              passHref
-                              className="link w-1/3 text-center text-purple-700 no-underline"
-                            >
-                              Opensea
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex w-full flex-col gap-3">
-                        {/* Tab navigation */}
-                        <div className="flex w-full border-b">
-                          <div
-                            role="tab"
-                            className={`inline-block px-4 py-2 text-xs whitespace-nowrap font-medium text-center w-1/2 cursor-pointer ${
-                              abiInputMethod === AbiInputMethod.Manual
-                                ? "border-b-2 border-purple-500 text-purple-500"
-                                : "border-b-2 border-transparent text-gray-500 hover:text-purple-700"
-                            }`}
-                            onClick={() => setAbiInputMethod(AbiInputMethod.Manual)}
-                          >
-                            Input ABI Manually
-                          </div>
-                          <div
-                            role="tab"
-                            className={`inline-block px-4 py-2 text-xs font-medium text-center w-1/2 cursor-pointer ${
-                              abiInputMethod === AbiInputMethod.Heimdall
-                                ? "border-b-2 border-purple-500 text-purple-500"
-                                : "border-b-2 border-transparent text-gray-500 hover:text-purple-700"
-                            }`}
-                            onClick={() => setAbiInputMethod(AbiInputMethod.Heimdall)}
-                          >
-                            Decompile ABI
-                          </div>
-                        </div>
+                {tabValue === TabName.verifiedContract ? (
+                  <div className="my-16 flex flex-col items-center justify-center">
+                    <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
+                    <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
+                    <p>Interact with any contract on Ethereum</p>
+                    <div className="mt-4">
+                      <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
+                    </div>
 
-                        {/* Content based on active tab */}
-                        {abiInputMethod === AbiInputMethod.Manual ? (
-                          <>
-                            <AddressInput
-                              placeholder="Contract address"
-                              value={localAbiContractAddress}
-                              onChange={setLocalAbiContractAddress}
-                            />
-                            <InputBase
-                              placeholder="Contract ABI (json format)"
-                              value={localContractAbi}
-                              onChange={setLocalContractAbi}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <AddressInput
-                              placeholder="Contract address"
-                              value={localAbiContractAddress}
-                              onChange={setLocalAbiContractAddress}
-                            />
-                          </>
-                        )}
+                    <div className="w-10/12 my-8">
+                      <AddressInput
+                        placeholder="Contract address"
+                        value={verifiedContractAddress}
+                        onChange={setVerifiedContractAddress}
+                      />
+                    </div>
+
+                    <button
+                      className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
+                      onClick={handleLoadContract}
+                      disabled={!isAbiAvailable}
+                    >
+                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
+                    </button>
+                    <div className="flex flex-col text-sm w-4/5">
+                      <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
+                      <div className="flex justify-center w-full">
+                        <Link
+                          href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
+                          passHref
+                          className="link w-1/3 text-center text-purple-700 no-underline"
+                        >
+                          DAI
+                        </Link>
+                        <Link
+                          href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
+                          passHref
+                          className="link w-1/3 text-center text-purple-700 no-underline"
+                        >
+                          Gitcoin
+                        </Link>
+                        <Link
+                          href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
+                          passHref
+                          className="link w-1/3 text-center text-purple-700 no-underline"
+                        >
+                          Opensea
+                        </Link>
                       </div>
-                    )}
+                    </div>
                   </div>
-                ))}
-              </div>
-              {activeTab !== TabName.verifiedContract && abiInputMethod === AbiInputMethod.Heimdall && (
-                <div className="text-xs mt-24 text-center">
-                  Warning: this feature is experimental. You may lose funds if you interact with contracts using this
-                  feature.
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="flex w-full flex-col items-center gap-3 p-6">
+                    <div className="flex justify-center mb-6">
+                      <button
+                        className="btn btn-ghost absolute left-4 px-2 btn-primary"
+                        onClick={() => {
+                          setActiveTab(TabName.verifiedContract);
+                          setVerifiedContractAddress("");
+                        }}
+                      >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                        Go back
+                      </button>
+                      <Image src="/logo_inv.svg" alt="logo" width={64} height={64} className="mb-4" />
+                      <div className="absolute top-8 right-4">
+                        <NetworksDropdown
+                          onChange={option => setNetwork(option ? option.value.toString() : "")}
+                          additionalClasses="text-xs w-28"
+                        />
+                      </div>
+                    </div>
 
-            <button
-              className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
-              onClick={handleLoadContract}
-              disabled={
-                (activeTab === TabName.verifiedContract && (!isAbiAvailable || !verifiedContractAddress)) ||
-                (activeTab === TabName.addressAbi &&
-                  abiInputMethod === AbiInputMethod.Manual &&
-                  (!localContractAbi || localContractAbi.length === 0)) ||
-                (activeTab === TabName.addressAbi &&
-                  abiInputMethod === AbiInputMethod.Heimdall &&
-                  !isAddress(localAbiContractAddress))
-              }
-            >
-              {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
-            </button>
+                    <div className="flex flex-col items-center w-4/5 border-b-2 pb-8">
+                      <div className="flex justify-center items-center gap-1">
+                        <MagnifyingGlassIcon className="h-5 w-5" />
+                        <h1 className="font-semibold text-lg mb-0">Contract not verified</h1>
+                      </div>
+                      <p className="bg-slate-100 px-2 rounded-md border border-slate-300 text-sm shadow-sm">
+                        {localAbiContractAddress}
+                      </p>
+                      <h4 className="text-center mb-8 font-semibold">
+                        You can decompile the contract (beta) or import the ABI manually below.
+                      </h4>
+                      <button className="btn btn-primary" onClick={() => fetchAbiFromHeimdall(localAbiContractAddress)}>
+                        {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
+                      </button>
+                    </div>
+                    <div className="w-full flex flex-col items-center gap-1">
+                      <h1 className="mt-4 font-semibold text-lg">Manually import ABI</h1>
+                      <textarea
+                        className="textarea bg-slate-100 w-4/5 h-24 mb-4 resize-none"
+                        placeholder="Paste contract ABI in JSON format here"
+                        value={localContractAbi}
+                        onChange={e => setLocalContractAbi(e.target.value)}
+                      ></textarea>
+                      <button className="btn btn-primary" onClick={handleUserProvidedAbi}>
+                        Import ABI
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          <MiniFooter />
+          {activeTab === TabName.verifiedContract && <MiniFooter />}
         </div>
       </div>
     </>
