@@ -56,7 +56,13 @@ const IconOption = (props: OptionProps<Options>) => (
   </Option>
 );
 
-export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
+export const NetworksDropdown = ({
+  onChange,
+  additionalClasses,
+}: {
+  onChange: (options: any) => any;
+  additionalClasses?: string;
+}) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -78,7 +84,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       onChange={onChange}
       components={{ Option: IconOption }}
       isSearchable={!isMobile}
-      className="text-sm w-44 max-w-xs bg-white relative"
+      className={`max-w-xs bg-white relative ${additionalClasses ? additionalClasses : "text-sm w-44"}`}
       theme={theme => ({
         ...theme,
         colors: {
