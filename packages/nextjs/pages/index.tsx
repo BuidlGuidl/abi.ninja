@@ -148,7 +148,7 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white p-2 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+        <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
               <div
