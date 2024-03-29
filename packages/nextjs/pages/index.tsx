@@ -218,7 +218,7 @@ const Home: NextPage = () => {
                         <ChevronLeftIcon className="h-4 w-4" />
                         Go back
                       </button>
-                      <Image src="/logo_inv.svg" alt="logo" width={64} height={64} className="mb-4" />
+                      <Image src="/logo_inv.svg" alt="logo" width={64} height={64} className="mb-2" />
                     </div>
 
                     <div className="flex flex-col items-center w-4/5 border-b-2 pb-8">
@@ -229,22 +229,22 @@ const Home: NextPage = () => {
                       <p className="bg-slate-100 px-2 rounded-md border border-slate-300 text-sm shadow-sm">
                         {localAbiContractAddress}
                       </p>
-                      <h4 className="text-center mb-8 font-semibold">
+                      <h4 className="text-center mb-6 font-semibold leading-tight">
                         You can decompile the contract (beta) or import the ABI manually below.
                       </h4>
                       <button className="btn btn-primary" onClick={() => fetchAbiFromHeimdall(localAbiContractAddress)}>
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
                       </button>
                     </div>
-                    <div className="w-full flex flex-col items-center gap-1">
-                      <h1 className="mt-4 font-semibold text-lg">Manually import ABI</h1>
+                    <div className="w-full flex flex-col items-center gap-2">
+                      <h1 className="mt-2 font-semibold text-lg">Manually import ABI</h1>
                       <textarea
                         className="textarea bg-slate-100 w-4/5 h-24 mb-4 resize-none"
                         placeholder="Paste contract ABI in JSON format here"
                         value={localContractAbi}
                         onChange={e => setLocalContractAbi(e.target.value)}
                       ></textarea>
-                      <button className="btn btn-primary" onClick={handleUserProvidedAbi}>
+                      <button className="btn btn-primary mb-12" onClick={handleUserProvidedAbi}>
                         Import ABI
                       </button>
                     </div>
