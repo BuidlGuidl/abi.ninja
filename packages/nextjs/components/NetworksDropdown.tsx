@@ -94,6 +94,9 @@ export const NetworksDropdown = ({
           primary: "#551d98",
         },
       })}
+      styles={{
+        menuList: provided => ({ ...provided, maxHeight: 280, overflow: "auto" }),
+      }}
     />
   );
 };
