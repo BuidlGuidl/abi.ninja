@@ -178,8 +178,8 @@ const Home: NextPage = () => {
                     >
                       {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
                     </button>
-                    <div className="flex flex-col text-sm w-4/5">
-                      <div className="mb-2 mt-4 text-center font-semibold">Quick Access</div>
+                    <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
+                      <div className="mb-2 text-center font-semibold">Quick Access</div>
                       <div className="flex justify-center w-full">
                         <Link
                           href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
