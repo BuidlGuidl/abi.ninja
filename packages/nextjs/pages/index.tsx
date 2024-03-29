@@ -219,12 +219,6 @@ const Home: NextPage = () => {
                         Go back
                       </button>
                       <Image src="/logo_inv.svg" alt="logo" width={64} height={64} className="mb-4" />
-                      <div className="absolute top-8 right-4">
-                        <NetworksDropdown
-                          onChange={option => setNetwork(option ? option.value.toString() : "")}
-                          additionalClasses="text-xs w-28"
-                        />
-                      </div>
                     </div>
 
                     <div className="flex flex-col items-center w-4/5 border-b-2 pb-8">
