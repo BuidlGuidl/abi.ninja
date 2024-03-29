@@ -3,7 +3,7 @@ import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 
 export const MiniFooter = () => {
   return (
-    <div className="flex justify-center items-center gap-1 text-xs w-full mt-10">
+    <div className="flex justify-center items-center gap-1 text-xs w-full mt-10 z-10">
       <div className="mb-1">
         <a href="https://github.com/BuidlGuidl/abi.ninja" target="_blank" rel="noreferrer" className="link">
           Fork me
