@@ -70,13 +70,6 @@ const Home: NextPage = () => {
           const isContract = Boolean(bytecode) && bytecode !== "0x";
 
           if (isContract) {
-            notification.error(
-              "The contract is not verified on Etherscan. Please provide ABI manually or decompile ABI(experimental)",
-              {
-                duration: 10000,
-                position: "bottom-left",
-              },
-            );
             setLocalAbiContractAddress(verifiedContractAddress);
             setActiveTab(TabName.addressAbi);
           } else {
