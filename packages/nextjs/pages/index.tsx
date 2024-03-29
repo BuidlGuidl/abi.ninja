@@ -253,7 +253,7 @@ const Home: NextPage = () => {
               </div>
             ))}
           </div>
-          {activeTab === TabName.verifiedContract && <MiniFooter />}
+          <MiniFooter />
         </div>
       </div>
     </>
