@@ -1,12 +1,22 @@
 # ABI Ninja
 
-Interact with any contract on Ethereum. You just need the Contract address (if it's verified) or its ABI + Contract address.
+Interact with any contract on Ethereum. ABI Ninja provides an intuitive frontend for contracts from most popular EVM networks, currently supporting:
 
-Built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
+- **Verified contracts**. Pulls the code from [AnyABI](https://anyabi.xyz/) and [Etherscan API](https://docs.etherscan.io/) as a fallback option.
+- **Unverified contracts**. Two different options are available:
+  - Decompile using [`heimdall-rs`](https://github.com/Jon-Becker/heimdall-rs) (experimental).
+  - Provide the ABI and the contract address.
+- **Proxy contracts**. Currently using [`evm-proxy-detection`](https://github.com/gnosis/evm-proxy-detection) to detect proxy contracts and provide the implementation address.
 
-![ABINinja - Index](.github/img/ui1.png)
+ABI Ninja (v2) is built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
 
-![ABINinja - Dashboard](.github/img/ui2.png)
+|                                                     Homepage                                                      |                                                   Unverified Contract Options                                                   |
+| :---------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
+| ![ABINinja - Index](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/3b7e0f12-1423-4835-bda3-2e12d65b4f15) | ![ABINinja - Unverified Contract](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/d30d76a3-35d0-4b3f-8633-c8e531999be6) |
+
+Friendly UI even for the most complex data structures:
+
+![ABINinja - Contract UI](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/7b3ec72b-c70b-4357-9f76-d10cb673530c)
 
 # 🏄‍♂️ Development Quick Start
 
