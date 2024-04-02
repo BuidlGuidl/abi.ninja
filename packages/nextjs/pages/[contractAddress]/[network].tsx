@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AlchemyProvider } from "@ethersproject/providers";
+import detectProxyTarget from "evm-proxy-detection";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
@@ -8,6 +10,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
 
@@ -32,10 +35,12 @@ const ContractDetailPage = () => {
     contractAbi: storedAbi,
     setMainChainId,
     chainId,
+    setImplementationAddress,
   } = useAbiNinjaState(state => ({
     contractAbi: state.contractAbi,
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
+    setImplementationAddress: state.setImplementationAddress,
   }));
 
   const getNetworkName = (chainId: number) => {
@@ -72,7 +77,14 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const abi = await fetchContractABIFromAnyABI(contractAddress, parsedNetworkId);
+          const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+          const requestFunc = ({ method, params }: { method: string; params: any }) =>
+            alchemyProvider.send(method, params);
+          const implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
+          if (implementationAddress) {
+            setImplementationAddress(implementationAddress);
+          }
+          const abi = await fetchContractABIFromAnyABI(implementationAddress || contractAddress, parsedNetworkId);
           if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
           setContractData({ abi, address: contractAddress });
           setError(null);
@@ -102,7 +114,7 @@ const ContractDetailPage = () => {
         }
       }
     }
-  }, [contractAddress, network, storedAbi, setMainChainId]);
+  }, [contractAddress, network, storedAbi, setMainChainId, setImplementationAddress]);
 
   return (
     <>

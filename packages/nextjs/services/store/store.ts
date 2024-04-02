@@ -17,6 +17,8 @@ type AbiNinjaState = {
   setContractAbi: (newAbi: Abi) => void;
   abiContractAddress: Address;
   setAbiContractAddress: (newAbiContractAddress: Address) => void;
+  implementationAddress: Address;
+  setImplementationAddress: (newImplementationAddress: Address) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -33,4 +35,6 @@ export const useAbiNinjaState = create<AbiNinjaState>(set => ({
   setContractAbi: (newAbi: Abi): void => set({ contractAbi: newAbi }),
   abiContractAddress: "",
   setAbiContractAddress: (newAddress: Address): void => set({ abiContractAddress: newAddress }),
+  implementationAddress: "",
+  setImplementationAddress: (newAddress: Address): void => set({ implementationAddress: newAddress }),
 }));

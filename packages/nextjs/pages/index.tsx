@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { AlchemyProvider } from "@ethersproject/providers";
+import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
@@ -9,6 +11,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
@@ -32,13 +35,17 @@ const Home: NextPage = () => {
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
 
+  const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+  const requestFunc = ({ method, params }: { method: string; params: any }) => alchemyProvider.send(method, params);
+
   const publicClient = usePublicClient({
     chainId: parseInt(network),
   });
 
-  const { setContractAbi, setAbiContractAddress } = useAbiNinjaState(state => ({
+  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
+    setImplementationAddress: state.setImplementationAddress,
   }));
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
@@ -49,7 +56,14 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
+        const implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
+        if (implementationAddress) {
+          setImplementationAddress(implementationAddress);
+        }
+        const abi = await fetchContractABIFromAnyABI(
+          implementationAddress || verifiedContractAddress,
+          parseInt(network),
+        );
         if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
         setContractAbi(abi);
         setIsAbiAvailable(true);
@@ -80,6 +94,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verifiedContractAddress, network, setContractAbi]);
 
   useEffect(() => {
@@ -114,8 +129,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (router.pathname === "/") {
       setContractAbi([]);
+      setImplementationAddress("");
     }
-  }, [router.pathname, setContractAbi]);
+  }, [router.pathname, setContractAbi, setImplementationAddress]);
 
   const handleLoadContract = () => {
     if (activeTab === TabName.verifiedContract) {
