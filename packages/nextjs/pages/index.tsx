@@ -124,6 +124,11 @@ const Home: NextPage = () => {
     try {
       const response = await fetch(`https://heimdall-api.fly.dev/${network}/${contractAddress}`);
       const abi = await response.json();
+      if (abi.length === 0) {
+        notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
+        setIsFetchingAbi(false);
+        return;
+      }
       setContractAbi(abi);
       setIsAbiAvailable(true);
       setAbiContractAddress(contractAddress);
