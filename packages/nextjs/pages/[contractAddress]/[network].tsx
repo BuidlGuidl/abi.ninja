@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AlchemyProvider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import detectProxyTarget from "evm-proxy-detection";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, isAddress } from "viem";
+import { Abi, extractChain, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -23,6 +23,8 @@ type ContractData = {
   abi: Abi;
   address: string;
 };
+
+type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const ContractDetailPage = () => {
   const router = useRouter();
@@ -77,10 +79,23 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const alchemyProvider = new AlchemyProvider(undefined, scaffoldConfig.alchemyApiKey);
-          const requestFunc = ({ method, params }: { method: string; params: any }) =>
-            alchemyProvider.send(method, params);
-          const implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
+          const chain = extractChain({
+            id: parseInt(network) as AllowedNetwork,
+            chains: Object.values(scaffoldConfig.targetNetworks),
+          });
+          // @ts-expect-error this might be present or might not be
+          const alchmeyRPCURL = chain.rpcUrls?.alchemy?.http[0];
+          let implementationAddress = undefined;
+          if (alchmeyRPCURL) {
+            const alchemyProvider = new JsonRpcProvider(
+              `${alchmeyRPCURL}/${scaffoldConfig.alchemyApiKey}`,
+              parseInt(network),
+            );
+            const requestFunc = ({ method, params }: { method: string; params: any }) =>
+              alchemyProvider.send(method, params);
+            implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
+          }
+
           if (implementationAddress) {
             setImplementationAddress(implementationAddress);
           }

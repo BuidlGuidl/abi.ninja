@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { AlchemyProvider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
-import { Address, isAddress } from "viem";
+import { Address, extractChain, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -21,6 +21,8 @@ enum TabName {
   addressAbi,
 }
 
+type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
+
 const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
@@ -34,9 +36,6 @@ const Home: NextPage = () => {
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
-
-  const alchemyProvider = new AlchemyProvider(undefined, scaffoldConfig.alchemyApiKey);
-  const requestFunc = ({ method, params }: { method: string; params: any }) => alchemyProvider.send(method, params);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -56,7 +55,23 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
+        const chain = extractChain({
+          id: parseInt(network) as AllowedNetwork,
+          chains: Object.values(scaffoldConfig.targetNetworks),
+        });
+        // @ts-expect-error this might be present or might not be
+        const alchmeyRPCURL = chain.rpcUrls?.alchemy?.http[0];
+        let implementationAddress = undefined;
+        if (alchmeyRPCURL) {
+          const alchemyProvider = new JsonRpcProvider(
+            `${alchmeyRPCURL}/${scaffoldConfig.alchemyApiKey}`,
+            parseInt(network),
+          );
+          const requestFunc = ({ method, params }: { method: string; params: any }) =>
+            alchemyProvider.send(method, params);
+          implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
+        }
+
         if (implementationAddress) {
           setImplementationAddress(implementationAddress);
         }
