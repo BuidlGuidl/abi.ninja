@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   const [isCheckingContractAddress, setIsCheckingContractAddress] = useState(false);
   const [isContract, setIsContract] = useState(false);
 
-  const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+  const alchemyProvider = new AlchemyProvider(undefined, scaffoldConfig.alchemyApiKey);
   const requestFunc = ({ method, params }: { method: string; params: any }) => alchemyProvider.send(method, params);
 
   const publicClient = usePublicClient({

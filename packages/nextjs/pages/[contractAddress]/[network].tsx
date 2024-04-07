@@ -77,7 +77,7 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const alchemyProvider = new AlchemyProvider(parseInt(network), scaffoldConfig.alchemyApiKey);
+          const alchemyProvider = new AlchemyProvider(undefined, scaffoldConfig.alchemyApiKey);
           const requestFunc = ({ method, params }: { method: string; params: any }) =>
             alchemyProvider.send(method, params);
           const implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
