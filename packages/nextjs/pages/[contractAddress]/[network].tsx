@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, extractChain, isAddress } from "viem";
+import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -22,8 +22,6 @@ type ContractData = {
   abi: Abi;
   address: string;
 };
-
-type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const ContractDetailPage = () => {
   const router = useRouter();
