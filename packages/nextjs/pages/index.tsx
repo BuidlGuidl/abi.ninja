@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import { Address, isAddress } from "viem";
+import { Address, extractChain, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -18,6 +18,8 @@ enum TabName {
   verifiedContract,
   addressAbi,
 }
+
+type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const tabValues = Object.values(TabName) as TabName[];
 
