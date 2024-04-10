@@ -1,6 +1,6 @@
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Select, { OptionProps, components } from "react-select";
-import { useIsMobile } from "~~/hooks/useIsMobile";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -57,7 +57,18 @@ const IconOption = (props: OptionProps<Options>) => (
 );
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
-  const isMobile = useIsMobile();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(max-width: 640px)");
+      setIsMobile(mediaQuery.matches);
+
+      const handleResize = () => setIsMobile(mediaQuery.matches);
+      mediaQuery.addEventListener("change", handleResize);
+      return () => mediaQuery.removeEventListener("change", handleResize);
+    }
+  }, []);
 
   return (
     <Select

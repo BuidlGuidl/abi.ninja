@@ -2,7 +2,6 @@ import { AugmentedAbiFunction } from "./ContractUI";
 import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
 import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useIsMobile } from "~~/hooks/useIsMobile";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
 export const ContractReadMethods = ({
@@ -12,8 +11,6 @@ export const ContractReadMethods = ({
   deployedContractData: Contract<ContractName>;
   removeMethod: (methodName: string) => void;
 }) => {
-  const isMobile = useIsMobile();
-
   if (!deployedContractData) {
     return null;
   }
@@ -37,9 +34,7 @@ export const ContractReadMethods = ({
   if (!functionsToDisplay.length) {
     return (
       <div className="py-5">
-        <span className="font-light text-gray-500 my-5">
-          Please select read methods from the {isMobile ? "hamburger menu" : "sidebar"}.
-        </span>
+        <span className="font-light text-gray-500 my-5">Please select read methods from the sidebar.</span>
       </div>
     );
   }
