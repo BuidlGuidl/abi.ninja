@@ -2,6 +2,7 @@ import { AugmentedAbiFunction } from "./ContractUI";
 import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
 import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useIsMobile } from "~~/hooks/useIsMobile";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
 export const ContractWriteMethods = ({
@@ -13,6 +14,8 @@ export const ContractWriteMethods = ({
   deployedContractData: Contract<ContractName>;
   removeMethod: (methodName: string) => void;
 }) => {
+  const isMobile = useIsMobile();
+
   if (!deployedContractData) {
     return null;
   }
@@ -35,7 +38,9 @@ export const ContractWriteMethods = ({
   if (!functionsToDisplay.length) {
     return (
       <div className="py-5">
-        <span className="font-light text-gray-500">Please select write methods from the sidebar.</span>
+        <span className="font-light text-gray-500">
+          Please select read methods from the {isMobile ? "hamburger menu" : "sidebar"}.
+        </span>
       </div>
     );
   }
