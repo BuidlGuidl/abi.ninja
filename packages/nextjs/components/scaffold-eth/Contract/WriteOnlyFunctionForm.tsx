@@ -130,7 +130,7 @@ export const WriteOnlyFunctionForm = ({
                 wrongNetwork &&
                 "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
               }`}
-              data-tip={`${wrongNetwork && "Wrong netowrk"}`}
+              data-tip={`${wrongNetwork && "Wrong network"}`}
             >
               <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isLoading} onClick={handleWrite}>
                 {isLoading && <span className="loading loading-spinner loading-xs"></span>}
