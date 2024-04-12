@@ -1,14 +1,14 @@
-const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
-const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50";
+const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
+const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50" as const;
 // const OPEN_ZEPPELIN_IMPLEMENTATION_SLOT = "0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3";
-const EIP_1822_LOGIC_SLOT = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7";
+const EIP_1822_LOGIC_SLOT = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7" as const;
 const EIP_1167_BEACON_METHODS = [
   "0x5c60da1b00000000000000000000000000000000000000000000000000000000",
   "0xda52571600000000000000000000000000000000000000000000000000000000",
-];
-const EIP_897_INTERFACE = ["0x5c60da1b00000000000000000000000000000000000000000000000000000000"];
-const GNOSIS_SAFE_PROXY_INTERFACE = ["0xa619486e00000000000000000000000000000000000000000000000000000000"];
-const COMPTROLLER_PROXY_INTERFACE = ["0xbb82aa5e00000000000000000000000000000000000000000000000000000000"];
+] as const;
+const EIP_897_INTERFACE = ["0x5c60da1b00000000000000000000000000000000000000000000000000000000"] as const;
+const GNOSIS_SAFE_PROXY_INTERFACE = ["0xa619486e00000000000000000000000000000000000000000000000000000000"] as const;
+const COMPTROLLER_PROXY_INTERFACE = ["0xbb82aa5e00000000000000000000000000000000000000000000000000000000"] as const;
 
 const readAddress = (value: string): string => {
   if (typeof value !== "string" || value === "0x") {
@@ -73,7 +73,7 @@ export const detectProxyTarget = async (proxyAddress: string, client: any): Prom
         const resolvedBeaconAddress = readAddress(beaconAddress);
         for (const method of EIP_1167_BEACON_METHODS) {
           try {
-            const data = await client.call({ data: method as `0x${string}`, to: resolvedBeaconAddress });
+            const data = await client.call({ data: method, to: resolvedBeaconAddress });
             return readAddress(data.data);
           } catch {
             // Ignore
@@ -90,19 +90,19 @@ export const detectProxyTarget = async (proxyAddress: string, client: any): Prom
           return readAddress(logicAddress);
         })(),
         (async () => {
-          const { data } = await client.call({ data: EIP_897_INTERFACE[0] as `0x${string}`, to: proxyAddress });
+          const { data } = await client.call({ data: EIP_897_INTERFACE[0], to: proxyAddress });
           return readAddress(data);
         })(),
         (async () => {
           const { data } = await client.call({
-            data: GNOSIS_SAFE_PROXY_INTERFACE[0] as `0x${string}`,
+            data: GNOSIS_SAFE_PROXY_INTERFACE[0],
             to: proxyAddress,
           });
           return readAddress(data);
         })(),
         (async () => {
           const { data } = await client.call({
-            data: COMPTROLLER_PROXY_INTERFACE[0] as `0x${string}`,
+            data: COMPTROLLER_PROXY_INTERFACE[0],
             to: proxyAddress,
           });
           return readAddress(data);
