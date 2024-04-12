@@ -1,3 +1,5 @@
+import { PublicClient } from "wagmi";
+
 const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
 const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50" as const;
 // const OPEN_ZEPPELIN_IMPLEMENTATION_SLOT = "0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3";
@@ -10,7 +12,7 @@ const EIP_897_INTERFACE = ["0x5c60da1b000000000000000000000000000000000000000000
 const GNOSIS_SAFE_PROXY_INTERFACE = ["0xa619486e00000000000000000000000000000000000000000000000000000000"] as const;
 const COMPTROLLER_PROXY_INTERFACE = ["0xbb82aa5e00000000000000000000000000000000000000000000000000000000"] as const;
 
-const readAddress = (value: string): string => {
+const readAddress = (value: string | undefined) => {
   if (typeof value !== "string" || value === "0x") {
     throw new Error(`Invalid address value: ${value}`);
   }
@@ -57,7 +59,7 @@ export const parse1167Bytecode = (bytecode: unknown): string => {
   return `0x${addressFromBytecode.padStart(40, "0")}`;
 };
 
-export const detectProxyTarget = async (proxyAddress: string, client: any): Promise<string | null> => {
+export const detectProxyTarget = async (proxyAddress: string, client: PublicClient): Promise<string | null> => {
   try {
     return await Promise.any([
       (async () => {
