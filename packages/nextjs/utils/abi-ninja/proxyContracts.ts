@@ -59,59 +59,57 @@ export const parse1167Bytecode = (bytecode: unknown): string => {
   return `0x${addressFromBytecode.padStart(40, "0")}`;
 };
 
-export const detectProxyTarget = async (proxyAddress: string, client: PublicClient): Promise<string | null> => {
+export const detectProxyTarget = async (proxyAddress: string, client: PublicClient) => {
+  const detectUsingBytecode = async () => {
+    const bytecode = await client.getBytecode({ address: proxyAddress });
+    return parse1167Bytecode(bytecode);
+  };
+
+  const detectUsingEIP1967LogicSlot = async () => {
+    const logicAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1967_LOGIC_SLOT });
+    return readAddress(logicAddress);
+  };
+
+  const detectUsingEIP1967BeaconSlot = async () => {
+    const beaconAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1967_BEACON_SLOT });
+    const resolvedBeaconAddress = readAddress(beaconAddress);
+    for (const method of EIP_1167_BEACON_METHODS) {
+      try {
+        const data = await client.call({ data: method as `0x${string}`, to: resolvedBeaconAddress });
+        return readAddress(data.data);
+      } catch {
+        // Ignore individual beacon method call failures
+      }
+    }
+    throw new Error("Beacon method calls failed");
+  };
+
+  const detectionMethods = [detectUsingBytecode, detectUsingEIP1967LogicSlot, detectUsingEIP1967BeaconSlot];
+
   try {
-    return await Promise.any([
-      (async () => {
-        const bytecode = await client.getBytecode({ address: proxyAddress });
-        return parse1167Bytecode(bytecode);
-      })(),
-      (async () => {
-        const logicAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1967_LOGIC_SLOT });
-        return readAddress(logicAddress);
-      })(),
-      (async () => {
-        const beaconAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1967_BEACON_SLOT });
-        const resolvedBeaconAddress = readAddress(beaconAddress);
-        for (const method of EIP_1167_BEACON_METHODS) {
-          try {
-            const data = await client.call({ data: method, to: resolvedBeaconAddress });
-            return readAddress(data.data);
-          } catch {
-            // Ignore
-          }
-        }
-        throw new Error("Beacon method calls failed");
-      })(),
-    ]);
-  } catch (error) {
+    return await Promise.any(detectionMethods.map(method => method()));
+  } catch (primaryError) {
+    const detectUsingEIP1822LogicSlot = async () => {
+      const logicAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1822_LOGIC_SLOT });
+      return readAddress(logicAddress);
+    };
+
+    const detectUsingInterfaceCalls = async (data: `0x${string}`) => {
+      const { data: resultData } = await client.call({ data, to: proxyAddress });
+      return readAddress(resultData);
+    };
+
+    const nextDetectionMethods = [
+      detectUsingEIP1822LogicSlot,
+      () => detectUsingInterfaceCalls(EIP_897_INTERFACE[0]),
+      () => detectUsingInterfaceCalls(GNOSIS_SAFE_PROXY_INTERFACE[0]),
+      () => detectUsingInterfaceCalls(COMPTROLLER_PROXY_INTERFACE[0]),
+    ];
+
     try {
-      return await Promise.any([
-        (async () => {
-          const logicAddress = await client.getStorageAt({ address: proxyAddress, slot: EIP_1822_LOGIC_SLOT });
-          return readAddress(logicAddress);
-        })(),
-        (async () => {
-          const { data } = await client.call({ data: EIP_897_INTERFACE[0], to: proxyAddress });
-          return readAddress(data);
-        })(),
-        (async () => {
-          const { data } = await client.call({
-            data: GNOSIS_SAFE_PROXY_INTERFACE[0],
-            to: proxyAddress,
-          });
-          return readAddress(data);
-        })(),
-        (async () => {
-          const { data } = await client.call({
-            data: COMPTROLLER_PROXY_INTERFACE[0],
-            to: proxyAddress,
-          });
-          return readAddress(data);
-        })(),
-      ]);
-    } catch (fallbackError) {
-      // @todo can't return null?
+      return await Promise.any(nextDetectionMethods.map(method => method()));
+    } catch (finalError) {
+      console.error("All detection methods failed:", finalError);
       return null;
     }
   }
