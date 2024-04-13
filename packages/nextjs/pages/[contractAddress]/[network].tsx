@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import detectProxyTarget from "evm-proxy-detection";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, extractChain, isAddress } from "viem";
+import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
+import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { ContractUI } from "~~/components/scaffold-eth";
-import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
+import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
   contractAddress: string;
@@ -23,8 +22,6 @@ type ContractData = {
   abi: Abi;
   address: string;
 };
-
-type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const ContractDetailPage = () => {
   const router = useRouter();
@@ -44,6 +41,10 @@ const ContractDetailPage = () => {
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
   }));
+
+  const publicClient = usePublicClient({
+    chainId: parseInt(network),
+  });
 
   const getNetworkName = (chainId: number) => {
     const chain = Object.values(chains).find(chain => chain.id === chainId);
@@ -79,22 +80,7 @@ const ContractDetailPage = () => {
         }
 
         try {
-          const chain = extractChain({
-            id: parseInt(network) as AllowedNetwork,
-            chains: Object.values(scaffoldConfig.targetNetworks),
-          });
-          // @ts-expect-error this might be present or might not be
-          const alchmeyRPCURL = chain.rpcUrls?.alchemy?.http[0];
-          let implementationAddress = undefined;
-          if (alchmeyRPCURL) {
-            const alchemyProvider = new JsonRpcProvider(
-              `${alchmeyRPCURL}/${scaffoldConfig.alchemyApiKey}`,
-              parseInt(network),
-            );
-            const requestFunc = ({ method, params }: { method: string; params: any }) =>
-              alchemyProvider.send(method, params);
-            implementationAddress = await detectProxyTarget(contractAddress, requestFunc);
-          }
+          const implementationAddress = await detectProxyTarget(contractAddress, publicClient);
 
           if (implementationAddress) {
             setImplementationAddress(implementationAddress);
@@ -129,7 +115,7 @@ const ContractDetailPage = () => {
         }
       }
     }
-  }, [contractAddress, network, storedAbi, setMainChainId, setImplementationAddress]);
+  }, [contractAddress, network, storedAbi, setMainChainId, setImplementationAddress, publicClient]);
 
   return (
     <>

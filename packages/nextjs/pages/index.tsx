@@ -2,26 +2,22 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
-import { Address, extractChain, isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput, InputBase } from "~~/components/scaffold-eth";
-import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
   verifiedContract,
   addressAbi,
 }
-
-type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const tabValues = Object.values(TabName) as TabName[];
 
@@ -55,22 +51,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const chain = extractChain({
-          id: parseInt(network) as AllowedNetwork,
-          chains: Object.values(scaffoldConfig.targetNetworks),
-        });
-        // @ts-expect-error this might be present or might not be
-        const alchmeyRPCURL = chain.rpcUrls?.alchemy?.http[0];
-        let implementationAddress = undefined;
-        if (alchmeyRPCURL) {
-          const alchemyProvider = new JsonRpcProvider(
-            `${alchmeyRPCURL}/${scaffoldConfig.alchemyApiKey}`,
-            parseInt(network),
-          );
-          const requestFunc = ({ method, params }: { method: string; params: any }) =>
-            alchemyProvider.send(method, params);
-          implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
-        }
+        const implementationAddress = await detectProxyTarget(verifiedContractAddress, publicClient);
 
         if (implementationAddress) {
           setImplementationAddress(implementationAddress);
