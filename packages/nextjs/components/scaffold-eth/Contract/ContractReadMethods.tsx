@@ -34,7 +34,10 @@ export const ContractReadMethods = ({
   if (!functionsToDisplay.length) {
     return (
       <div className="py-5">
-        <span className="font-light text-gray-500 my-5">Please select read methods from the sidebar.</span>
+        <span className="font-light text-gray-500 my-5">
+          Please select read methods from the <span className="sm:hidden">hamburger menu</span>
+          <span className="hidden sm:inline">sidebar</span>.
+        </span>
       </div>
     );
   }

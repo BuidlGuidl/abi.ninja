@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { JsonRpcProvider } from "@ethersproject/providers";
+import detectProxyTarget from "evm-proxy-detection";
 import type { NextPage } from "next";
-import { Address, isAddress } from "viem";
+import { Address, extractChain, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
@@ -18,6 +20,8 @@ enum TabName {
   verifiedContract,
   addressAbi,
 }
+
+type AllowedNetwork = (typeof scaffoldConfig.targetNetworks)[number]["id"];
 
 const tabValues = Object.values(TabName) as TabName[];
 
@@ -35,9 +39,10 @@ const Home: NextPage = () => {
     chainId: parseInt(network),
   });
 
-  const { setContractAbi, setAbiContractAddress } = useAbiNinjaState(state => ({
+  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
+    setImplementationAddress: state.setImplementationAddress,
   }));
 
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
@@ -48,7 +53,30 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const abi = await fetchContractABIFromAnyABI(verifiedContractAddress, parseInt(network));
+        const chain = extractChain({
+          id: parseInt(network) as AllowedNetwork,
+          chains: Object.values(scaffoldConfig.targetNetworks),
+        });
+        // @ts-expect-error this might be present or might not be
+        const alchmeyRPCURL = chain.rpcUrls?.alchemy?.http[0];
+        let implementationAddress = undefined;
+        if (alchmeyRPCURL) {
+          const alchemyProvider = new JsonRpcProvider(
+            `${alchmeyRPCURL}/${scaffoldConfig.alchemyApiKey}`,
+            parseInt(network),
+          );
+          const requestFunc = ({ method, params }: { method: string; params: any }) =>
+            alchemyProvider.send(method, params);
+          implementationAddress = await detectProxyTarget(verifiedContractAddress, requestFunc);
+        }
+
+        if (implementationAddress) {
+          setImplementationAddress(implementationAddress);
+        }
+        const abi = await fetchContractABIFromAnyABI(
+          implementationAddress || verifiedContractAddress,
+          parseInt(network),
+        );
         if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
         setContractAbi(abi);
         setIsAbiAvailable(true);
@@ -92,11 +120,13 @@ const Home: NextPage = () => {
     }
   }, [verifiedContractAddress, network, setContractAbi, publicClient]);
 
+
   useEffect(() => {
     if (router.pathname === "/") {
       setContractAbi([]);
+      setImplementationAddress("");
     }
-  }, [router.pathname, setContractAbi]);
+  }, [router.pathname, setContractAbi, setImplementationAddress]);
 
   const handleLoadContract = () => {
     if (isAbiAvailable) {
