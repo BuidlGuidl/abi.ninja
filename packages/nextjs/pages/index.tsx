@@ -12,6 +12,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
 import { AddressInput } from "~~/components/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
@@ -118,8 +119,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network, setContractAbi, publicClient]);
-
+  }, [verifiedContractAddress, network, setContractAbi, publicClient, setImplementationAddress]);
 
   useEffect(() => {
     if (router.pathname === "/") {
