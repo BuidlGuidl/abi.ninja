@@ -1370,7 +1370,6 @@ __metadata:
     eslint-config-next: ^13.1.6
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.2.1
-    evm-proxy-detection: ^1.2.0
     next: 13.3.4
     next-plausible: ^3.12.0
     nextjs-progressbar: ^0.0.16
@@ -4874,13 +4873,6 @@ __metadata:
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: f6f487ad2198aa41d878fa31452f1a3c00958f46e9019286ff4787c84aac329332ab45c9cdc8c445928fc6d7ded294b9e005a7fce9426488518017831b272780
-  languageName: node
-  linkType: hard
-
-"evm-proxy-detection@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "evm-proxy-detection@npm:1.2.0"
-  checksum: d9996cbcd22eadd0b1209116d1f5c90ebf063edfe08c71c2f92372040dc004248ab280887a2f6d968d3e4963f40909f7f4cece584992e8e1f6ea136d6e18f2ee
   languageName: node
   linkType: hard
 

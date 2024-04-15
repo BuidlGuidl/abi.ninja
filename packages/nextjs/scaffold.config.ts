@@ -9,15 +9,9 @@ export type ScaffoldConfig = {
   walletAutoConnect: boolean;
 };
 
-const localhost = {
-  ...chains.localhost,
-  id: 31337,
-} as const;
-
 const scaffoldConfig = {
   // After adding a new chain here we should also add it to the networks.ts file
   targetNetworks: [
-    localhost,
     chains.mainnet,
     chains.sepolia,
     chains.optimism,
