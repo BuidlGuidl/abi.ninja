@@ -26,7 +26,7 @@ const networks = getTargetNetworks();
 
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
-  const [network, setNetwork] = useState(networks[1].id.toString());
+  const [network, setNetwork] = useState(networks[0].id.toString());
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
