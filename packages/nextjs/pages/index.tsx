@@ -133,7 +133,7 @@ const Home: NextPage = () => {
   const fetchAbiFromHeimdall = async (contractAddress: string) => {
     setIsFetchingAbi(true);
     try {
-      const response = await fetch(`https://${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${network}/${contractAddress}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${network}/${contractAddress}`);
       const abi = await response.json();
       if (abi.length === 0) {
         notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
