@@ -78,7 +78,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       onChange={onChange}
       components={{ Option: IconOption }}
       isSearchable={!isMobile}
-      className="text-sm w-44 max-w-xs bg-white relative"
+      className="max-w-xs bg-white relative text-sm w-44"
       theme={theme => ({
         ...theme,
         colors: {
@@ -88,6 +88,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           primary: "#551d98",
         },
       })}
+      styles={{
+        menuList: provided => ({ ...provided, maxHeight: 280, overflow: "auto" }),
+      }}
     />
   );
 };

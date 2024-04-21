@@ -14,9 +14,7 @@ const scaffoldConfig = {
   targetNetworks: [
     chains.mainnet,
     chains.sepolia,
-    chains.goerli,
     chains.optimism,
-    chains.optimismGoerli,
     chains.base,
     chains.baseSepolia,
     chains.polygon,
