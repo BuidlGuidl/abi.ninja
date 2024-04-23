@@ -39,7 +39,7 @@ export default async function handler(request: NextRequest) {
       <div tw="flex w-full h-full bg-white">
         <div tw="flex flex-col w-2/5 justify-center items-center">
           <div tw="flex mb-5">
-            <svg width="210" height="180" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="240" height="180" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_5_16470)">
                 <path
                   d="M59.6256 68.8776C80.4629 68.8776 97.3549 53.9748 97.3549 35.5913C97.3549 17.2078 80.4629 2.30499 59.6256 2.30499C38.7882 2.30499 21.8962 17.2078 21.8962 35.5913C21.8962 53.9748 38.7882 68.8776 59.6256 68.8776Z"
@@ -116,18 +116,16 @@ export default async function handler(request: NextRequest) {
           </div>
           <div tw="flex text-6xl">ABI Ninja</div>
         </div>
-        <div tw="flex flex-col py-20 items-center text-purple-800 w-3/5 bg-purple-100 ">
-          <div tw="mb-20 p-3 px-5 rounded-xl text-2xl bg-purple-200">{networkName}</div>
+        <div tw="flex flex-col py-20 justify-center items-center text-purple-800 w-3/5 bg-purple-100 ">
+          <div tw="mb-20 p-3 px-5 rounded-xl text-4xl bg-purple-200">{networkName}</div>
           <div tw="flex flex-col w-4/5 justify-center items-center">
-            <div tw="mb-20 text-6xl text-center">Super long contract name</div>
-
             <div
               style={{
                 wordBreak: "break-all",
               }}
-              tw="flex w-4/5 text-center"
+              tw="flex w-[595px] text-center"
             >
-              <div tw="p-2 bg-purple-50 text-4xl rounded-xl">{contractAddress}</div>
+              <div tw="p-2 bg-purple-50 text-5xl rounded-xl">{contractAddress}</div>
             </div>
           </div>
         </div>
