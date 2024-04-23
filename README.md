@@ -6,7 +6,7 @@ Interact with any contract on Ethereum. ABI Ninja provides an intuitive frontend
 - **Unverified contracts**. Two different options are available:
   - Decompile using [`heimdall-rs`](https://github.com/Jon-Becker/heimdall-rs) (experimental).
   - Provide the ABI and the contract address.
-- **Proxy contracts**. Currently using [`evm-proxy-detection`](https://github.com/gnosis/evm-proxy-detection) to detect proxy contracts and provide the implementation address.
+- **Proxy contracts**. Autodetects most popular proxy patterns, and allows to read and write as proxy.
 
 ABI Ninja (v2) is built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
 
