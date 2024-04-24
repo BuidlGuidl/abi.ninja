@@ -14,7 +14,9 @@ type MetaHeaderProps = {
 
 // Images must have an absolute path to work properly on Twitter.
 // We try to get it dynamically from Vercel, but we default to relative path.
-const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "/";
+const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : "https://five-donkeys-fix.loca.lt";
 
 export const MetaHeader = ({
   address,
@@ -25,7 +27,9 @@ export const MetaHeader = ({
   twitterCard = "summary_large_image",
   children,
 }: MetaHeaderProps) => {
-  const imageUrl = address ? `${baseUrl}/api/og/?address=${address}&network=${network}` : `${baseUrl}/thumbnail.png`;
+  const imageUrl = address
+    ? `${baseUrl}/api/og/?contractAddress=${address}&network=${network}`
+    : `${baseUrl}/thumbnail.png`;
 
   return (
     <Head>
