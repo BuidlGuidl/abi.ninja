@@ -9,7 +9,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import * as chains from "viem/chains";
-import { configureChains } from "wagmi";
+import { Chain, configureChains } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import scaffoldConfig from "~~/scaffold.config";
@@ -28,7 +28,7 @@ const enabledChains = targetNetworks.find(network => network.id === 1)
  * Chains for the app
  */
 export const appChains = configureChains(
-  enabledChains,
+  enabledChains as Chain[],
   [
     alchemyProvider({
       apiKey: scaffoldConfig.alchemyApiKey,
