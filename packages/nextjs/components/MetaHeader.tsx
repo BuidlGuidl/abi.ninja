@@ -1,7 +1,10 @@
 import React from "react";
 import Head from "next/head";
+import { Address } from "viem";
 
 type MetaHeaderProps = {
+  address?: Address | null;
+  network?: number | null;
   title?: string;
   description?: string;
   image?: string;
@@ -11,16 +14,22 @@ type MetaHeaderProps = {
 
 // Images must have an absolute path to work properly on Twitter.
 // We try to get it dynamically from Vercel, but we default to relative path.
-const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "/";
+const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : "https://five-donkeys-fix.loca.lt";
 
 export const MetaHeader = ({
+  address,
+  network,
   title = "ABI Ninja",
   description = "Interact with any contract on Ethereum",
   image = "thumbnail.png",
   twitterCard = "summary_large_image",
   children,
 }: MetaHeaderProps) => {
-  const imageUrl = baseUrl + image;
+  const imageUrl = address
+    ? `${baseUrl}/api/og/?contractAddress=${address}&network=${network}`
+    : `${baseUrl}/thumbnail.png`;
 
   return (
     <Head>

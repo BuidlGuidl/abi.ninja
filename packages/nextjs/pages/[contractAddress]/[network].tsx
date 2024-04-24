@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, isAddress } from "viem";
 import * as chains from "viem/chains";
@@ -23,7 +24,28 @@ type ContractData = {
   address: string;
 };
 
-const ContractDetailPage = () => {
+type ServerSideProps = {
+  addressFromUrl: string | null;
+  chainIdFromUrl: number | null;
+};
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  // Assume that 'contractAddress' and 'network' cannot be arrays.
+  const contractAddress = context.params?.contractAddress as string | undefined;
+  const network = context.params?.network as string | undefined;
+
+  const formattedAddress = contractAddress ? contractAddress : null;
+  const formattedChainId = network ? parseInt(network, 10) : null;
+
+  return {
+    props: {
+      addressFromUrl: formattedAddress,
+      chainIdFromUrl: formattedChainId,
+    },
+  };
+};
+
+const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps) => {
   const router = useRouter();
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
@@ -41,6 +63,9 @@ const ContractDetailPage = () => {
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
   }));
+
+  console.log("addressFromUrl", addressFromUrl);
+  console.log("chainIdFromUrl", chainIdFromUrl);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -119,7 +144,7 @@ const ContractDetailPage = () => {
 
   return (
     <>
-      <MetaHeader />
+      <MetaHeader address={addressFromUrl} network={chainIdFromUrl} />
       <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
