@@ -42,7 +42,7 @@ const createPublicClientByChainId = (chainId: number) => {
   });
 };
 
-const getNetworkName = (networkId: number): string => {
+const getNetworkName = (networkId: number) => {
   const network = networks.find(n => n.id === networkId);
   return network ? network.name : "Unknown Network";
 };
@@ -69,15 +69,16 @@ export const config = {
 
 export default async function handler(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  if (!searchParams.has("contractAddress")) {
-    return new Response("Missing 'contractAddress' query parameter", { status: 400 });
-  }
+
   const contractAddress = searchParams.get("contractAddress");
   const networkId = searchParams.get("network") || "1";
 
-  const networkName = getNetworkName(+networkId);
+  if (!contractAddress) {
+    return new Response("Missing 'contractAddress' query parameter", { status: 400 });
+  }
 
-  const contractName = await getContractName(contractAddress as string, +networkId);
+  const networkName = getNetworkName(+networkId);
+  const contractName = await getContractName(contractAddress, +networkId);
 
   return new ImageResponse(
     (
