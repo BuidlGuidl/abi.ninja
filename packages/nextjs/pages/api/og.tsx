@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ImageResponse } from "@vercel/og";
 import { Address, Chain, createPublicClient, http } from "viem";
 import * as chains from "viem/chains";
+import scaffoldConfig from "~~/scaffold.config";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const contractAbi = [
@@ -31,9 +32,13 @@ const findChainById = (chainId: number): Chain => {
 };
 
 const createPublicClientByChainId = (chainId: number) => {
+  const chain = findChainById(chainId);
+  const alchemyBaseURL = chain.rpcUrls?.alchemy?.http[0];
+  const alchemyURL = alchemyBaseURL ? `${alchemyBaseURL}/${scaffoldConfig.alchemyApiKey}` : undefined;
+
   return createPublicClient({
-    chain: findChainById(chainId),
-    transport: http(),
+    chain: chain,
+    transport: http(alchemyURL),
   });
 };
 
