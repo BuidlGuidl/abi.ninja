@@ -4,7 +4,7 @@ import { Address, Chain, createPublicClient, http } from "viem";
 import * as chains from "viem/chains";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
-export const contractAbi = [
+const contractAbi = [
   {
     constant: true,
     inputs: [],
