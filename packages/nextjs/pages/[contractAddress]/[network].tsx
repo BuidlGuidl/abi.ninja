@@ -64,9 +64,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     setImplementationAddress: state.setImplementationAddress,
   }));
 
-  console.log("addressFromUrl", addressFromUrl);
-  console.log("chainIdFromUrl", chainIdFromUrl);
-
   const publicClient = usePublicClient({
     chainId: parseInt(network),
   });
