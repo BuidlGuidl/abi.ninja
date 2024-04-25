@@ -1,13 +1,8 @@
 import { NextRequest } from "next/server";
 import { ImageResponse } from "@vercel/og";
-import { Address, createPublicClient, http } from "viem";
-import { mainnet } from "viem/chains";
+import { Address, Chain, createPublicClient, http } from "viem";
+import * as chains from "viem/chains";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
-
-export const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http(),
-});
 
 export const contractAbi = [
   {
@@ -23,13 +18,34 @@ export const contractAbi = [
 
 const networks = getTargetNetworks();
 
+const findChainById = (chainId: number): Chain => {
+  const chainEntries = Object.entries(chains as Record<string, Chain>);
+
+  for (const [, chain] of chainEntries) {
+    if (chain.id === chainId) {
+      return chain;
+    }
+  }
+
+  throw new Error(`No chain found with ID ${chainId}`);
+};
+
+const createPublicClientByChainId = (chainId: number) => {
+  return createPublicClient({
+    chain: findChainById(chainId),
+    transport: http(),
+  });
+};
+
 const getNetworkName = (networkId: number): string => {
   const network = networks.find(n => n.id === networkId);
   return network ? network.name : "Unknown Network";
 };
 
-const getContractName = async (contractAddress: Address) => {
+const getContractName = async (contractAddress: Address, networkId: number) => {
   try {
+    const publicClient = createPublicClientByChainId(networkId);
+
     const data = await publicClient.readContract({
       address: contractAddress,
       abi: contractAbi,
@@ -56,7 +72,7 @@ export default async function handler(request: NextRequest) {
 
   const networkName = getNetworkName(+networkId);
 
-  const contractName = await getContractName(contractAddress as string);
+  const contractName = await getContractName(contractAddress as string, +networkId);
 
   return new ImageResponse(
     (
