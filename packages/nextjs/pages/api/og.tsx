@@ -29,13 +29,17 @@ const getNetworkName = (networkId: number): string => {
 };
 
 const getContractName = async (contractAddress: Address) => {
-  const data = await publicClient.readContract({
-    address: contractAddress,
-    abi: contractAbi,
-    functionName: "name",
-  });
-
-  return data;
+  try {
+    const data = await publicClient.readContract({
+      address: contractAddress,
+      abi: contractAbi,
+      functionName: "name",
+    });
+    return data;
+  } catch (error) {
+    console.error("Error reading contract:", error);
+    return ""; // return empty string
+  }
 };
 
 export const config = {
