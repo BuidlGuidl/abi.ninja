@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ImageResponse } from "@vercel/og";
 import { Address, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
+import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 export const publicClient = createPublicClient({
   chain: mainnet,
@@ -20,19 +21,11 @@ export const contractAbi = [
   },
 ] as const;
 
-type NetworkNames = {
-  [key: number]: string;
-};
+const networks = getTargetNetworks();
 
-const networkNames: NetworkNames = {
-  1: "Ethereum Mainnet",
-  11155111: "Sepolia",
-  10: "Optimism",
-  137: "Polygon Mainnet",
-  80001: "Polygon Mumbai",
-  42161: "Arbitrum One",
-  100: "Gnosis Chain",
-  // ... include other network names and their chain IDs here
+const getNetworkName = (networkId: number): string => {
+  const network = networks.find(n => n.id === networkId);
+  return network ? network.name : "Unknown Network";
 };
 
 const getContractName = async (contractAddress: Address) => {
@@ -45,10 +38,6 @@ const getContractName = async (contractAddress: Address) => {
   return data;
 };
 
-const getNetworkName = (chainId: number) => {
-  return networkNames[chainId] || "Unknown Network";
-};
-
 export const config = {
   runtime: "edge",
 };
@@ -59,9 +48,9 @@ export default async function handler(request: NextRequest) {
     return new Response("Missing 'contractAddress' query parameter", { status: 400 });
   }
   const contractAddress = searchParams.get("contractAddress");
-  const network = searchParams.get("network") || "1";
+  const networkId = searchParams.get("network") || "1";
 
-  const networkName = getNetworkName(parseInt(network));
+  const networkName = getNetworkName(+networkId);
 
   const contractName = await getContractName(contractAddress as string);
 
