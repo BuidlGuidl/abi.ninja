@@ -56,14 +56,14 @@ export const MethodSelector = ({
               <div key={method.uid} className="flex items-center gap-2 w-full pr-4">
                 <button
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
-                    isMethodSelected(method.uid) ? "bg-purple-100 pointer-events-none" : ""
+                    isMethodSelected(method.uid) ? "bg-secondary pointer-events-none" : ""
                   }`}
                   onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
-                      className="ml-4 text-xs hover:bg-gray-100 rounded-md p-1 pointer-events-auto"
+                      className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
                       onClick={() => removeMethod(method.uid)}
                     >
                       <XMarkIcon className="h-4 w-4" />
@@ -95,14 +95,14 @@ export const MethodSelector = ({
               <div key={index} className="flex items-center gap-2 w-full pr-4">
                 <button
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
-                    isMethodSelected(method.uid) ? "bg-purple-100 pointer-events-none" : ""
+                    isMethodSelected(method.uid) ? "bg-secondary pointer-events-none" : ""
                   }`}
                   onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
-                      className="ml-4 text-xs hover:bg-gray-100 rounded-md p-1 pointer-events-auto"
+                      className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
                       onClick={() => removeMethod(method.uid)}
                     >
                       <XMarkIcon className="h-4 w-4" />

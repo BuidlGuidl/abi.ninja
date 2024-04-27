@@ -130,7 +130,7 @@ const ContractDetailPage = () => {
           ) : contractData.abi?.length > 0 ? (
             <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
-            <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
+            <div className="bg-base-200 border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
               <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
               <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
               <p className="break-all">
