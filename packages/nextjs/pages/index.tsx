@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
+import { useDarkMode } from "usehooks-ts";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
@@ -45,6 +47,7 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
+  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -157,7 +160,11 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+        <div
+          className={`flex h-screen ${
+            isDarkMode ? "bg-black" : "bg-white"
+          } relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl`}
+        >
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
               <div
@@ -188,7 +195,7 @@ const Home: NextPage = () => {
                     </div>
 
                     <button
-                      className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
+                      className="btn btn-primary px-8 text-base border-2 hover:bg-neutral hover:text-primary"
                       onClick={handleLoadContract}
                       disabled={!isAbiAvailable}
                     >
@@ -200,21 +207,21 @@ const Home: NextPage = () => {
                         <Link
                           href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-primary no-underline"
                         >
                           DAI
                         </Link>
                         <Link
                           href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-primary no-underline"
                         >
                           Gitcoin
                         </Link>
                         <Link
                           href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-primary no-underline"
                         >
                           Opensea
                         </Link>
@@ -275,6 +282,7 @@ const Home: NextPage = () => {
               </div>
             ))}
           </div>
+          <SwitchTheme className="absolute top-5 right-5" />
           <MiniFooter />
         </div>
       </div>

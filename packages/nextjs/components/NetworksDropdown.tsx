@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Select, { OptionProps, components } from "react-select";
+import { useDarkMode } from "usehooks-ts";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -58,6 +59,7 @@ const IconOption = (props: OptionProps<Options>) => (
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const darkMode = useDarkMode();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -78,14 +80,18 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       onChange={onChange}
       components={{ Option: IconOption }}
       isSearchable={!isMobile}
-      className="max-w-xs bg-white relative text-sm w-44"
+      className="max-w-xs relative text-sm w-44"
       theme={theme => ({
         ...theme,
+        borderRadius: theme.borderRadius,
+        spacing: theme.spacing,
         colors: {
           ...theme.colors,
-          primary25: "#efeaff",
-          primary50: "#c1aeff",
-          primary: "#551d98",
+          primary25: darkMode.isDarkMode ? "#401574" : "#efeaff",
+          primary50: darkMode.isDarkMode ? "#551d98" : "#c1aeff",
+          primary: darkMode.isDarkMode ? "#BA8DE8" : "#551d98",
+          neutral0: darkMode.isDarkMode ? "#000000" : theme.colors.neutral0,
+          neutral80: darkMode.isDarkMode ? "#ffffff" : theme.colors.neutral80,
         },
       })}
       styles={{
