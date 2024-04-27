@@ -160,7 +160,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
             <div className="laptop:col-span-8 flex flex-col gap-6">
               <div className="z-10">
                 <div className="bg-base-200 rounded-2xl shadow-xl flex flex-col mt-10 relative">
-                  <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+                  <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[0px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                     <div className="flex items-center justify-center space-x-2">
                       <p className="my-0 text-sm font-bold">Read</p>
                     </div>
@@ -175,7 +175,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
               </div>
               <div className="z-10">
                 <div className="bg-base-200 rounded-2xl shadow-xl flex flex-col mt-10 relative">
-                  <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[1px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
+                  <div className="h-[5rem] w-[5.5rem] bg-secondary absolute self-start rounded-[22px] -top-[38px] -left-[0px] -z-10 py-[0.65rem] shadow-lg shadow-base-300">
                     <div className="flex items-center justify-center space-x-2">
                       <p className="my-0 text-sm font-bold">Write</p>
                     </div>
