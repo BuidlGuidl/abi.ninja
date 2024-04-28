@@ -2,12 +2,13 @@
 module.exports = {
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
   plugins: [require("daisyui")],
-  darkTheme: "scaffoldEthDark",
+  darkTheme: "dark",
+  darkMode: ["selector", "[data-theme='dark']"],
   // DaisyUI theme colors
   daisyui: {
     themes: [
       {
-        scaffoldEth: {
+        light: {
           primary: "#551d98",
           "primary-content": "#ffffff",
           secondary: "#c1aeff",
@@ -37,7 +38,7 @@ module.exports = {
         },
       },
       {
-        scaffoldEthDark: {
+        dark: {
           primary: "#9d51e9",
           "primary-content": "#f3e8ff",
           secondary: "#5a595c",
@@ -47,7 +48,7 @@ module.exports = {
           neutral: "#292929",
           "neutral-content": "#BA8DE8",
           "base-100": "#191919",
-          "base-200": "#222222",
+          "base-200": "#131313",
           "base-300": "#2c2c2c",
           "base-content": "#dfdfdf",
           info: "#3b8dcb",

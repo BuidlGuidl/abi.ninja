@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 import Select, { OptionProps, components } from "react-select";
-import { useDarkMode } from "usehooks-ts";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -59,7 +59,15 @@ const IconOption = (props: OptionProps<Options>) => (
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const darkMode = useDarkMode();
+  const { resolvedTheme } = useTheme();
+
+  const isDarkMode = resolvedTheme === "dark";
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -72,6 +80,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   }, []);
 
+  if (!mounted) return null;
   return (
     <Select
       defaultValue={groupedOptions["mainnet"].options[0]}
@@ -83,15 +92,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       className="max-w-xs relative text-sm w-44"
       theme={theme => ({
         ...theme,
-        borderRadius: theme.borderRadius,
-        spacing: theme.spacing,
         colors: {
           ...theme.colors,
-          primary25: darkMode.isDarkMode ? "#401574" : "#efeaff",
-          primary50: darkMode.isDarkMode ? "#551d98" : "#c1aeff",
-          primary: darkMode.isDarkMode ? "#BA8DE8" : "#551d98",
-          neutral0: darkMode.isDarkMode ? "#000000" : theme.colors.neutral0,
-          neutral80: darkMode.isDarkMode ? "#ffffff" : theme.colors.neutral80,
+          primary25: isDarkMode ? "#401574" : "#efeaff",
+          primary50: isDarkMode ? "#551d98" : "#c1aeff",
+          primary: isDarkMode ? "#BA8DE8" : "#551d98",
+          neutral0: isDarkMode ? "#000000" : theme.colors.neutral0,
+          neutral80: isDarkMode ? "#ffffff" : theme.colors.neutral80,
         },
       })}
       styles={{

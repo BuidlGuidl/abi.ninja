@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
-import { useDarkMode } from "usehooks-ts";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -47,7 +46,6 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
-  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -161,9 +159,7 @@ const Home: NextPage = () => {
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
         <div
-          className={`flex h-screen ${
-            isDarkMode ? "bg-black" : "bg-white"
-          } relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl`}
+          className={`flex h-screen bg-base-200 relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl`}
         >
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
