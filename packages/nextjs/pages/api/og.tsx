@@ -18,6 +18,7 @@ const contractAbi = [
 ] as const;
 
 const networks = getTargetNetworks();
+const baseUrl = process.env.VERCEL_URL ? "https://abi.ninja" : `http://localhost:${process.env.PORT || 3000}`;
 
 const findChainById = (chainId: number): Chain => {
   const chainEntries = Object.entries(chains as Record<string, Chain>);
@@ -45,6 +46,11 @@ const createPublicClientByChainId = (chainId: number) => {
 const getNetworkName = (networkId: number) => {
   const network = networks.find(n => n.id === networkId);
   return network ? network.name : "Unknown Network";
+};
+
+const getNetworkIcon = (networkId: number) => {
+  const network = networks.find(n => n.id === networkId);
+  return network && network.icon ? baseUrl + network.icon : null;
 };
 
 const getContractName = async (contractAddress: Address, networkId: number) => {
@@ -78,6 +84,7 @@ export default async function handler(request: NextRequest) {
   }
 
   const networkName = getNetworkName(+networkId);
+  const networkIcon = getNetworkIcon(+networkId);
   const contractName = await getContractName(contractAddress, +networkId);
 
   return new ImageResponse(
@@ -197,7 +204,10 @@ export default async function handler(request: NextRequest) {
           </div>
         </div>
         <div tw="flex flex-col py-20 justify-center items-center text-[#551d98] w-3/5 bg-purple-100 ">
-          <div tw="mb-10 p-3 px-5 rounded-xl text-4xl bg-purple-200">{networkName}</div>
+          <div tw="flex items-center mb-10 p-3 px-5 rounded-xl text-4xl bg-white">
+            {networkIcon && <img tw="mr-4 h-16" src={networkIcon} alt={networkName} />}
+            {networkName}
+          </div>
           <div tw="mb-10 p-3 px-5 rounded-xl font-bold text-7xl text-center">
             {contractName ? contractName : "Contract Address: "}
           </div>
