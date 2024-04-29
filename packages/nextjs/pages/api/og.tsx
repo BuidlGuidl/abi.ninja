@@ -198,7 +198,9 @@ export default async function handler(request: NextRequest) {
         </div>
         <div tw="flex flex-col py-20 justify-center items-center text-[#551d98] w-3/5 bg-purple-100 ">
           <div tw="mb-10 p-3 px-5 rounded-xl text-4xl bg-purple-200">{networkName}</div>
-          <div tw="mb-10 p-3 px-5 rounded-xl font-bold text-7xl text-center">{contractName}</div>
+          <div tw="mb-10 p-3 px-5 rounded-xl font-bold text-7xl text-center">
+            {contractName ? contractName : "Contract Address: "}
+          </div>
           <div tw="flex flex-col w-4/5 justify-center items-center">
             <div
               style={{
