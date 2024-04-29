@@ -205,7 +205,10 @@ export default async function handler(request: NextRequest) {
         </div>
         <div tw="flex flex-col py-20 justify-center items-center text-[#551d98] w-3/5 bg-purple-100 ">
           <div tw="flex items-center mb-10 p-3 px-5 rounded-xl text-4xl bg-white">
-            {networkIcon && <img tw="mr-4 h-16" src={networkIcon} alt={networkName} />}
+            {networkIcon && (
+              // eslint-disable-next-line
+              <img tw="mr-4 h-16" src={networkIcon} alt={networkName} />
+            )}
             {networkName}
           </div>
           <div tw="mb-10 p-3 px-5 rounded-xl font-bold text-7xl text-center">
