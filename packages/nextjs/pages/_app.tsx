@@ -17,26 +17,6 @@ import "~~/styles/globals.css";
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const price = useNativeCurrencyPrice();
   const setNativeCurrencyPrice = useGlobalState(state => state.setNativeCurrencyPrice);
-
-  useEffect(() => {
-    if (price > 0) {
-      setNativeCurrencyPrice(price);
-    }
-  }, [setNativeCurrencyPrice, price]);
-
-  return (
-    <>
-      <div className="flex min-h-screen flex-col">
-        <main className="relative flex flex-1 flex-col">
-          <Component {...pageProps} />
-        </main>
-      </div>
-      <Toaster />
-    </>
-  );
-};
-
-const ScaffoldEthAppWithProviders = (props: AppProps) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
@@ -45,18 +25,35 @@ const ScaffoldEthAppWithProviders = (props: AppProps) => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (price > 0) {
+      setNativeCurrencyPrice(price);
+    }
+  }, [setNativeCurrencyPrice, price]);
+
+  return (
+    <RainbowKitProvider
+      chains={appChains.chains}
+      avatar={BlockieAvatar}
+      theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+    >
+      <div className="flex min-h-screen flex-col">
+        <main className="relative flex flex-1 flex-col">
+          <Component {...pageProps} />
+        </main>
+      </div>
+      <Toaster />
+    </RainbowKitProvider>
+  );
+};
+
+const ScaffoldEthAppWithProviders = (props: AppProps) => {
   return (
     <PlausibleProvider domain="abi.ninja">
       <ThemeProvider>
         <WagmiConfig config={wagmiConfig}>
           <NextNProgress />
-          <RainbowKitProvider
-            chains={appChains.chains}
-            avatar={BlockieAvatar}
-            theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
-          >
-            <ScaffoldEthApp {...props} />
-          </RainbowKitProvider>
+          <ScaffoldEthApp {...props} />
         </WagmiConfig>
       </ThemeProvider>
     </PlausibleProvider>
