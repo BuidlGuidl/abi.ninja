@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
-import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
@@ -31,6 +31,7 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
+  const [recentlyContracts, setRecentlyContracts] = useState<string[]>([]);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -45,6 +46,16 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const arr = []; // Array to hold the keys
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith("contractData")) {
+        arr.push(localStorage.key(i) as string);
+      }
+    }
+    setRecentlyContracts(arr);
+  }, []);
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -115,6 +126,22 @@ const Home: NextPage = () => {
     }
   };
 
+  const addressSortenned = (address: string) => {
+    if (address) {
+      return `0x...${address.substring(address.length - 8)}`;
+    }
+    return "";
+  };
+
+  const handleClearRecently = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith("contractData")) {
+        localStorage.removeItem(localStorage.key(i) as string);
+      }
+    }
+    setRecentlyContracts([]);
+  };
+
   const handleUserProvidedAbi = () => {
     if (!localContractAbi) {
       notification.error("Please provide an ABI.");
@@ -124,6 +151,7 @@ const Home: NextPage = () => {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
       router.push(`/${localAbiContractAddress}/${network}`);
+      localStorage.setItem(`contractData_${network}_${localAbiContractAddress}`, localContractAbi);
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
@@ -156,7 +184,7 @@ const Home: NextPage = () => {
   return (
     <>
       <MetaHeader />
-      <div className="flex flex-grow items-center justify-center bg-base-100">
+      <div className="flex flex-grow items-center justify-center bg-base-100 gap-20">
         <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
@@ -277,6 +305,36 @@ const Home: NextPage = () => {
           </div>
           <MiniFooter />
         </div>
+
+        {activeTab === TabName.verifiedContract && recentlyContracts.length > 0 && (
+          <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+            <button
+              className="btn btn-ghost absolute right-4 px-2 btn-primary"
+              onClick={() => {
+                handleClearRecently();
+              }}
+            >
+              Clear
+              <TrashIcon className="h-4 w-4" />
+            </button>
+            <div className="my-4 flex flex-col items-center justify-center">
+              <div className="mb-2 text-center font-semibold">Recently Contracts</div>
+              {recentlyContracts.map(contract => {
+                const [, network, address] = contract.split("_");
+                return (
+                  <Link
+                    href={`/${address}/${network}`}
+                    passHref
+                    key={contract}
+                    className="link text-center text-purple-700 no-underline"
+                  >
+                    {`${addressSortenned(address)} (${network})`}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

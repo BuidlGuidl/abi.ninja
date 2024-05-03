@@ -101,6 +101,17 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           return;
         }
 
+        const localStorageAbiStr =
+          localStorage.getItem(`contractData_${parsedNetworkId}_${contractAddress}`) || undefined;
+        const localStorageAbi = localStorageAbiStr ? JSON.parse(localStorageAbiStr) : null;
+
+        if (localStorageAbi) {
+          setContractData({ abi: localStorageAbi, address: contractAddress });
+          setError(null);
+          setIsLoading(false);
+          return;
+        }
+
         try {
           const implementationAddress = await detectProxyTarget(contractAddress, publicClient);
 
