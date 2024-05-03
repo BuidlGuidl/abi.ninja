@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
-import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
@@ -31,6 +31,7 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
+  const [recentlyContracts, setRecentlyContracts] = useState<string[]>([]);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -45,6 +46,16 @@ const Home: NextPage = () => {
   const [isAbiAvailable, setIsAbiAvailable] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const arr = []; // Array to hold the keys
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith("contractData")) {
+        arr.push(localStorage.key(i) as string);
+      }
+    }
+    setRecentlyContracts(arr);
+  }, []);
 
   useEffect(() => {
     const fetchContractAbi = async () => {
@@ -115,6 +126,22 @@ const Home: NextPage = () => {
     }
   };
 
+  const addressSortenned = (address: string) => {
+    if (address) {
+      return `0x...${address.substring(address.length - 8)}`;
+    }
+    return "";
+  };
+
+  const handleClearRecently = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith("contractData")) {
+        localStorage.removeItem(localStorage.key(i) as string);
+      }
+    }
+    setRecentlyContracts([]);
+  };
+
   const handleUserProvidedAbi = () => {
     if (!localContractAbi) {
       notification.error("Please provide an ABI.");
@@ -124,6 +151,7 @@ const Home: NextPage = () => {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
       router.push(`/${localAbiContractAddress}/${network}`);
+      localStorage.setItem(`contractData_${network}_${localAbiContractAddress}`, localContractAbi);
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
@@ -156,7 +184,7 @@ const Home: NextPage = () => {
   return (
     <>
       <MetaHeader />
-      <div className="flex flex-grow items-center justify-center bg-base-100">
+      <div className="flex flex-grow items-center justify-center bg-base-100 gap-20">
         <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
@@ -171,56 +199,58 @@ const Home: NextPage = () => {
                 }`}
               >
                 {tabValue === TabName.verifiedContract ? (
-                  <div className="my-16 flex flex-col items-center justify-center">
-                    <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
-                    <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
-                    <p>Interact with any contract on Ethereum</p>
-                    <div className="mt-4">
-                      <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
-                    </div>
+                  <>
+                    <div className="my-16 flex flex-col items-center justify-center">
+                      <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
+                      <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
+                      <p>Interact with any contract on Ethereum</p>
+                      <div className="mt-4">
+                        <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
+                      </div>
 
-                    <div className="w-10/12 my-8">
-                      <AddressInput
-                        placeholder="Contract address"
-                        value={verifiedContractAddress}
-                        onChange={setVerifiedContractAddress}
-                      />
-                    </div>
+                      <div className="w-10/12 my-8">
+                        <AddressInput
+                          placeholder="Contract address"
+                          value={verifiedContractAddress}
+                          onChange={setVerifiedContractAddress}
+                        />
+                      </div>
 
-                    <button
-                      className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
-                      onClick={handleLoadContract}
-                      disabled={!isAbiAvailable}
-                    >
-                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
-                    </button>
-                    <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
-                      <div className="mb-2 text-center font-semibold">Quick Access</div>
-                      <div className="flex justify-center w-full">
-                        <Link
-                          href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
-                          passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
-                        >
-                          DAI
-                        </Link>
-                        <Link
-                          href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
-                          passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
-                        >
-                          Gitcoin
-                        </Link>
-                        <Link
-                          href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
-                          passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
-                        >
-                          Opensea
-                        </Link>
+                      <button
+                        className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
+                        onClick={handleLoadContract}
+                        disabled={!isAbiAvailable}
+                      >
+                        {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
+                      </button>
+                      <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
+                        <div className="mb-2 text-center font-semibold">Quick Access</div>
+                        <div className="flex justify-center w-full">
+                          <Link
+                            href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
+                            passHref
+                            className="link w-1/3 text-center text-purple-700 no-underline"
+                          >
+                            DAI
+                          </Link>
+                          <Link
+                            href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
+                            passHref
+                            className="link w-1/3 text-center text-purple-700 no-underline"
+                          >
+                            Gitcoin
+                          </Link>
+                          <Link
+                            href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
+                            passHref
+                            className="link w-1/3 text-center text-purple-700 no-underline"
+                          >
+                            Opensea
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </>
                 ) : (
                   <div className="flex w-full flex-col items-center gap-3 p-6">
                     <div className="flex justify-center mb-6">
@@ -277,6 +307,36 @@ const Home: NextPage = () => {
           </div>
           <MiniFooter />
         </div>
+
+        {activeTab === TabName.verifiedContract && recentlyContracts.length > 0 && (
+          <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+            <button
+              className="btn btn-ghost absolute right-4 px-2 btn-primary"
+              onClick={() => {
+                handleClearRecently();
+              }}
+            >
+              Clear
+              <TrashIcon className="h-4 w-4" />
+            </button>
+            <div className="my-4 flex flex-col items-center justify-center">
+              <div className="mb-2 text-center font-semibold">Recently Contracts</div>
+              {recentlyContracts.map(contract => {
+                const [, network, address] = contract.split("_");
+                return (
+                  <Link
+                    href={`/${address}/${network}`}
+                    passHref
+                    key={contract}
+                    className="link text-center text-purple-700 no-underline"
+                  >
+                    {`${addressSortenned(address)} (${network})`}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
