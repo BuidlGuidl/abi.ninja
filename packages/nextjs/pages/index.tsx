@@ -245,9 +245,7 @@ const Home: NextPage = () => {
                         <MagnifyingGlassIcon className="h-5 w-5" />
                         <h1 className="font-semibold text-lg mb-0">Contract not verified</h1>
                       </div>
-                      <p className="bg-slate-100 px-2 rounded-md border border-slate-300 text-sm shadow-sm">
-                        {localAbiContractAddress}
-                      </p>
+                      <p className="bg-neutral px-2 rounded-md  text-sm shadow-sm">{localAbiContractAddress}</p>
                       <h4 className="text-center mb-6 font-semibold leading-tight">
                         You can decompile the contract (beta) or import the ABI manually below.
                       </h4>
@@ -261,7 +259,7 @@ const Home: NextPage = () => {
                     <div className="w-full flex flex-col items-center gap-2">
                       <h1 className="mt-2 font-semibold text-lg">Manually import ABI</h1>
                       <textarea
-                        className="textarea bg-slate-100 w-4/5 h-24 mb-4 resize-none"
+                        className="textarea bg-neutral w-4/5 h-24 mb-4 resize-none"
                         placeholder="Paste contract ABI in JSON format here"
                         value={localContractAbi}
                         onChange={e => setLocalContractAbi(e.target.value)}
