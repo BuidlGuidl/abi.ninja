@@ -56,7 +56,7 @@ export const MethodSelector = ({
               <div key={method.uid} className="flex items-center gap-2 w-full pr-4">
                 <button
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
-                    isMethodSelected(method.uid) ? "bg-secondary pointer-events-none" : ""
+                    isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
                   onClick={() => onMethodSelect(method.uid)}
                 >
@@ -95,7 +95,7 @@ export const MethodSelector = ({
               <div key={index} className="flex items-center gap-2 w-full pr-4">
                 <button
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
-                    isMethodSelected(method.uid) ? "bg-secondary pointer-events-none" : ""
+                    isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
                   onClick={() => onMethodSelect(method.uid)}
                 >
