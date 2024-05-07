@@ -191,11 +191,11 @@ const Home: NextPage = () => {
                     </div>
 
                     <button
-                      className="btn btn-primary px-8 text-base border-2 hover:bg-neutral hover:text-primary"
+                      className="btn btn-primary min-h-fit h-9 px-3 text-base border-2 hover:bg-neutral hover:text-primary"
                       onClick={handleLoadContract}
                       disabled={!isAbiAvailable}
                     >
-                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
+                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load contract"}
                     </button>
                     <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
                       <div className="mb-2 text-center text-lg">Quick access</div>
