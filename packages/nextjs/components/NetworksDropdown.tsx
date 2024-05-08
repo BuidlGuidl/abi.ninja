@@ -89,7 +89,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       onChange={onChange}
       components={{ Option: IconOption }}
       isSearchable={!isMobile}
-      className="max-w-xs relative text-sm w-36"
+      className="max-w-xs relative text-sm w-44"
       theme={theme => ({
         ...theme,
         colors: {
