@@ -105,6 +105,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         menuList: provided => ({ ...provided, maxHeight: 280, overflow: "auto" }),
         control: provided => ({ ...provided, borderRadius: 12 }),
         indicatorSeparator: provided => ({ ...provided, display: "none" }),
+        menu: provided => ({
+          ...provided,
+          border: `1px solid ${isDarkMode ? "#555555" : "#a3a3a3"}`,
+        }),
       }}
     />
   );
