@@ -40,6 +40,9 @@ p {
 }
 
 .btn[disabled] {
-  background-color: #8d8d8d;
+  background-color: #dddddd;
   opacity: 0.6;
+  [data-theme="dark"] & {
+    background-color: #333333;
+  }
 }
