@@ -97,7 +97,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           primary25: isDarkMode ? "#401574" : "#efeaff",
           primary50: isDarkMode ? "#551d98" : "#c1aeff",
           primary: isDarkMode ? "#BA8DE8" : "#551d98",
-          neutral0: isDarkMode ? "#000000" : theme.colors.neutral0,
+          neutral0: isDarkMode ? "#130C25" : theme.colors.neutral0,
           neutral80: isDarkMode ? "#ffffff" : theme.colors.neutral80,
         },
       })}
