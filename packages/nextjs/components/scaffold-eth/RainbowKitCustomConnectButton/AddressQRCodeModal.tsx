@@ -10,7 +10,7 @@ type AddressQRCodeModalProps = {
 export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps) => {
   return (
     <>
-      <div className="text-black">
+      <div className="text-secondary-content">
         <input type="checkbox" id={`${modalId}`} className="modal-toggle" />
         <label htmlFor={`${modalId}`} className="modal cursor-pointer">
           <label className="modal-box relative">
@@ -22,7 +22,12 @@ export const AddressQRCodeModal = ({ address, modalId }: AddressQRCodeModalProps
             <div className="space-y-3 py-6">
               <div className="flex space-x-4 flex-col items-center gap-6">
                 <QRCodeSVG value={address} size={256} />
-                <Address address={address} format="long" disableAddressLink />
+                <div className="hidden md:block">
+                  <Address address={address} format="long" disableAddressLink />
+                </div>
+                <div className="block md:hidden">
+                  <Address address={address} format="short" disableAddressLink />
+                </div>
               </div>
             </div>
           </label>
