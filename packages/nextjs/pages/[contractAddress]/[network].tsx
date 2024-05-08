@@ -169,7 +169,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           )}
         </div>
       </div>
-      <SwitchTheme className="fixed bottom-3 right-3 z-50" />
+      <SwitchTheme className="fixed bottom-3 right-6 z-50" />
     </>
   );
 };
