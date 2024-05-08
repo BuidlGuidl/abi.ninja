@@ -10,7 +10,7 @@ export const MiniHeader = () => {
         <label htmlFor="sidebar" className="btn btn-ghost drawer-button sm:hidden ml-2">
           <Bars3Icon className="h-1/2" />
         </label>
-        <Link href="/" passHref className="flex items-center gap-2 ml-4 mr-6 shrink-0">
+        <Link href="/" passHref className="flex items-center gap-2 sm:ml-4 mr-6 shrink-0">
           <div className="flex items-center">
             <Image alt="Abi Ninja logo" src="/logo_inv.svg" width={50} height={50} />
             <span className="hidden sm:flex ml-2">
