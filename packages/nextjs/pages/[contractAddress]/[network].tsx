@@ -9,6 +9,7 @@ import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
@@ -168,6 +169,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           )}
         </div>
       </div>
+      <SwitchTheme className="fixed bottom-3 right-3 z-50" />
     </>
   );
 };

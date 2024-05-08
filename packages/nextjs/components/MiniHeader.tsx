@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SwitchTheme } from "./SwitchTheme";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
@@ -21,7 +20,6 @@ export const MiniHeader = () => {
         </Link>
       </div>
       <div className="navbar-end flex-grow mr-4">
-        <SwitchTheme className="mr-4" />
         <RainbowKitCustomConnectButton />
       </div>
     </div>
