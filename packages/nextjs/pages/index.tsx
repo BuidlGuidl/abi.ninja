@@ -250,7 +250,7 @@ const Home: NextPage = () => {
                         You can decompile the contract (beta) or import the ABI manually below.
                       </h4>
                       <button
-                        className="btn btn-primary border-2 hover:bg-white hover:text-primary"
+                        className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={() => fetchAbiFromHeimdall(localAbiContractAddress)}
                       >
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
@@ -265,7 +265,7 @@ const Home: NextPage = () => {
                         onChange={e => setLocalContractAbi(e.target.value)}
                       ></textarea>
                       <button
-                        className="btn btn-primary border-2 mb-12 hover:bg-white hover:text-primary"
+                        className="btn btn-primary min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={handleUserProvidedAbi}
                       >
                         Import ABI
