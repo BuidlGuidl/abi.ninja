@@ -198,26 +198,26 @@ const Home: NextPage = () => {
                       {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load contract"}
                     </button>
                     <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
-                      <div className="mb-2 text-center text-lg">Quick access</div>
-                      <div className="flex justify-center w-full bg-neutral p-3  rounded-xl">
+                      <div className="mb-2 text-center text-base">Quick access</div>
+                      <div className="flex justify-center w-full rounded-xl">
                         <Link
                           href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
                           passHref
-                          className="link w-1/3 text-center lg:text-left lg:pl-7 text-base-content no-underline text-[1rem]"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           DAI
                         </Link>
                         <Link
                           href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
                           passHref
-                          className="link w-1/3 text-center text-base-content no-underline text-[1rem]"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           Gitcoin
                         </Link>
                         <Link
                           href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
                           passHref
-                          className="link w-1/3 text-center text-base-content no-underline text-[1rem]"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           Opensea
                         </Link>
