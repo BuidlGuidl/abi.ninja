@@ -42,7 +42,8 @@ p {
 .btn[disabled] {
   background-color: #dddddd;
   opacity: 0.6;
-  [data-theme="dark"] & {
-    background-color: #333333;
-  }
+}
+
+[data-theme="dark"] .btn[disabled] {
+  background-color: #333333;
 }
