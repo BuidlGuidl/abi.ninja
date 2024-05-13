@@ -2,22 +2,23 @@
 module.exports = {
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
   plugins: [require("daisyui")],
-  darkTheme: "scaffoldEthDark",
+  darkTheme: "dark",
+  darkMode: ["selector", "[data-theme='dark']"],
   // DaisyUI theme colors
   daisyui: {
     themes: [
       {
-        scaffoldEth: {
+        light: {
           primary: "#551d98",
           "primary-content": "#ffffff",
           secondary: "#c1aeff",
           "secondary-content": "#212638",
           accent: "#666B7C",
           "accent-content": "#212638",
-          neutral: "#212638",
+          neutral: "#f1f5f9",
           "neutral-content": "#ffffff",
           "base-100": "#efeaff",
-          "base-200": "#f4f8ff",
+          "base-200": "#ffffff",
           "base-300": "#DAE8FF",
           "base-content": "#212638",
           info: "#93BBFB",
@@ -37,23 +38,23 @@ module.exports = {
         },
       },
       {
-        scaffoldEthDark: {
-          primary: "#212638",
-          "primary-content": "#F9FBFF",
-          secondary: "#323f61",
-          "secondary-content": "#F9FBFF",
-          accent: "#4969A6",
-          "accent-content": "#F9FBFF",
-          neutral: "#F9FBFF",
-          "neutral-content": "#385183",
-          "base-100": "#385183",
-          "base-200": "#2A3655",
-          "base-300": "#212638",
-          "base-content": "#F9FBFF",
-          info: "#385183",
-          success: "#34EEB6",
-          warning: "#FFCF72",
-          error: "#FF8863",
+        dark: {
+          primary: "#8975DB",
+          "primary-content": "#E3D9FF",
+          secondary: "#8975DB",
+          "secondary-content": "#ede5ff",
+          accent: "#eeeeee",
+          "accent-content": "#cfd8e3",
+          neutral: "#3F2A58",
+          "neutral-content": "#BA8DE8",
+          "base-100": "#29203F",
+          "base-200": "#130C25",
+          "base-300": "#2c2c2c",
+          "base-content": "#d2d2d2",
+          info: "#3b8dcb",
+          success: "#2c907f",
+          warning: "#c47f30",
+          error: "#b2584e",
 
           ".tooltip": {
             "--tooltip-tail": "6px",

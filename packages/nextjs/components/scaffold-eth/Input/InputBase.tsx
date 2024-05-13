@@ -32,7 +32,7 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
   );
 
   return (
-    <div className={`flex bg-slate-100 rounded-lg text-accent ${modifier}`}>
+    <div className={`flex bg-neutral rounded-lg text-accent ${modifier}`}>
       {prefix}
       <input
         className="input input-ghost focus:outline-none focus:bg-transparent focus:text-accent h-10 px-4 border w-full placeholder:text-gray-400 text-accent"

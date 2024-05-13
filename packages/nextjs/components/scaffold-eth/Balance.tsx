@@ -38,7 +38,7 @@ export const Balance = ({ address, className = "" }: BalanceProps) => {
       className={`btn btn-sm btn-ghost flex flex-col font-normal items-center hover:bg-transparent ${className}`}
       onClick={onToggleBalance}
     >
-      <div className="w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center text-secondary-content">
         {isEthBalance ? (
           <>
             <span>{balance?.toFixed(4)}</span>

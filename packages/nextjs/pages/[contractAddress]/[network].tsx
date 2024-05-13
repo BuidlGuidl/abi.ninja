@@ -9,6 +9,7 @@ import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
@@ -152,7 +153,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           ) : contractData.abi?.length > 0 ? (
             <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
-            <div className="bg-white border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
+            <div className="bg-base-200 border shadow-xl rounded-2xl px-6 lg:px-8 m-4">
               <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
               <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
               <p className="break-all">
@@ -168,6 +169,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           )}
         </div>
       </div>
+      <SwitchTheme className="fixed bottom-3 right-6 z-50" />
     </>
   );
 };

@@ -3,9 +3,9 @@ import type { AppProps } from "next/app";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import PlausibleProvider from "next-plausible";
+import { ThemeProvider, useTheme } from "next-themes";
 import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
-import { useDarkMode } from "usehooks-ts";
 import { WagmiConfig } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
@@ -17,6 +17,13 @@ import "~~/styles/globals.css";
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const price = useNativeCurrencyPrice();
   const setNativeCurrencyPrice = useGlobalState(state => state.setNativeCurrencyPrice);
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (price > 0) {
@@ -25,37 +32,30 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   }, [setNativeCurrencyPrice, price]);
 
   return (
-    <>
+    <RainbowKitProvider
+      chains={appChains.chains}
+      avatar={BlockieAvatar}
+      theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+    >
       <div className="flex min-h-screen flex-col">
         <main className="relative flex flex-1 flex-col">
           <Component {...pageProps} />
         </main>
       </div>
       <Toaster />
-    </>
+    </RainbowKitProvider>
   );
 };
 
 const ScaffoldEthAppWithProviders = (props: AppProps) => {
-  // This variable is required for initial client side rendering of correct theme for RainbowKit
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
-  const { isDarkMode } = useDarkMode();
-  useEffect(() => {
-    setIsDarkTheme(isDarkMode);
-  }, [isDarkMode]);
-
   return (
     <PlausibleProvider domain="abi.ninja">
-      <WagmiConfig config={wagmiConfig}>
-        <NextNProgress />
-        <RainbowKitProvider
-          chains={appChains.chains}
-          avatar={BlockieAvatar}
-          theme={isDarkTheme ? darkTheme() : lightTheme()}
-        >
+      <ThemeProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <NextNProgress />
           <ScaffoldEthApp {...props} />
-        </RainbowKitProvider>
-      </WagmiConfig>
+        </WagmiConfig>
+      </ThemeProvider>
     </PlausibleProvider>
   );
 };

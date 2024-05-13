@@ -9,6 +9,7 @@ import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outlin
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown";
+import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
@@ -157,7 +158,9 @@ const Home: NextPage = () => {
     <>
       <MetaHeader />
       <div className="flex flex-grow items-center justify-center bg-base-100">
-        <div className="flex h-screen relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl bg-white pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl">
+        <div
+          className={`flex h-screen bg-base-200 relative overflow-x-hidden w-full flex-col items-center justify-center rounded-2xl pb-4 lg:h-[650px] lg:w-[450px] lg:justify-between lg:shadow-xl`}
+        >
           <div className="flex-grow flex flex-col items-center justify-center lg:w-full">
             {tabValues.map(tabValue => (
               <div
@@ -188,33 +191,33 @@ const Home: NextPage = () => {
                     </div>
 
                     <button
-                      className="btn btn-primary px-8 text-base border-2 hover:bg-white hover:text-primary"
+                      className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                       onClick={handleLoadContract}
                       disabled={!isAbiAvailable}
                     >
-                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load Contract"}
+                      {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Load contract"}
                     </button>
                     <div className="flex flex-col text-sm w-4/5 mb-10 mt-14">
-                      <div className="mb-2 text-center font-semibold">Quick Access</div>
-                      <div className="flex justify-center w-full">
+                      <div className="mb-2 text-center text-base">Quick access</div>
+                      <div className="flex justify-center w-full rounded-xl">
                         <Link
                           href="/0x6B175474E89094C44Da98b954EedeAC495271d0F/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           DAI
                         </Link>
                         <Link
                           href="/0xde30da39c46104798bb5aa3fe8b9e0e1f348163f/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           Gitcoin
                         </Link>
                         <Link
                           href="/0x00000000006c3852cbef3e08e8df289169ede581/1"
                           passHref
-                          className="link w-1/3 text-center text-purple-700 no-underline"
+                          className="link w-1/3 text-center text-base-content no-underline"
                         >
                           Opensea
                         </Link>
@@ -242,14 +245,12 @@ const Home: NextPage = () => {
                         <MagnifyingGlassIcon className="h-5 w-5" />
                         <h1 className="font-semibold text-lg mb-0">Contract not verified</h1>
                       </div>
-                      <p className="bg-slate-100 px-2 rounded-md border border-slate-300 text-sm shadow-sm">
-                        {localAbiContractAddress}
-                      </p>
+                      <p className="bg-neutral px-2 rounded-md  text-sm shadow-sm">{localAbiContractAddress}</p>
                       <h4 className="text-center mb-6 font-semibold leading-tight">
                         You can decompile the contract (beta) or import the ABI manually below.
                       </h4>
                       <button
-                        className="btn btn-primary border-2 hover:bg-white hover:text-primary"
+                        className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={() => fetchAbiFromHeimdall(localAbiContractAddress)}
                       >
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
@@ -258,13 +259,13 @@ const Home: NextPage = () => {
                     <div className="w-full flex flex-col items-center gap-2">
                       <h1 className="mt-2 font-semibold text-lg">Manually import ABI</h1>
                       <textarea
-                        className="textarea bg-slate-100 w-4/5 h-24 mb-4 resize-none"
+                        className="textarea bg-neutral w-4/5 h-24 mb-4 resize-none"
                         placeholder="Paste contract ABI in JSON format here"
                         value={localContractAbi}
                         onChange={e => setLocalContractAbi(e.target.value)}
                       ></textarea>
                       <button
-                        className="btn btn-primary border-2 mb-12 hover:bg-white hover:text-primary"
+                        className="btn btn-primary min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={handleUserProvidedAbi}
                       >
                         Import ABI
@@ -275,6 +276,7 @@ const Home: NextPage = () => {
               </div>
             ))}
           </div>
+          <SwitchTheme className="absolute top-5 right-5" />
           <MiniFooter />
         </div>
       </div>

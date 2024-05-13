@@ -38,3 +38,12 @@ p {
 .input:focus {
   @apply outline-none;
 }
+
+.btn[disabled] {
+  background-color: #dddddd;
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .btn[disabled] {
+  background-color: #333333;
+}
