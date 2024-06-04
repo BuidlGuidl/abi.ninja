@@ -1,10 +1,6 @@
-import { NETWORKS_EXTRA_DATA, getTargetNetworks } from "./scaffold-eth";
+import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
 
 export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string, chainId: number) => {
-  const chain = getTargetNetworks().find(network => network.id === chainId);
-
-  if (!chain) throw new Error(`ChainId ${chainId} not found in supported networks`);
-
   const url = `https://anyabi.xyz/api/get-abi/${chainId}/${verifiedContractAddress}`;
 
   const response = await fetch(url);
