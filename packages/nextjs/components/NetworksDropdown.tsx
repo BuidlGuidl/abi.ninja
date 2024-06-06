@@ -3,13 +3,16 @@ import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
+import { defineChain } from "viem";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
   value: number | string;
   label: string;
   icon?: string;
+  rpcUrl?: string;
 };
+
 type GroupedOptions = Record<
   "mainnet" | "testnet" | "localhost",
   {
@@ -53,6 +56,12 @@ groupedOptions.mainnet.options.push({
   icon: "/mainnet.svg",
 });
 
+groupedOptions.mainnet.options.push({
+  value: "add-custom-chain",
+  label: "Add Custom Chain",
+  icon: "/mainnet.svg",
+});
+
 const allChains = Object.values(chains).map(chain => ({
   value: chain.id,
   label: chain.name,
@@ -74,6 +83,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
   const { resolvedTheme } = useTheme();
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [customChains, setCustomChains] = useState<Options[]>([]);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -94,19 +104,77 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedChains = localStorage.getItem("customChains");
+      if (storedChains) {
+        setCustomChains(JSON.parse(storedChains));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    customChains.forEach(chain => {
+      defineChain({
+        id: chain.value as number,
+        name: chain.label,
+        //@ts-ignore : weird error here, ignoring for now
+        rpcUrls: {
+          default: { http: [chain.rpcUrl as string] },
+        },
+      });
+    });
+  }, [customChains]);
+
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "see-all") {
       (document.getElementById("see-all-modal") as HTMLDialogElement)?.showModal();
+    } else if (selected?.value === "add-custom-chain") {
+      (document.getElementById("add-custom-chain-modal") as HTMLDialogElement)?.showModal();
     } else {
       setSelectedOption(selected);
       onChange(selected);
     }
   };
 
-  const filteredChains = allChains.filter(chain => chain.label.toLowerCase().includes(searchTerm.toLowerCase()));
+  const handleAddCustomChain = (newChain: any) => {
+    const chain = defineChain(newChain);
+    const chainOption: Options = {
+      value: chain.id,
+      label: chain.name,
+      rpcUrl: chain.rpcUrl,
+    };
+    const updatedChains = [...customChains, chainOption];
+    setCustomChains(updatedChains);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("customChains", JSON.stringify(updatedChains));
+    }
+  };
 
-  console.log({ filteredChains });
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newChain = {
+      id: parseInt(formData.get("id") as string),
+      name: formData.get("name") as string,
+      rpcUrl: formData.get("rpcUrl") as string,
+    };
+    handleAddCustomChain(newChain);
+    (document.getElementById("add-custom-chain-modal") as HTMLDialogElement)?.close();
+  };
+
+  const filteredChains = [...allChains, ...customChains].filter(chain =>
+    chain.label.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const combinedOptions = {
+    ...groupedOptions,
+    custom: {
+      label: "custom",
+      options: customChains,
+    },
+  };
 
   if (!mounted) return null;
 
@@ -115,7 +183,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
       <Select
         value={selectedOption}
         instanceId="network-select"
-        options={Object.values(groupedOptions)}
+        options={Object.values(combinedOptions)}
         onChange={handleSelectChange}
         components={{ Option: IconOption }}
         isSearchable={!isMobile}
@@ -182,6 +250,46 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
             ))}
           </div>
         </div>
+      </dialog>
+
+      <dialog id="add-custom-chain-modal" className="modal">
+        <form method="dialog" className="modal-box p-12 bg-base-200" onSubmit={handleSubmit}>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-xl">Add Custom Chain</h3>
+            <div className="modal-action mt-0">
+              <button
+                type="button"
+                className="btn btn-error"
+                onClick={() => (document.getElementById("add-custom-chain-modal") as HTMLDialogElement)?.close()}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Chain ID</span>
+            </label>
+            <input type="number" name="id" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="text" name="name" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">RPC URL</span>
+            </label>
+            <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="modal-action mt-6">
+            <button type="submit" className="btn btn-primary">
+              Add Chain
+            </button>
+          </div>
+        </form>
       </dialog>
     </>
   );
