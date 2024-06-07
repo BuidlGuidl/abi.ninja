@@ -47,3 +47,9 @@ p {
 [data-theme="dark"] .btn[disabled] {
   background-color: #333333;
 }
+
+@layer components {
+  .modal-box {
+    box-shadow: none !important;
+  }
+}
