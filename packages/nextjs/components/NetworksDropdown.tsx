@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
-import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
+import Select, { MultiValue, SingleValue, components } from "react-select";
 import { defineChain } from "viem";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -69,14 +70,34 @@ const allChains = Object.values(chains).map(chain => ({
 }));
 
 const { Option } = components;
-const IconOption = (props: OptionProps<Options>) => (
-  <Option {...props}>
-    <div className="flex items-center">
-      <Image src={props.data.icon || "/mainnet.svg"} alt={props.data.label} width={24} height={24} className="mr-2" />
-      {props.data.label}
-    </div>
-  </Option>
-);
+
+const CustomOption = (props: any) => {
+  const { selectProps, data } = props;
+  const { optionDelete } = selectProps;
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    optionDelete(data);
+  };
+
+  return (
+    <Option {...props}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Image
+            src={props.data.icon || "/mainnet.svg"}
+            alt={props.data.label}
+            width={24}
+            height={24}
+            className="mr-2"
+          />
+          {props.data.label}
+        </div>
+        {props.data.rpcUrl && <TrashIcon className="h-4 w-4 text-red-500 cursor-pointer" onClick={handleDelete} />}
+      </div>
+    </Option>
+  );
+};
 
 export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | null) => void }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -164,6 +185,14 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
     (document.getElementById("add-custom-chain-modal") as HTMLDialogElement)?.close();
   };
 
+  const handleDeleteCustomChain = (chain: Options) => {
+    const updatedChains = customChains.filter(c => c.value !== chain.value);
+    setCustomChains(updatedChains);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("customChains", JSON.stringify(updatedChains));
+    }
+  };
+
   const filteredChains = [...allChains, ...customChains].filter(chain =>
     chain.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -185,7 +214,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
         instanceId="network-select"
         options={Object.values(combinedOptions)}
         onChange={handleSelectChange}
-        components={{ Option: IconOption }}
+        components={{ Option: CustomOption }}
         isSearchable={!isMobile}
         className="max-w-xs relative text-sm w-44"
         theme={theme => ({
@@ -208,6 +237,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
             border: `1px solid ${isDarkMode ? "#555555" : "#a3a3a3"}`,
           }),
         }}
+        //@ts-ignore @todo : fix this
+        optionDelete={handleDeleteCustomChain}
       />
 
       <dialog id="see-all-modal" className="modal">
