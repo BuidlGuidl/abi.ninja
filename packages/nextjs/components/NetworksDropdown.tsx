@@ -197,6 +197,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
       rpcUrl: formData.get("rpcUrl") as string,
     };
     handleAddCustomChain(newChain);
+    e.currentTarget.reset();
     (document.getElementById("add-custom-chain-modal") as HTMLDialogElement)?.close();
   };
 
