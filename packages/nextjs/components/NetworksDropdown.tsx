@@ -258,7 +258,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
       />
 
       <dialog id="see-all-modal" className="modal">
-        <div className="flex flex-col modal-box p-12 h-3/4 w-11/12 max-w-5xl bg-base-200">
+        <div className="flex flex-col modal-box justify-center p-12 h-3/4 w-11/12 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
@@ -278,7 +278,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
             onChange={e => setSearchTerm(e.target.value)}
           />
 
-          <div className="flex flex-wrap content-start justify-center gap-4 overflow-y-auto h-3/4 p-2">
+          <div className="flex flex-wrap content-start justify-center gap-4 overflow-y-auto h-5/6 p-2">
             {filteredChains.map(option => (
               <div
                 key={`${option.label}-${option.value}`}
