@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue, components } from "react-select";
 import { defineChain } from "viem";
 import { EyeIcon, PlusIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
-import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 type Options = {
   value: number | string;
@@ -174,6 +174,14 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
   };
 
   const handleAddCustomChain = (newChain: any) => {
+    const existingChain =
+      allChains.find(chain => chain.value === newChain.id) || customChains.find(chain => chain.value === newChain.id);
+
+    if (existingChain) {
+      notification.error(`This chain already exists with the name: ${existingChain.label}`);
+      return;
+    }
+
     const chain = defineChain(newChain);
     const chainOption: Options = {
       value: chain.id,
