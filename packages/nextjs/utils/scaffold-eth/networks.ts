@@ -76,13 +76,13 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#5f4bb6",
     etherscanEndpoint: "https://block-explorer-api.mainnet.zksync.io",
     etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
-    icon: "/zkSync.svg",
+    icon: "/zksync.svg",
   },
   [chains.zkSyncTestnet.id]: {
     color: "#5f4bb6",
     etherscanEndpoint: "https://block-explorer-api.testnets.zksync.dev",
     etherscanApiKey: ZKSYNC_ETHERSCAN_API_KEY,
-    icon: "/zkSync.svg",
+    icon: "/zksync.svg",
   },
   [chains.base.id]: {
     color: "#1450EE",
