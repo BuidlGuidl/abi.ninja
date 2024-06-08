@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue, components } from "react-select";
 import { defineChain } from "viem";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PlusIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
   value: number | string;
   label: string;
-  icon?: string;
+  icon?: string | ReactNode;
   rpcUrl?: string;
 };
 
@@ -54,19 +54,19 @@ const groupedOptions = networks.reduce<GroupedOptions>(
 groupedOptions.mainnet.options.push({
   value: "see-all",
   label: "See All Chains",
-  icon: "/mainnet.svg",
+  icon: <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />,
 });
 
 groupedOptions.mainnet.options.push({
   value: "add-custom-chain",
   label: "Add Custom Chain",
-  icon: "/mainnet.svg",
+  icon: <PlusIcon className="h-6 w-6 mr-2 text-gray-500" />,
 });
 
 const allChains = Object.values(chains).map(chain => ({
   value: chain.id,
   label: chain.name,
-  icon: "/mainnet.svg",
+  icon: "",
 }));
 
 const { Option } = components;
@@ -84,16 +84,27 @@ const CustomOption = (props: any) => {
     <Option {...props}>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Image
-            src={props.data.icon || "/mainnet.svg"}
-            alt={props.data.label}
-            width={24}
-            height={24}
-            className="mr-2"
-          />
+          {typeof props.data.icon === "string" ? (
+            <Image
+              src={props.data.icon || "/mainnet.svg"}
+              alt={props.data.label}
+              width={24}
+              height={24}
+              className="mr-2"
+            />
+          ) : (
+            props.data.icon
+          )}
           {props.data.label}
         </div>
-        {props.data.rpcUrl && <TrashIcon className="h-4 w-4 text-red-500 cursor-pointer" onClick={handleDelete} />}
+        {props.data.rpcUrl && (
+          <div
+            className="h-4 w-4 text-red-500 cursor-pointer font-bold flex items-center justify-center"
+            onClick={handleDelete}
+          >
+            ✕
+          </div>
+        )}
       </div>
     </Option>
   );
@@ -164,6 +175,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
     const chainOption: Options = {
       value: chain.id,
       label: chain.name,
+      icon: <PuzzlePieceIcon className="h-6 w-6 mr-2 text-gray-500" />,
       rpcUrl: chain.rpcUrl,
     };
     const updatedChains = [...customChains, chainOption];
