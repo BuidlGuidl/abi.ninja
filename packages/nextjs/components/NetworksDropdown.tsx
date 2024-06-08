@@ -22,6 +22,19 @@ type GroupedOptions = Record<
   }
 >;
 
+const getIconComponent = (iconName: string | undefined) => {
+  switch (iconName) {
+    case "EyeIcon":
+      return <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    case "PlusIcon":
+      return <PlusIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    case "PuzzlePieceIcon":
+      return <PuzzlePieceIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    default:
+      return <Image src={iconName || "/mainnet.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
+  }
+};
+
 const networks = getTargetNetworks();
 const groupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
@@ -54,13 +67,13 @@ const groupedOptions = networks.reduce<GroupedOptions>(
 groupedOptions.mainnet.options.push({
   value: "see-all",
   label: "See All Chains",
-  icon: <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />,
+  icon: "EyeIcon",
 });
 
 groupedOptions.mainnet.options.push({
   value: "add-custom-chain",
   label: "Add Custom Chain",
-  icon: <PlusIcon className="h-6 w-6 mr-2 text-gray-500" />,
+  icon: "PlusIcon",
 });
 
 const allChains = Object.values(chains).map(chain => ({
@@ -84,17 +97,7 @@ const CustomOption = (props: any) => {
     <Option {...props}>
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          {typeof props.data.icon === "string" ? (
-            <Image
-              src={props.data.icon || "/mainnet.svg"}
-              alt={props.data.label}
-              width={24}
-              height={24}
-              className="mr-2"
-            />
-          ) : (
-            props.data.icon
-          )}
+          {typeof props.data.icon === "string" ? getIconComponent(props.data.icon) : props.data.icon}
           {props.data.label}
         </div>
         {props.data.rpcUrl && (
@@ -175,7 +178,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
     const chainOption: Options = {
       value: chain.id,
       label: chain.name,
-      icon: <PuzzlePieceIcon className="h-6 w-6 mr-2 text-gray-500" />,
+      icon: "PuzzlePieceIcon",
       rpcUrl: chain.rpcUrl,
     };
     const updatedChains = [...customChains, chainOption];
