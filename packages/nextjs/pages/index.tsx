@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import * as chains from "@wagmi/core/chains";
 import type { NextPage } from "next";
-import { Address, isAddress } from "viem";
-import { usePublicClient } from "wagmi";
+import { Address, createPublicClient, defineChain, http, isAddress } from "viem";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -25,6 +25,11 @@ const tabValues = Object.values(TabName) as TabName[];
 
 const networks = getTargetNetworks();
 
+const getCustomChain = (chainId: number) => {
+  const customChains = JSON.parse(localStorage.getItem("customChains") || "[]");
+  return customChains.find((chain: any) => chain.value === chainId);
+};
+
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(networks[0].id.toString());
@@ -33,8 +38,35 @@ const Home: NextPage = () => {
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
 
-  const publicClient = usePublicClient({
-    chainId: parseInt(network),
+  let selectedChain = Object.values(chains).find(chain => chain.id === parseInt(network));
+  if (!selectedChain) {
+    const customChain = getCustomChain(parseInt(network));
+    if (customChain) {
+      // @ts-ignore
+      selectedChain = defineChain({
+        id: customChain.value,
+        name: customChain.label,
+        nativeCurrency: {
+          decimals: 18,
+          name: customChain.label,
+          symbol: customChain.label,
+        },
+        rpcUrls: {
+          default: {
+            http: [customChain.rpcUrl],
+          },
+          public: {
+            http: [customChain.rpcUrl],
+          },
+        },
+        network: customChain.label, // shouldn't be necessary according to docs, but it is
+      });
+    }
+  }
+
+  const publicClient = createPublicClient({
+    chain: selectedChain,
+    transport: http(),
   });
 
   const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
@@ -51,6 +83,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
+        // @ts-ignore
         const implementationAddress = await detectProxyTarget(verifiedContractAddress, publicClient);
 
         if (implementationAddress) {
@@ -102,7 +135,8 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network, setContractAbi, publicClient, setImplementationAddress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifiedContractAddress, network, setContractAbi, setImplementationAddress]);
 
   useEffect(() => {
     if (router.pathname === "/") {
