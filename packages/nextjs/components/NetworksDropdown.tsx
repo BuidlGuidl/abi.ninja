@@ -3,7 +3,6 @@ import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue, components } from "react-select";
-import { defineChain } from "viem";
 import { EyeIcon, PlusIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
@@ -139,19 +138,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
     }
   }, []);
 
-  useEffect(() => {
-    customChains.forEach(chain => {
-      defineChain({
-        id: chain.value as number,
-        name: chain.label,
-        //@ts-ignore : weird error here, ignoring for now
-        rpcUrls: {
-          default: { http: [chain.rpcUrl as string] },
-        },
-      });
-    });
-  }, [customChains]);
-
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "see-all") {
@@ -173,12 +159,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (option: Options | nu
       return;
     }
 
-    const chain = defineChain(newChain);
     const chainOption: Options = {
-      value: chain.id,
-      label: chain.name,
+      value: newChain.id,
+      label: newChain.name,
       icon: "PuzzlePieceIcon",
-      rpcUrl: chain.rpcUrl,
+      rpcUrl: newChain.rpcUrl,
     };
     const updatedChains = [...customChains, chainOption];
     setCustomChains(updatedChains);
