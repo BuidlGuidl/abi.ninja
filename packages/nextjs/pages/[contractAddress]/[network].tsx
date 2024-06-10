@@ -248,7 +248,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               <div className="flex justify-center gap-12">
                 {customChains.some(chain => chain.value === chainId) ? (
                   <div className="w-1/2">
-                    <form className="bg-base-200" onSubmit={handleSubmit}>
+                    <form className="bg-base-200" onSubmit={handleUserProvidedAbi}>
                       <h3 className="font-bold text-xl">Add Custom ABI</h3>
                       <div className="form-control">
                         <label className="label">
