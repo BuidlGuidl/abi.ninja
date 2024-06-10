@@ -6,7 +6,7 @@ import Select, { MultiValue, SingleValue, components } from "react-select";
 import { EyeIcon, PlusIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
 import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
-type Options = {
+export type Options = {
   value: number | string;
   label: string;
   icon?: string | ReactNode;
