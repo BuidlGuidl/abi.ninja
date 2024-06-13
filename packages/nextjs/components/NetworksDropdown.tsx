@@ -10,7 +10,7 @@ type Options = {
   icon?: string;
 };
 type GroupedOptions = Record<
-  "mainnet" | "testnet" | "localhost",
+  "mainnet" | "testnet",
   {
     label: string;
     options: Options[];
@@ -20,16 +20,6 @@ type GroupedOptions = Record<
 const networks = getTargetNetworks();
 const groupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
-    // Handle the case for localhost
-    if (network.id === 31337) {
-      groups.localhost.options.push({
-        value: network.id,
-        label: network.name,
-        icon: network.icon,
-      });
-      return groups;
-    }
-
     const groupName = network.testnet ? "testnet" : "mainnet";
 
     groups[groupName].options.push({
@@ -43,7 +33,6 @@ const groupedOptions = networks.reduce<GroupedOptions>(
   {
     mainnet: { label: "mainnet", options: [] },
     testnet: { label: "testnet", options: [] },
-    localhost: { label: "localhost", options: [] },
   },
 );
 
