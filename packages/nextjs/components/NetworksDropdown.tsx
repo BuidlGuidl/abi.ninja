@@ -145,7 +145,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         }}
       />
       <dialog id="see-all-modal" className="modal">
-        <div className="flex flex-col modal-box justify-center p-12 h-3/4 w-11/12 max-w-5xl bg-base-200">
+        <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
