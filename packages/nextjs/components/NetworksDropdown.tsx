@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
@@ -74,6 +74,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const { resolvedTheme } = useTheme();
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -97,7 +98,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "see-all") {
-      (document.getElementById("see-all-modal") as HTMLDialogElement)?.showModal();
+      const modal = document.getElementById("see-all-modal") as HTMLDialogElement;
+      modal.showModal();
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
     } else {
       setSelectedOption(selected);
       onChange(selected);
@@ -158,6 +163,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             className="input input-bordered w-full mb-4 bg-neutral"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
+            ref={searchInputRef}
           />
 
           <div className="flex flex-wrap content-start justify-center gap-4 overflow-y-auto h-5/6 p-2">
