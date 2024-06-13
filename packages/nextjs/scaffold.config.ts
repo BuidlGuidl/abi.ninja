@@ -25,6 +25,7 @@ const scaffoldConfig = {
     chains.zkSyncTestnet,
     chains.scroll,
     chains.scrollSepolia,
+    chains.hardhat,
   ],
 
   // The interval at which your front-end polls the RPC servers for new data
