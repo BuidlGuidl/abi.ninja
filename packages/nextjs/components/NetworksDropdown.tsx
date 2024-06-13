@@ -4,7 +4,7 @@ import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
   value: number | string;
@@ -28,7 +28,7 @@ const getIconComponent = (iconName: string | undefined) => {
   }
 };
 
-const networks = getTargetNetworks();
+const networks = getPopularTargetNetworks();
 const groupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
     const groupName = network.testnet ? "testnet" : "mainnet";
