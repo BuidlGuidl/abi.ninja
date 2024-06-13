@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
   value: number | string;
   label: string;
-  icon?: string;
+  icon?: string | ReactNode;
 };
 type GroupedOptions = Record<
-  "mainnet" | "testnet",
+  "mainnet" | "testnet" | "localhost",
   {
     label: string;
     options: Options[];
@@ -23,6 +23,8 @@ const getIconComponent = (iconName: string | undefined) => {
   switch (iconName) {
     case "EyeIcon":
       return <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    case "localhost":
+      return <WrenchScrewdriverIcon className="h-6 w-6 mr-2 text-gray-500" />;
     default:
       return <Image src={iconName || "/mainnet.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
   }
@@ -31,6 +33,15 @@ const getIconComponent = (iconName: string | undefined) => {
 const networks = getPopularTargetNetworks();
 const groupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
+    if (network.id === 31337) {
+      groups.localhost.options.push({
+        value: network.id,
+        label: "31337 - Localhost",
+        icon: getIconComponent("localhost"),
+      });
+      return groups;
+    }
+
     const groupName = network.testnet ? "testnet" : "mainnet";
 
     groups[groupName].options.push({
@@ -44,6 +55,7 @@ const groupedOptions = networks.reduce<GroupedOptions>(
   {
     mainnet: { label: "mainnet", options: [] },
     testnet: { label: "testnet", options: [] },
+    localhost: { label: "localhost", options: [] },
   },
 );
 
