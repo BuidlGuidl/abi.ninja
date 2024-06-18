@@ -175,13 +175,12 @@ const Home: NextPage = () => {
               >
                 {tabValue === TabName.verifiedContract ? (
                   <div className="my-16 flex flex-col items-center justify-center">
-                    <Image src="/logo_inv.svg" alt="logo" width={128} height={128} className="mb-4" />
+                    <Image src="/logo_inv.svg" alt="logo" width={119} height={87} className="mb-4" />{" "}
                     <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
                     <p>Interact with any contract on Ethereum</p>
                     <div className="mt-4">
                       <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
                     </div>
-
                     <div className="w-10/12 my-8">
                       <AddressInput
                         placeholder="Contract address"
@@ -189,7 +188,6 @@ const Home: NextPage = () => {
                         onChange={setVerifiedContractAddress}
                       />
                     </div>
-
                     <button
                       className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                       onClick={handleLoadContract}
