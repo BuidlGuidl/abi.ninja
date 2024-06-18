@@ -3,7 +3,7 @@ import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
-import { EyeIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -166,14 +166,14 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
               <button
-                className="btn btn-error"
+                className="hover:text-error"
                 onClick={() => {
                   if (seeAllModalRef.current) {
                     seeAllModalRef.current.close();
                   }
                 }}
               >
-                Close
+                <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
           </div>
