@@ -171,6 +171,16 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
+  const handleModalClose = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+      setSearchTerm("");
+    }
+    if (seeAllModalRef.current) {
+      seeAllModalRef.current.close();
+    }
+  };
+
   const existingChainIds = new Set(
     Object.values(groupedOptions)
       .flatMap(group => group.options.map(option => option.value))
@@ -217,19 +227,12 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           }),
         }}
       />
-      <dialog id="see-all-modal" className="modal" ref={seeAllModalRef}>
+      <dialog id="see-all-modal" className="modal" ref={seeAllModalRef} onClose={handleModalClose}>
         <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
-              <button
-                className="hover:text-error"
-                onClick={() => {
-                  if (seeAllModalRef.current) {
-                    seeAllModalRef.current.close();
-                  }
-                }}
-              >
+              <button className="hover:text-error" onClick={handleModalClose}>
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
