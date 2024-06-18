@@ -148,12 +148,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "other-chains") {
-      if (seeAllModalRef.current) {
-        seeAllModalRef.current.showModal();
-      }
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
+      if (!seeAllModalRef.current || !searchInputRef.current) return;
+      seeAllModalRef.current.showModal();
+      searchInputRef.current.focus();
     } else {
       setSelectedOption(selected);
       onChange(selected);
