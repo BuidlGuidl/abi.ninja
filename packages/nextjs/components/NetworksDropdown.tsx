@@ -132,7 +132,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const filteredChains = allChains.filter(chain => chain.label.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredChains = allChains.filter(chain =>
+    `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   if (!mounted) return null;
   return (
