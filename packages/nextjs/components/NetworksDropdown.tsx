@@ -3,6 +3,7 @@ import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
+import { Chain } from "viem";
 import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
@@ -10,6 +11,7 @@ type Options = {
   value: number | string;
   label: string;
   icon?: string | ReactNode;
+  isTestnet?: boolean;
 };
 
 type GroupedOptions = Record<
@@ -49,6 +51,7 @@ const groupedOptions = networks.reduce<GroupedOptions>(
       value: network.id,
       label: network.name,
       icon: network.icon,
+      isTestnet: network.testnet,
     });
 
     return groups;
@@ -71,6 +74,7 @@ const allChains = Object.values(chains)
     value: chain.id,
     label: chain.name,
     icon: "",
+    isTestnet: (chain as Chain).testnet || false,
   }));
 
 groupedOptions.other.options.push({
@@ -104,6 +108,16 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
+    const storedChains = localStorage.getItem("customChains");
+    if (storedChains) {
+      const customChains = JSON.parse(storedChains);
+      customChains.forEach((chain: Options) => {
+        const groupName = chain.isTestnet ? "testnet" : "mainnet";
+        if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
+          groupedOptions[groupName].options.push(chain);
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -129,6 +143,20 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     } else {
       setSelectedOption(selected);
       onChange(selected);
+    }
+  };
+
+  const handleChainSelect = (option: Options) => {
+    const groupName = option.isTestnet ? "testnet" : "mainnet";
+    if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
+      groupedOptions[groupName].options.push(option);
+    }
+    const customChains = [...JSON.parse(localStorage.getItem("customChains") || "[]"), option];
+    localStorage.setItem("customChains", JSON.stringify(customChains));
+    setSelectedOption(option);
+    onChange(option);
+    if (seeAllModalRef.current) {
+      seeAllModalRef.current.close();
     }
   };
 
@@ -200,13 +228,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
               <div
                 key={`${option.label}-${option.value}`}
                 className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
-                onClick={() => {
-                  setSelectedOption(option);
-                  onChange(option);
-                  if (seeAllModalRef.current) {
-                    seeAllModalRef.current.close();
-                  }
-                }}
+                onClick={() => handleChainSelect(option)}
               >
                 <div className="card-body flex flex-col justify-center items-center p-4">
                   <span className="text-sm font-semibold">Chain Id: {option.value}</span>
