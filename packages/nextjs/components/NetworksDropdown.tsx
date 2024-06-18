@@ -13,7 +13,7 @@ type Options = {
 };
 
 type GroupedOptions = Record<
-  "mainnet" | "testnet" | "localhost",
+  "mainnet" | "testnet" | "localhost" | "other",
   {
     label: string;
     options: Options[];
@@ -57,20 +57,27 @@ const groupedOptions = networks.reduce<GroupedOptions>(
     mainnet: { label: "mainnet", options: [] },
     testnet: { label: "testnet", options: [] },
     localhost: { label: "localhost", options: [] },
+    other: { label: "other", options: [] },
   },
 );
 
-groupedOptions.mainnet.options.push({
-  value: "see-all",
-  label: "See All Chains",
+const allChains = Object.values(chains)
+  .filter(
+    chain =>
+      !networks.some(network => network.id === chain.id) &&
+      !Object.values(groupedOptions).some(group => group.options.some(option => option.value === chain.id)),
+  )
+  .map(chain => ({
+    value: chain.id,
+    label: chain.name,
+    icon: "",
+  }));
+
+groupedOptions.other.options.push({
+  value: "other-chains",
+  label: "Other chains",
   icon: "EyeIcon",
 });
-
-const allChains = Object.values(chains).map(chain => ({
-  value: chain.id,
-  label: chain.name,
-  icon: "",
-}));
 
 const { Option } = components;
 const IconOption = (props: OptionProps<Options>) => (
@@ -112,7 +119,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
-    if (selected?.value === "see-all") {
+    if (selected?.value === "other-chains") {
       if (seeAllModalRef.current) {
         seeAllModalRef.current.showModal();
       }
