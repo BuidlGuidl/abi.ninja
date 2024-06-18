@@ -73,18 +73,32 @@ const groupedOptions = networks.reduce<GroupedOptions>(
   },
 );
 
-const allChains = Object.values(chains)
-  .filter(
-    chain =>
-      !networks.some(network => network.id === chain.id) &&
-      !Object.values(groupedOptions).some(group => group.options.some(option => option.value === chain.id)),
-  )
-  .map(chain => ({
+const filterChains = (
+  chains: Record<string, Chain>,
+  networkIds: Set<number>,
+  existingChainIds: Set<number>,
+): Chain[] => {
+  return Object.values(chains).filter(chain => !networkIds.has(chain.id) && !existingChainIds.has(chain.id));
+};
+
+const mapChainsToOptions = (chains: Chain[]): Options[] => {
+  return chains.map(chain => ({
     value: chain.id,
     label: chain.name,
     icon: "",
-    isTestnet: (chain as Chain).testnet || false,
+    isTestnet: (chain as any).testnet || false,
   }));
+};
+
+const getStoredChains = (): Options[] => {
+  if (typeof window !== "undefined") {
+    const storedChains = localStorage.getItem("customChains");
+    return storedChains ? JSON.parse(storedChains) : [];
+  }
+  return [];
+};
+
+const networkIds = new Set(networks.map(network => network.id));
 
 const { Option } = components;
 const IconOption = (props: OptionProps<Options>) => (
@@ -111,16 +125,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
-    const storedChains = localStorage.getItem("customChains");
-    if (storedChains) {
-      const customChains = JSON.parse(storedChains);
-      customChains.forEach((chain: Options) => {
-        const groupName = chain.isTestnet ? "testnet" : "mainnet";
-        if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
-          groupedOptions[groupName].options.push(chain);
-        }
-      });
-    }
+    const customChains = getStoredChains();
+    customChains.forEach((chain: Options) => {
+      const groupName = chain.isTestnet ? "testnet" : "mainnet";
+      if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
+        groupedOptions[groupName].options.push(chain);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -154,7 +165,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
       groupedOptions[groupName].options.push(option);
     }
-    const customChains = [...JSON.parse(localStorage.getItem("customChains") || "[]"), option];
+    const customChains = [...getStoredChains(), option];
     localStorage.setItem("customChains", JSON.stringify(customChains));
     setSelectedOption(option);
     onChange(option);
@@ -163,7 +174,15 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const filteredChains = allChains.filter(chain =>
+  const existingChainIds = new Set(
+    Object.values(groupedOptions)
+      .flatMap(group => group.options.map(option => option.value))
+      .filter(value => typeof value === "number") as number[],
+  );
+
+  const filteredChains = filterChains(chains, networkIds, existingChainIds);
+
+  const modalChains = mapChainsToOptions(filteredChains).filter(chain =>
     `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
@@ -228,7 +247,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           />
 
           <div className="flex flex-wrap content-start justify-center gap-4 overflow-y-auto h-5/6 p-2">
-            {filteredChains.map(option => (
+            {modalChains.map(option => (
               <div
                 key={`${option.label}-${option.value}`}
                 className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
