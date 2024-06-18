@@ -60,7 +60,16 @@ const groupedOptions = networks.reduce<GroupedOptions>(
     mainnet: { label: "mainnet", options: [] },
     testnet: { label: "testnet", options: [] },
     localhost: { label: "localhost", options: [] },
-    other: { label: "other", options: [] },
+    other: {
+      label: "other",
+      options: [
+        {
+          value: "other-chains",
+          label: "Other chains",
+          icon: "EyeIcon",
+        },
+      ],
+    },
   },
 );
 
@@ -76,12 +85,6 @@ const allChains = Object.values(chains)
     icon: "",
     isTestnet: (chain as Chain).testnet || false,
   }));
-
-groupedOptions.other.options.push({
-  value: "other-chains",
-  label: "Other chains",
-  icon: "EyeIcon",
-});
 
 const { Option } = components;
 const IconOption = (props: OptionProps<Options>) => (
