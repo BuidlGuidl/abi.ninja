@@ -11,6 +11,7 @@ type Options = {
   label: string;
   icon?: string | ReactNode;
 };
+
 type GroupedOptions = Record<
   "mainnet" | "testnet" | "localhost",
   {
@@ -86,7 +87,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const { resolvedTheme } = useTheme();
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
+
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const seeAllModalRef = useRef<HTMLDialogElement>(null);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -110,8 +113,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "see-all") {
-      const modal = document.getElementById("see-all-modal") as HTMLDialogElement;
-      modal.showModal();
+      if (seeAllModalRef.current) {
+        seeAllModalRef.current.showModal();
+      }
       if (searchInputRef.current) {
         searchInputRef.current.focus();
       }
@@ -156,14 +160,18 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           }),
         }}
       />
-      <dialog id="see-all-modal" className="modal">
+      <dialog id="see-all-modal" className="modal" ref={seeAllModalRef}>
         <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
               <button
                 className="btn btn-error"
-                onClick={() => (document.getElementById("see-all-modal") as HTMLDialogElement)?.close()}
+                onClick={() => {
+                  if (seeAllModalRef.current) {
+                    seeAllModalRef.current.close();
+                  }
+                }}
               >
                 Close
               </button>
@@ -186,7 +194,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
                 onClick={() => {
                   setSelectedOption(option);
                   onChange(option);
-                  (document.getElementById("see-all-modal") as HTMLDialogElement)?.close();
+                  if (seeAllModalRef.current) {
+                    seeAllModalRef.current.close();
+                  }
                 }}
               >
                 <div className="card-body flex flex-col justify-center items-center p-4">
