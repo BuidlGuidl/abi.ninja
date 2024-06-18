@@ -164,7 +164,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="skeleton bg-neutral max-w-xs w-44 relative h-[38px]" />;
+
   return (
     <>
       <Select
