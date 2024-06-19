@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Address as AddressType, isAddress } from "viem";
 import { hardhat } from "viem/chains";
@@ -87,12 +86,8 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           size={(blockieSizeMap[size] * 24) / blockieSizeMap["base"]}
         />
       </div>
-      {disableAddressLink ? (
+      {disableAddressLink || targetNetwork.id === hardhat.id ? (
         <span className={`ml-1.5 text-${size} font-normal`}>{displayAddress}</span>
-      ) : targetNetwork.id === hardhat.id ? (
-        <span className={`ml-1.5 text-${size} font-normal`}>
-          <Link href={blockExplorerAddressLink}>{displayAddress}</Link>
-        </span>
       ) : (
         <a
           className={`ml-1.5 text-${size} font-normal`}

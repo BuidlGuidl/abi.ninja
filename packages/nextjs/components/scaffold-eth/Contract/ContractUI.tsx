@@ -215,7 +215,9 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                 {mainNetwork && (
                   <p className="my-0 text-sm">
                     <span className="font-bold">Network</span>:{" "}
-                    <span style={{ color: networkColor }}>{mainNetwork.name}</span>
+                    <span style={{ color: networkColor }}>
+                      {mainNetwork.id == 31337 ? "Localhost" : mainNetwork.name}
+                    </span>
                   </p>
                 )}
               </div>
