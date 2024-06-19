@@ -14,7 +14,7 @@ import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
-import { getTargetNetworks, notification } from "~~/utils/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
   verifiedContract,
@@ -23,11 +23,9 @@ enum TabName {
 
 const tabValues = Object.values(TabName) as TabName[];
 
-const networks = getTargetNetworks();
-
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
-  const [network, setNetwork] = useState(networks[0].id.toString());
+  const [network, setNetwork] = useState("1");
   const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
