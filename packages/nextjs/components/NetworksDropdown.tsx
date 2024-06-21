@@ -92,7 +92,7 @@ const mapChainsToOptions = (chains: Chain[]): Options[] => {
 
 const getStoredChains = (): Options[] => {
   if (typeof window !== "undefined") {
-    const storedChains = localStorage.getItem("customChains");
+    const storedChains = localStorage.getItem("storedChains");
     return storedChains ? JSON.parse(storedChains) : [];
   }
   return [];
@@ -125,8 +125,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
-    const customChains = getStoredChains();
-    customChains.forEach((chain: Options) => {
+    const storedChains = getStoredChains();
+    storedChains.forEach((chain: Options) => {
       const groupName = chain.isTestnet ? "testnet" : "mainnet";
       if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
         groupedOptions[groupName].options.push(chain);
@@ -162,8 +162,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
       groupedOptions[groupName].options.push(option);
     }
-    const customChains = [...getStoredChains(), option];
-    localStorage.setItem("customChains", JSON.stringify(customChains));
+    const storedChains = [...getStoredChains(), option];
+    localStorage.setItem("storedChains", JSON.stringify(storedChains));
     setSelectedOption(option);
     onChange(option);
     if (seeAllModalRef.current) {
