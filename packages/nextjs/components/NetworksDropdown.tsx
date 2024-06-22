@@ -123,6 +123,7 @@ const IconOption = (props: OptionProps<Options>) => (
   </Option>
 );
 
+// placeholder
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
   const { resolvedTheme } = useTheme();
