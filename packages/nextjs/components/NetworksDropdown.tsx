@@ -135,7 +135,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   }));
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const seeAllModalRef = useRef<HTMLDialogElement>(null);
+  const seeOtherChainsModal = useRef<HTMLDialogElement>(null);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -166,8 +166,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "other-chains") {
-      if (!seeAllModalRef.current || !searchInputRef.current) return;
-      seeAllModalRef.current.showModal();
+      if (!seeOtherChainsModal.current || !searchInputRef.current) return;
+      seeOtherChainsModal.current.showModal();
       searchInputRef.current.focus();
     }
     if (selected?.value === "custom-chains") {
@@ -209,21 +209,21 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     localStorage.setItem("storedChains", JSON.stringify(storedChains));
     setSelectedOption(option);
     onChange(option);
-    if (seeAllModalRef.current) {
-      seeAllModalRef.current.close();
+    if (seeOtherChainsModal.current) {
+      seeOtherChainsModal.current.close();
     }
 
     // Update wagmi configuration
     updateWagmiConfig();
   };
 
-  const handleModalClose = () => {
+  const handleSeeOtherChainsModalClose = () => {
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
       setSearchTerm("");
     }
-    if (seeAllModalRef.current) {
-      seeAllModalRef.current.close();
+    if (seeOtherChainsModal.current) {
+      seeOtherChainsModal.current.close();
     }
   };
 
@@ -273,12 +273,17 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           }),
         }}
       />
-      <dialog id="see-all-modal" className="modal" ref={seeAllModalRef} onClose={handleModalClose}>
+      <dialog
+        id="see-other-chains-modal"
+        className="modal"
+        ref={seeOtherChainsModal}
+        onClose={handleSeeOtherChainsModalClose}
+      >
         <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
-              <button className="hover:text-error" onClick={handleModalClose}>
+              <button className="hover:text-error" onClick={handleSeeOtherChainsModalClose}>
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
