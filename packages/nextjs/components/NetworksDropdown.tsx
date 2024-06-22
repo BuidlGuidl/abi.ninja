@@ -4,7 +4,8 @@ import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
 import { Chain } from "viem";
-import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PlusIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useGlobalState } from "~~/services/store/store";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 type Options = {
@@ -15,7 +16,7 @@ type Options = {
 };
 
 type GroupedOptions = Record<
-  "mainnet" | "testnet" | "localhost" | "other",
+  "mainnet" | "testnet" | "localhost" | "other" | "custom",
   {
     label: string;
     options: Options[];
@@ -28,6 +29,8 @@ const getIconComponent = (iconName: string | undefined) => {
       return <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />;
     case "localhost":
       return <WrenchScrewdriverIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    case "PlusIcon":
+      return <PlusIcon className="h-6 w-6 mr-2 text-gray-500" />;
     default:
       return <Image src={iconName || "/mainnet.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
   }
@@ -67,6 +70,16 @@ const groupedOptions = networks.reduce<GroupedOptions>(
           value: "other-chains",
           label: "Other chains",
           icon: "EyeIcon",
+        },
+      ],
+    },
+    custom: {
+      label: "custom",
+      options: [
+        {
+          value: "custom-chains",
+          label: "Add your own chain",
+          icon: "PlusIcon",
         },
       ],
     },
@@ -116,6 +129,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { addCustomChain, updateWagmiConfig } = useGlobalState(state => ({
+    addCustomChain: state.addCustomChain,
+    updateWagmiConfig: state.updateWagmiConfig,
+  }));
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const seeAllModalRef = useRef<HTMLDialogElement>(null);
 
@@ -151,6 +169,31 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       if (!seeAllModalRef.current || !searchInputRef.current) return;
       seeAllModalRef.current.showModal();
       searchInputRef.current.focus();
+    }
+    if (selected?.value === "custom-chains") {
+      const chain = {
+        id: 322202,
+        name: "Parex",
+        network: "parex",
+        nativeCurrency: { name: "Parex", symbol: "PAREX", decimals: 18 },
+        rpcUrls: {
+          public: { http: ["https://mainnet-rpc.parex.network"] },
+          default: { http: ["https://mainnet-rpc.parex.network"] },
+        },
+        testnet: false,
+      } as const satisfies Chain;
+
+      addCustomChain(chain);
+      setSelectedOption(selected);
+      onChange({
+        value: chain.id,
+        label: chain.name,
+        icon: "",
+        isTestnet: (chain as any).testnet || false,
+      });
+
+      // Update wagmi configuration
+      updateWagmiConfig();
     } else {
       setSelectedOption(selected);
       onChange(selected);
@@ -169,6 +212,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     if (seeAllModalRef.current) {
       seeAllModalRef.current.close();
     }
+
+    // Update wagmi configuration
+    updateWagmiConfig();
   };
 
   const handleModalClose = () => {

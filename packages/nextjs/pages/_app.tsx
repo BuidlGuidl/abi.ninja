@@ -1,3 +1,4 @@
+// _app.tsx
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
@@ -10,7 +11,6 @@ import { WagmiConfig } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { appChains } from "~~/services/web3/wagmiConnectors";
 import "~~/styles/globals.css";
 
@@ -31,19 +31,25 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
     }
   }, [setNativeCurrencyPrice, price]);
 
+  const wagmiConfig = useGlobalState(state => state.wagmiConfig);
+
+  console.log("wagmiConfig", wagmiConfig);
+
   return (
-    <RainbowKitProvider
-      chains={appChains.chains}
-      avatar={BlockieAvatar}
-      theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
-    >
-      <div className="flex min-h-screen flex-col">
-        <main className="relative flex flex-1 flex-col">
-          <Component {...pageProps} />
-        </main>
-      </div>
-      <Toaster />
-    </RainbowKitProvider>
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider
+        chains={appChains.chains}
+        avatar={BlockieAvatar}
+        theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+      >
+        <div className="flex min-h-screen flex-col">
+          <main className="relative flex flex-1 flex-col">
+            <Component {...pageProps} />
+          </main>
+        </div>
+        <Toaster />
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 };
 
@@ -51,10 +57,8 @@ const ScaffoldEthAppWithProviders = (props: AppProps) => {
   return (
     <PlausibleProvider domain="abi.ninja">
       <ThemeProvider>
-        <WagmiConfig config={wagmiConfig}>
-          <NextNProgress />
-          <ScaffoldEthApp {...props} />
-        </WagmiConfig>
+        <NextNProgress />
+        <ScaffoldEthApp {...props} />
       </ThemeProvider>
     </PlausibleProvider>
   );
