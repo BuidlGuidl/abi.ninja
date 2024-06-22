@@ -78,7 +78,7 @@ const groupedOptions = networks.reduce<GroupedOptions>(
       options: [
         {
           value: "custom-chains",
-          label: "Add your own chain",
+          label: "Add custom chain",
           icon: "PlusIcon",
         },
       ],
@@ -136,6 +136,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const seeOtherChainsModal = useRef<HTMLDialogElement>(null);
+  const customChainModal = useRef<HTMLDialogElement>(null);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -171,29 +172,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       searchInputRef.current.focus();
     }
     if (selected?.value === "custom-chains") {
-      const chain = {
-        id: 322202,
-        name: "Parex",
-        network: "parex",
-        nativeCurrency: { name: "Parex", symbol: "PAREX", decimals: 18 },
-        rpcUrls: {
-          public: { http: ["https://mainnet-rpc.parex.network"] },
-          default: { http: ["https://mainnet-rpc.parex.network"] },
-        },
-        testnet: false,
-      } as const satisfies Chain;
-
-      addCustomChain(chain);
-      setSelectedOption(selected);
-      onChange({
-        value: chain.id,
-        label: chain.name,
-        icon: "",
-        isTestnet: (chain as any).testnet || false,
-      });
-
-      // Update wagmi configuration
-      updateWagmiConfig();
+      if (!customChainModal.current) return;
+      customChainModal.current.showModal();
     } else {
       setSelectedOption(selected);
       onChange(selected);
@@ -213,7 +193,42 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       seeOtherChainsModal.current.close();
     }
 
-    // Update wagmi configuration
+    updateWagmiConfig();
+  };
+
+  const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const chain = {
+      id: Number(formData.get("id")),
+      name: formData.get("name") as string,
+      network: formData.get("name") as string,
+      nativeCurrency: {
+        name: formData.get("nativeCurrencyName") as string,
+        symbol: formData.get("nativeCurrencySymbol") as string,
+        decimals: Number(formData.get("nativeCurrencyDecimals")),
+      },
+      rpcUrls: {
+        public: { http: [formData.get("rpcUrl") as string] },
+        default: { http: [formData.get("rpcUrl") as string] },
+      },
+      testnet: formData.get("isTestnet") === "on",
+    } as const satisfies Chain;
+
+    addCustomChain(chain);
+
+    const option = {
+      value: chain.id,
+      label: chain.name,
+      icon: "",
+      isTestnet: (chain as any).testnet || false,
+    };
+    handleChainSelect(option);
+
+    if (customChainModal.current) {
+      customChainModal.current.close();
+    }
+
     updateWagmiConfig();
   };
 
@@ -224,6 +239,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
     if (seeOtherChainsModal.current) {
       seeOtherChainsModal.current.close();
+    }
+  };
+
+  const handleCloseCustomChainModal = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customChainModal.current) {
+      customChainModal.current.close();
     }
   };
 
@@ -312,6 +334,71 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             ))}
           </div>
         </div>
+      </dialog>
+
+      <dialog
+        id="add-custom-chain-modal"
+        className="modal"
+        ref={customChainModal}
+        onClose={handleCloseCustomChainModal}
+      >
+        <form method="dialog" className="modal-box p-12 bg-base-200" onSubmit={handleSubmitCustomChain}>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-xl">Add Custom Chain</h3>
+            <div className="modal-action mt-0">
+              <button className="hover:text-error" onClick={handleCloseCustomChainModal}>
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Chain ID</span>
+            </label>
+            <input type="number" name="id" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="text" name="name" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Name</span>
+            </label>
+            <input type="text" name="nativeCurrencyName" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Symbol</span>
+            </label>
+            <input type="text" name="nativeCurrencySymbol" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Decimals</span>
+            </label>
+            <input type="number" name="nativeCurrencyDecimals" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">RPC URL</span>
+            </label>
+            <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control flex-row mt-4 items-center gap-4">
+            <label className="label">
+              <span className="label-text">Testnet?</span>
+            </label>
+            <input type="checkbox" name="isTestnet" className="checkbox checkbox-primary" />
+          </div>
+          <div className="modal-action mt-6">
+            <button type="submit" className="btn btn-primary">
+              Add Chain
+            </button>
+          </div>
+        </form>
       </dialog>
     </>
   );

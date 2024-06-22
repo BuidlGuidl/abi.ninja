@@ -19,7 +19,7 @@ import { burnerWalletConfig } from "~~/services/web3/wagmi-burner/burnerWalletCo
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
-const configureWagmi = (additionalNetworks = []) => {
+export const configureWagmi = (additionalNetworks: ChainWithAttributes[] = []) => {
   const targetNetworks = [...getTargetNetworks(), ...additionalNetworks];
   const { onlyLocalBurnerWallet } = scaffoldConfig;
 
@@ -66,11 +66,13 @@ const configureWagmi = (additionalNetworks = []) => {
     },
   ]);
 
-  return createConfig({
+  const wagmiConfig = createConfig({
     autoConnect: false,
     connectors: newConnectors,
     publicClient: appChains.publicClient,
   });
+
+  return { wagmiConfig, appChains };
 };
 
 type GlobalState = {
@@ -78,7 +80,8 @@ type GlobalState = {
   setNativeCurrencyPrice: (newNativeCurrencyPriceState: number) => void;
   targetNetwork: ChainWithAttributes;
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
-  wagmiConfig: ReturnType<typeof createConfig>;
+  wagmiConfig: ReturnType<typeof configureWagmi>["wagmiConfig"];
+  appChains: ReturnType<typeof configureWagmi>["appChains"];
   additionalNetworks: ChainWithAttributes[];
   addCustomChain: (newNetwork: ChainWithAttributes) => void;
   updateWagmiConfig: () => void;
@@ -95,27 +98,33 @@ type AbiNinjaState = {
   setImplementationAddress: (newImplementationAddress: Address) => void;
 };
 
-export const useGlobalState = create<GlobalState>(set => ({
-  nativeCurrencyPrice: 0,
-  setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
-  targetNetwork: scaffoldConfig.targetNetworks[1],
-  setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
-  // @ts-ignore
-  wagmiConfig: configureWagmi(),
-  additionalNetworks: [],
-  addCustomChain: (newNetwork: ChainWithAttributes) =>
-    // @ts-ignore
-    set(state => {
-      const updatedNetworks = [...state.additionalNetworks, newNetwork];
-      return {
-        additionalNetworks: updatedNetworks,
-        // @ts-ignore
-        wagmiConfig: configureWagmi(updatedNetworks),
-      };
-    }),
-  // @ts-ignore
-  updateWagmiConfig: () => set(state => ({ wagmiConfig: configureWagmi(state.additionalNetworks) })),
-}));
+export const useGlobalState = create<GlobalState>(set => {
+  const { wagmiConfig, appChains } = configureWagmi();
+  return {
+    nativeCurrencyPrice: 0,
+    setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
+    targetNetwork: scaffoldConfig.targetNetworks[1],
+    setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
+    wagmiConfig,
+    appChains,
+    additionalNetworks: [],
+    addCustomChain: (newNetwork: ChainWithAttributes) =>
+      set(state => {
+        const updatedNetworks = [...state.additionalNetworks, newNetwork];
+        const { wagmiConfig, appChains } = configureWagmi(updatedNetworks);
+        return {
+          additionalNetworks: updatedNetworks,
+          wagmiConfig,
+          appChains,
+        };
+      }),
+    updateWagmiConfig: () =>
+      set(state => {
+        const { wagmiConfig, appChains } = configureWagmi(state.additionalNetworks);
+        return { wagmiConfig, appChains };
+      }),
+  };
+});
 
 export const useAbiNinjaState = create<AbiNinjaState>(set => ({
   mainChainId: scaffoldConfig.targetNetworks[1].id,

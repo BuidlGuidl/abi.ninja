@@ -1,4 +1,3 @@
-// _app.tsx
 import { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
@@ -11,7 +10,6 @@ import { WagmiConfig } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { appChains } from "~~/services/web3/wagmiConnectors";
 import "~~/styles/globals.css";
 
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
@@ -32,8 +30,7 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   }, [setNativeCurrencyPrice, price]);
 
   const wagmiConfig = useGlobalState(state => state.wagmiConfig);
-
-  console.log("wagmiConfig", wagmiConfig);
+  const appChains = useGlobalState(state => state.appChains);
 
   return (
     <WagmiConfig config={wagmiConfig}>
