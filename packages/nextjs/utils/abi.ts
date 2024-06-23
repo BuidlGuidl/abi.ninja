@@ -20,11 +20,12 @@ export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string, chainId: number) => {
   const chain = NETWORKS_EXTRA_DATA[chainId];
 
-  if (!chain || (chain && !chain.etherscanApiKey) || !chain.etherscanEndpoint)
+  if (!chain || !chain.etherscanEndpoint)
     throw new Error(`ChainId ${chainId} not found in supported etherscan networks`);
 
-  const apiKey = chain.etherscanApiKey;
-  const url = `${chain.etherscanEndpoint}/api?module=contract&action=getabi&address=${verifiedContractAddress}&apikey=${apiKey}`;
+  const apiKey = chain.etherscanApiKey ?? "";
+  const apiKeyUrlParam = apiKey.trim().length > 0 ? `&apikey=${apiKey}` : "";
+  const url = `${chain.etherscanEndpoint}/api?module=contract&action=getabi&address=${verifiedContractAddress}${apiKeyUrlParam}`;
 
   const response = await fetch(url);
   const data = await response.json();
