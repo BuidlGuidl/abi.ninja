@@ -3,16 +3,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, Chain, isAddress } from "viem";
+import { Abi, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
-import { getStoredCustomChains } from "~~/components/NetworksDropdown";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { formDataToChain, getStoredCustomChains } from "~~/utils/abi-ninja";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -172,34 +172,11 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    // @todo maybe make this into a function because it is used in both here and in NetworksDropdown
-
-    const chain = {
-      id: Number(formData.get("id")),
-      name: formData.get("name") as string,
-      network: formData.get("name") as string,
-      nativeCurrency: {
-        name: formData.get("nativeCurrencyName") as string,
-        symbol: formData.get("nativeCurrencySymbol") as string,
-        decimals: Number(formData.get("nativeCurrencyDecimals")),
-      },
-      rpcUrls: {
-        public: { http: [formData.get("rpcUrl") as string] },
-        default: { http: [formData.get("rpcUrl") as string] },
-      },
-      testnet: formData.get("isTestnet") === "on",
-    } as const satisfies Chain;
+    const chain = formDataToChain(formData);
 
     addCustomChain(chain);
 
-    const option = {
-      value: chain.id,
-      label: chain.name,
-      rpcUrl: chain.rpcUrls.public.http[0],
-      icon: "",
-      isTestnet: (chain as any).testnet || false,
-    };
-    const storedCustomChains = [...getStoredCustomChains(), option];
+    const storedCustomChains = [...getStoredCustomChains(), chain];
     localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
     notification.success("Custom chain and ABI successfully loaded.");
   };
@@ -217,7 +194,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
           ) : contractData.abi?.length > 0 ? (
             <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
-            <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-scroll">
+            <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
               <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
               <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
               <p className="break-all">
@@ -305,7 +282,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                         </label>
                         <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
                       </div>
-                      <div className="form-control">
+                      <div className="form-control flex-row mt-4 items-center gap-4">
                         <label className="label">
                           <span className="label-text">Is Testnet?</span>
                         </label>

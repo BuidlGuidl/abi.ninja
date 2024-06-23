@@ -1,27 +1,21 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
-import { Chain } from "viem";
 import { EyeIcon, PlusIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "~~/services/store/store";
+import {
+  GroupedOptions,
+  Options,
+  chainToOption,
+  filterChains,
+  formDataToChain,
+  getStoredCustomChains,
+  getStoredOtherChains,
+  mapChainsToOptions,
+} from "~~/utils/abi-ninja";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
-
-type Options = {
-  value: number | string;
-  label: string;
-  icon?: string | ReactNode;
-  testnet?: boolean;
-};
-
-type GroupedOptions = Record<
-  "mainnet" | "testnet" | "localhost" | "other" | "custom",
-  {
-    label: string;
-    options: Options[];
-  }
->;
 
 const getIconComponent = (iconName: string | undefined) => {
   switch (iconName) {
@@ -84,45 +78,6 @@ const groupedOptions = networks.reduce<GroupedOptions>(
     },
   },
 );
-
-const filterChains = (
-  chains: Record<string, Chain>,
-  networkIds: Set<number>,
-  existingChainIds: Set<number>,
-): Chain[] => {
-  return Object.values(chains).filter(chain => !networkIds.has(chain.id) && !existingChainIds.has(chain.id));
-};
-
-const mapChainsToOptions = (chains: Chain[]): Options[] => {
-  return chains.map(chain => ({
-    value: chain.id,
-    label: chain.name,
-    icon: "",
-    isTestnet: (chain as any).testnet || false,
-  }));
-};
-
-const chainToOption = (chain: Chain): Options => ({
-  value: chain.id,
-  label: chain.name,
-  icon: "",
-});
-
-export const getStoredCustomChains = (): Chain[] => {
-  if (typeof window !== "undefined") {
-    const storedCustomChains = localStorage.getItem("storedCustomChains");
-    return storedCustomChains ? JSON.parse(storedCustomChains) : [];
-  }
-  return [];
-};
-
-export const getStoredOtherChains = (): Options[] => {
-  if (typeof window !== "undefined") {
-    const storedOtherChains = localStorage.getItem("storedOtherChains");
-    return storedOtherChains ? JSON.parse(storedOtherChains) : [];
-  }
-  return [];
-};
 
 const networkIds = new Set(networks.map(network => network.id));
 
@@ -220,34 +175,14 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const chain = {
-      id: Number(formData.get("id")),
-      name: formData.get("name") as string,
-      network: formData.get("name") as string,
-      nativeCurrency: {
-        name: formData.get("nativeCurrencyName") as string,
-        symbol: formData.get("nativeCurrencySymbol") as string,
-        decimals: Number(formData.get("nativeCurrencyDecimals")),
-      },
-      rpcUrls: {
-        public: { http: [formData.get("rpcUrl") as string] },
-        default: { http: [formData.get("rpcUrl") as string] },
-      },
-      testnet: formData.get("isTestnet") === "on",
-    } as const satisfies Chain;
+    const chain = formDataToChain(formData);
 
     const storedCustomChains = [...getStoredCustomChains(), chain];
     localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
 
     addCustomChain(chain);
 
-    const option = {
-      value: chain.id,
-      label: chain.name,
-      rpcUrl: chain.rpcUrls.public.http[0],
-      icon: "",
-      isTestnet: chain.testnet,
-    };
+    const option = chainToOption(chain);
     setSelectedOption(option);
     onChange(option);
 
