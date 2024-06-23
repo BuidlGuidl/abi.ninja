@@ -12,7 +12,7 @@ type Options = {
   value: number | string;
   label: string;
   icon?: string | ReactNode;
-  isTestnet?: boolean;
+  testnet?: boolean;
 };
 
 type GroupedOptions = Record<
@@ -54,7 +54,6 @@ const groupedOptions = networks.reduce<GroupedOptions>(
       value: network.id,
       label: network.name,
       icon: network.icon,
-      isTestnet: network.testnet,
     });
 
     return groups;
@@ -103,10 +102,24 @@ const mapChainsToOptions = (chains: Chain[]): Options[] => {
   }));
 };
 
-const getStoredChains = (): Options[] => {
+const chainToOption = (chain: Chain): Options => ({
+  value: chain.id,
+  label: chain.name,
+  icon: "",
+});
+
+export const getStoredCustomChains = (): Chain[] => {
   if (typeof window !== "undefined") {
-    const storedChains = localStorage.getItem("storedChains");
-    return storedChains ? JSON.parse(storedChains) : [];
+    const storedCustomChains = localStorage.getItem("storedCustomChains");
+    return storedCustomChains ? JSON.parse(storedCustomChains) : [];
+  }
+  return [];
+};
+
+export const getStoredOtherChains = (): Options[] => {
+  if (typeof window !== "undefined") {
+    const storedOtherChains = localStorage.getItem("storedOtherChains");
+    return storedOtherChains ? JSON.parse(storedOtherChains) : [];
   }
   return [];
 };
@@ -123,16 +136,14 @@ const IconOption = (props: OptionProps<Options>) => (
   </Option>
 );
 
-// placeholder
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
   const { resolvedTheme } = useTheme();
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { addCustomChain, updateWagmiConfig } = useGlobalState(state => ({
+  const { addCustomChain } = useGlobalState(state => ({
     addCustomChain: state.addCustomChain,
-    updateWagmiConfig: state.updateWagmiConfig,
   }));
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -145,9 +156,19 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
-    const storedChains = getStoredChains();
-    storedChains.forEach((chain: Options) => {
-      const groupName = chain.isTestnet ? "testnet" : "mainnet";
+    const storedCustomChains = getStoredCustomChains();
+    storedCustomChains.forEach(chain => {
+      const groupName = chain.testnet ? "testnet" : "mainnet";
+      if (!groupedOptions[groupName].options.some(option => option.value === chain.id)) {
+        const option = chainToOption(chain);
+        groupedOptions[groupName].options.push(option);
+      }
+      addCustomChain(chain);
+    });
+
+    const storedOtherChains = getStoredOtherChains();
+    storedOtherChains.forEach(chain => {
+      const groupName = chain.testnet ? "testnet" : "mainnet";
       if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
         groupedOptions[groupName].options.push(chain);
       }
@@ -181,20 +202,19 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const handleChainSelect = (option: Options) => {
-    const groupName = option.isTestnet ? "testnet" : "mainnet";
+  const handleSelectOtherChain = (option: Options) => {
+    const groupName = option.testnet ? "testnet" : "mainnet";
     if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
       groupedOptions[groupName].options.push(option);
     }
-    const storedChains = [...getStoredChains(), option];
-    localStorage.setItem("storedChains", JSON.stringify(storedChains));
+    const storedOtherChains = [...getStoredOtherChains(), option];
+    localStorage.setItem("storedOtherChains", JSON.stringify(storedOtherChains));
+
     setSelectedOption(option);
     onChange(option);
     if (seeOtherChainsModal.current) {
       seeOtherChainsModal.current.close();
     }
-
-    updateWagmiConfig();
   };
 
   const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
@@ -216,21 +236,24 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       testnet: formData.get("isTestnet") === "on",
     } as const satisfies Chain;
 
+    const storedCustomChains = [...getStoredCustomChains(), chain];
+    localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
+
     addCustomChain(chain);
 
     const option = {
       value: chain.id,
       label: chain.name,
+      rpcUrl: chain.rpcUrls.public.http[0],
       icon: "",
-      isTestnet: (chain as any).testnet || false,
+      isTestnet: chain.testnet,
     };
-    handleChainSelect(option);
+    setSelectedOption(option);
+    onChange(option);
 
     if (customChainModal.current) {
       customChainModal.current.close();
     }
-
-    updateWagmiConfig();
   };
 
   const handleSeeOtherChainsModalClose = () => {
@@ -325,7 +348,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
               <div
                 key={`${option.label}-${option.value}`}
                 className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
-                onClick={() => handleChainSelect(option)}
+                onClick={() => handleSelectOtherChain(option)}
               >
                 <div className="card-body flex flex-col justify-center items-center p-4">
                   <span className="text-sm font-semibold">Chain Id: {option.value}</span>

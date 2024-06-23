@@ -19,7 +19,7 @@ import { burnerWalletConfig } from "~~/services/web3/wagmi-burner/burnerWalletCo
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
-export const configureWagmi = (additionalNetworks: ChainWithAttributes[] = []) => {
+const configureWagmi = (additionalNetworks: ChainWithAttributes[] = []) => {
   const targetNetworks = [...getTargetNetworks(), ...additionalNetworks];
   const { onlyLocalBurnerWallet } = scaffoldConfig;
 
@@ -84,7 +84,6 @@ type GlobalState = {
   appChains: ReturnType<typeof configureWagmi>["appChains"];
   additionalNetworks: ChainWithAttributes[];
   addCustomChain: (newNetwork: ChainWithAttributes) => void;
-  updateWagmiConfig: () => void;
 };
 
 type AbiNinjaState = {
@@ -117,11 +116,6 @@ export const useGlobalState = create<GlobalState>(set => {
           wagmiConfig,
           appChains,
         };
-      }),
-    updateWagmiConfig: () =>
-      set(state => {
-        const { wagmiConfig, appChains } = configureWagmi(state.additionalNetworks);
-        return { wagmiConfig, appChains };
       }),
   };
 });
