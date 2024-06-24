@@ -59,9 +59,7 @@ type BurnerAccount = {
  * Creates a burner wallet
  */
 export const useBurnerWallet = (): BurnerAccount => {
-  const [burnerSk, setBurnerSk] = useLocalStorage<Hex>(burnerStorageKey, newDefaultPrivateKey, {
-    initializeWithValue: false,
-  });
+  const [burnerSk, setBurnerSk] = useLocalStorage<Hex>(burnerStorageKey, newDefaultPrivateKey);
 
   const { targetNetwork } = useTargetNetwork();
   const publicClient = usePublicClient({ chainId: targetNetwork.id });
