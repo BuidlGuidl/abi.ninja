@@ -3,7 +3,7 @@ import { InheritanceTooltip } from "./InheritanceTooltip";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
-import { useAccount, useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
   ContractInput,
   IntegerInput,
@@ -11,12 +11,11 @@ import {
   getFunctionInputKey,
   getInitialFormState,
   getParsedContractFunctionArgs,
-  getParsedError,
   transformAbiFunction,
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
@@ -36,28 +35,26 @@ export const WriteOnlyFunctionForm = ({
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [txValue, setTxValue] = useState<string | bigint>("");
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const writeTxn = useTransactor();
   const { address: connectedAddress } = useAccount();
   const { openConnectModal } = useConnectModal();
   const wrongNetwork = !chain || chain?.id !== mainChainId;
 
-  const {
-    data: result,
-    isLoading,
-    writeAsync,
-  } = useContractWrite({
-    address: contractAddress,
-    functionName: abiFunction.name,
-    chainId: mainChainId,
-    abi: abi,
-    args: getParsedContractFunctionArgs(form),
-  });
+  const { data: result, isPending, writeContractAsync } = useWriteContract();
 
   const handleWrite = async () => {
-    if (writeAsync) {
+    if (writeContractAsync) {
       try {
-        const makeWriteWithParams = () => writeAsync({ value: BigInt(txValue) });
+        const makeWriteWithParams = () =>
+          writeContractAsync({
+            address: contractAddress,
+            functionName: abiFunction.name,
+            abi: abi,
+            chainId: mainChainId,
+            args: getParsedContractFunctionArgs(form),
+            value: BigInt(txValue),
+          });
         await writeTxn(makeWriteWithParams);
         onChange();
       } catch (e: any) {
@@ -68,8 +65,8 @@ export const WriteOnlyFunctionForm = ({
   };
 
   const [displayedTxResult, setDisplayedTxResult] = useState<TransactionReceipt>();
-  const { data: txResult } = useWaitForTransaction({
-    hash: result?.hash,
+  const { data: txResult } = useWaitForTransactionReceipt({
+    hash: result,
   });
   useEffect(() => {
     setDisplayedTxResult(txResult);
@@ -132,8 +129,8 @@ export const WriteOnlyFunctionForm = ({
               }`}
               data-tip={`${wrongNetwork && "Wrong network"}`}
             >
-              <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isLoading} onClick={handleWrite}>
-                {isLoading && <span className="loading loading-spinner loading-xs"></span>}
+              <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isPending} onClick={handleWrite}>
+                {isPending && <span className="loading loading-spinner loading-xs"></span>}
                 Send 💸
               </button>
             </div>
