@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type KeyboardEvent, useState } from "react";
 import { AugmentedAbiFunction } from "./ContractUI";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -28,6 +28,14 @@ export const MethodSelector = ({
 
   const isMethodSelected = (uid: string) => {
     return abi.some(method => method.uid === uid);
+  };
+
+  const callOnMethodSelectOnSpaceOrEnter = (event: KeyboardEvent<HTMLDivElement>, uid: string) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      onMethodSelect(uid);
+      event.stopPropagation();
+    }
   };
 
   return (
@@ -60,13 +68,20 @@ export const MethodSelector = ({
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
-                  onClick={() => onMethodSelect(method.uid)}
+                  onClick={() => {
+                    onMethodSelect(method.uid);
+                  }}
+                  onKeyDown={event => callOnMethodSelectOnSpaceOrEnter(event, method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
                       className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.uid)}
+                      onClick={event => {
+                        removeMethod(method.uid);
+                        event.stopPropagation();
+                      }}
+                      onKeyDown={event => event.stopPropagation()}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
@@ -101,13 +116,18 @@ export const MethodSelector = ({
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
+                  onKeyDown={event => callOnMethodSelectOnSpaceOrEnter(event, method.uid)}
                   onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
                       className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.uid)}
+                      onClick={event => {
+                        removeMethod(method.uid);
+                        event.stopPropagation();
+                      }}
+                      onKeyDown={event => event.stopPropagation()}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
