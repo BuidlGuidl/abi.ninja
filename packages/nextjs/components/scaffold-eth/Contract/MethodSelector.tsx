@@ -54,7 +54,9 @@ export const MethodSelector = ({
           <div className="flex flex-col items-start gap-1 pb-4">
             {readMethods.map(method => (
               <div key={method.uid} className="flex items-center gap-2 w-full pr-4">
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
@@ -69,7 +71,7 @@ export const MethodSelector = ({
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   )}
-                </button>
+                </div>
               </div>
             ))}
           </div>
@@ -93,7 +95,9 @@ export const MethodSelector = ({
           <div className="flex flex-col items-start gap-1">
             {writeMethods.map((method, index) => (
               <div key={index} className="flex items-center gap-2 w-full pr-4">
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
@@ -108,7 +112,7 @@ export const MethodSelector = ({
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   )}
-                </button>
+                </div>
               </div>
             ))}
           </div>
