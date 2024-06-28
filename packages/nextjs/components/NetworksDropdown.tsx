@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as chains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
-import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
+import Select, { MultiValue, SingleValue, components } from "react-select";
 import { Chain } from "viem";
 import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
@@ -34,7 +34,7 @@ const getIconComponent = (iconName: string | undefined) => {
 };
 
 const networks = getPopularTargetNetworks();
-const groupedOptions = networks.reduce<GroupedOptions>(
+const initialGroupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
     if (network.id === 31337) {
       groups.localhost.options.push({
@@ -98,23 +98,49 @@ const getStoredChains = (): Options[] => {
   return [];
 };
 
+const isChainStored = (chain: Options): boolean => {
+  const storedChains = getStoredChains();
+  return storedChains.some(storedChain => storedChain.value === chain.value);
+};
+
 const networkIds = new Set(networks.map(network => network.id));
 
 const { Option } = components;
-const IconOption = (props: OptionProps<Options>) => (
-  <Option {...props}>
-    <div className="flex items-center">
-      {typeof props.data.icon === "string" ? getIconComponent(props.data.icon) : props.data.icon}
-      {props.data.label}
-    </div>
-  </Option>
-);
+
+const CustomOption = (props: any) => {
+  const { data } = props;
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    props.onDelete(data);
+  };
+
+  return (
+    <Option {...props}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {typeof data.icon === "string" ? getIconComponent(data.icon) : data.icon}
+          {data.label}
+        </div>
+
+        {isChainStored(data) && (
+          <div
+            className="h-4 w-4 text-red-500 cursor-pointer font-bold flex items-center justify-center"
+            onClick={handleDelete}
+          >
+            ✕
+          </div>
+        )}
+      </div>
+    </Option>
+  );
+};
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
   const { resolvedTheme } = useTheme();
-  const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
+  const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [groupedOptions, setGroupedOptions] = useState<GroupedOptions>(initialGroupedOptions);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const seeAllModalRef = useRef<HTMLDialogElement>(null);
@@ -128,10 +154,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     const customChains = getStoredChains();
     customChains.forEach((chain: Options) => {
       const groupName = chain.isTestnet ? "testnet" : "mainnet";
-      if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
-        groupedOptions[groupName].options.push(chain);
+      if (!initialGroupedOptions[groupName].options.some(option => option.value === chain.value)) {
+        initialGroupedOptions[groupName].options.push(chain);
       }
     });
+    setGroupedOptions({ ...initialGroupedOptions });
   }, []);
 
   useEffect(() => {
@@ -164,6 +191,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
     const customChains = [...getStoredChains(), option];
     localStorage.setItem("customChains", JSON.stringify(customChains));
+    setGroupedOptions({ ...groupedOptions });
     setSelectedOption(option);
     onChange(option);
     if (seeAllModalRef.current) {
@@ -193,6 +221,28 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const handleDeleteCustomChain = (chain: Options) => {
+    const updatedChains = getStoredChains().filter((c: Options) => c.value !== chain.value);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("customChains", JSON.stringify(updatedChains));
+    }
+
+    const updatedGroupedOptions = { ...groupedOptions };
+    Object.keys(updatedGroupedOptions).forEach(groupName => {
+      updatedGroupedOptions[groupName as keyof GroupedOptions].options = updatedGroupedOptions[
+        groupName as keyof GroupedOptions
+      ].options.filter(option => option.value !== chain.value);
+    });
+
+    setGroupedOptions(updatedGroupedOptions);
+
+    if (selectedOption?.value === chain.value) {
+      setSelectedOption(updatedGroupedOptions.mainnet.options[0]);
+      onChange(updatedGroupedOptions.mainnet.options[0]);
+    }
+  };
+
   if (!mounted) return <div className="skeleton bg-neutral max-w-xs w-44 relative h-[38px]" />;
 
   return (
@@ -203,7 +253,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         instanceId="network-select"
         options={Object.values(groupedOptions)}
         onChange={handleSelectChange}
-        components={{ Option: IconOption }}
+        components={{ Option: props => <CustomOption {...props} onDelete={handleDeleteCustomChain} /> }}
         isSearchable={!isMobile}
         className="max-w-xs relative text-sm w-44"
         theme={theme => ({
