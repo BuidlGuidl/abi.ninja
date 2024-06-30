@@ -10,7 +10,7 @@ import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 type Options = {
   value: number | string;
   label: string;
-  icon?: string | ReactNode;
+  icon: string | ReactNode;
   isTestnet?: boolean;
 };
 
