@@ -58,7 +58,8 @@ module.exports = {
 
           ".tooltip": {
             "--tooltip-tail": "6px",
-            "--tooltip-color": "hsl(var(--p))",
+            "--tooltip-color": "oklch(var(--s))",
+            "--tooltip-text-color": "oklch(var(--sc))",
           },
           ".link": {
             textUnderlineOffset: "2px",
