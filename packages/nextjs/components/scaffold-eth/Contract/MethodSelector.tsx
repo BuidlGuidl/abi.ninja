@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type KeyboardEvent, useState } from "react";
 import { AugmentedAbiFunction } from "./ContractUI";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -30,6 +30,14 @@ export const MethodSelector = ({
     return abi.some(method => method.uid === uid);
   };
 
+  const callOnMethodSelectOnSpaceOrEnter = (event: KeyboardEvent<HTMLDivElement>, uid: string) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      onMethodSelect(uid);
+      event.stopPropagation();
+    }
+  };
+
   return (
     <div className="overflow-auto h-[80vh]">
       <input id="sidebar" type="checkbox" className="drawer-toggle" />
@@ -54,22 +62,31 @@ export const MethodSelector = ({
           <div className="flex flex-col items-start gap-1 pb-4">
             {readMethods.map(method => (
               <div key={method.uid} className="flex items-center gap-2 w-full pr-4">
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
-                  onClick={() => onMethodSelect(method.uid)}
+                  onClick={() => {
+                    onMethodSelect(method.uid);
+                  }}
+                  onKeyDown={event => callOnMethodSelectOnSpaceOrEnter(event, method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
                       className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.uid)}
+                      onClick={event => {
+                        removeMethod(method.uid);
+                        event.stopPropagation();
+                      }}
+                      onKeyDown={event => event.stopPropagation()}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   )}
-                </button>
+                </div>
               </div>
             ))}
           </div>
@@ -93,22 +110,29 @@ export const MethodSelector = ({
           <div className="flex flex-col items-start gap-1">
             {writeMethods.map((method, index) => (
               <div key={index} className="flex items-center gap-2 w-full pr-4">
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   className={`btn btn-sm btn-ghost font-normal pr-1 w-full justify-between ${
                     isMethodSelected(method.uid) ? "bg-neutral pointer-events-none" : ""
                   }`}
+                  onKeyDown={event => callOnMethodSelectOnSpaceOrEnter(event, method.uid)}
                   onClick={() => onMethodSelect(method.uid)}
                 >
                   {method.name}
                   {isMethodSelected(method.uid) && (
                     <button
                       className="ml-4 text-xs hover:bg-base-100 rounded-md p-1 pointer-events-auto"
-                      onClick={() => removeMethod(method.uid)}
+                      onClick={event => {
+                        removeMethod(method.uid);
+                        event.stopPropagation();
+                      }}
+                      onKeyDown={event => event.stopPropagation()}
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   )}
-                </button>
+                </div>
               </div>
             ))}
           </div>
