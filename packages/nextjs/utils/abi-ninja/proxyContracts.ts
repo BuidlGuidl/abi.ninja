@@ -1,4 +1,4 @@
-import { PublicClient } from "wagmi";
+import { UsePublicClientReturnType } from "wagmi";
 
 const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
 const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50" as const;
@@ -59,7 +59,11 @@ export const parse1167Bytecode = (bytecode: unknown): string => {
   return `0x${addressFromBytecode.padStart(40, "0")}`;
 };
 
-export const detectProxyTarget = async (proxyAddress: string, client: PublicClient) => {
+export const detectProxyTarget = async (proxyAddress: string, client: UsePublicClientReturnType) => {
+  if (!client) {
+    console.error("No client provided");
+    return;
+  }
   const detectUsingBytecode = async () => {
     const bytecode = await client.getBytecode({ address: proxyAddress });
     return parse1167Bytecode(bytecode);

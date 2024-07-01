@@ -14,13 +14,14 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
-    "@ethersproject/providers": "^5.7.2",
     "@heroicons/react": "^2.0.11",
-    "@rainbow-me/rainbowkit": "1.3.0",
+    "@rainbow-me/rainbowkit": "2.1.2",
+    "@tanstack/react-query": "^5.28.6",
     "@uniswap/sdk-core": "^4.0.1",
     "@uniswap/v2-sdk": "^3.0.1",
     "@vercel/og": "^0.6.2",
     "blo": "^1.0.1",
+    "burner-connector": "^0.0.8",
     "daisyui": "^4.4.19",
     "next": "13.3.4",
     "next-plausible": "^3.12.0",
@@ -34,8 +35,8 @@
     "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
-    "viem": "1.19.9",
-    "wagmi": "1.4.7",
+    "viem": "2.13.6",
+    "wagmi": "2.9.8",
     "zustand": "^4.1.2"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@types/react": "^18.0.9",
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "abitype": "1.0.2",
     "autoprefixer": "^10.4.12",
     "eslint": "^8.15.0",
     "eslint-config-next": "^13.1.6",
@@ -53,7 +55,7 @@
     "prettier": "^2.8.4",
     "tailwindcss": "^3.3.3",
     "type-fest": "^4.6.0",
-    "typescript": "^5.1.6",
+    "typescript": "5.1.6",
     "vercel": "^28.15.1"
   }
 }

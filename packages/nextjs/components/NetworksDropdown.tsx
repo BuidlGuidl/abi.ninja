@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import * as chains from "@wagmi/core/chains";
+import * as wagmiChains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
 import { Chain } from "viem";
@@ -21,6 +21,8 @@ type GroupedOptions = Record<
     options: Options[];
   }
 >;
+
+type Chains = Record<string, Chain>;
 
 const getIconComponent = (iconName: string | undefined) => {
   switch (iconName) {
@@ -72,6 +74,17 @@ const groupedOptions = networks.reduce<GroupedOptions>(
     },
   },
 );
+
+const excludeChainKeys = ["lineaTestnet", "x1Testnet"]; // duplicate chains in viem chains
+
+const unfilteredChains: Chains = wagmiChains as Chains;
+
+const filteredChains = Object.keys(unfilteredChains)
+  .filter(key => !excludeChainKeys.includes(key))
+  .reduce((obj: Chains, key) => {
+    obj[key] = unfilteredChains[key];
+    return obj;
+  }, {} as Chains);
 
 const filterChains = (
   chains: Record<string, Chain>,
@@ -187,9 +200,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       .filter(value => typeof value === "number") as number[],
   );
 
-  const filteredChains = filterChains(chains, networkIds, existingChainIds);
+  const filteredChainsForModal = filterChains(filteredChains, networkIds, existingChainIds);
 
-  const modalChains = mapChainsToOptions(filteredChains).filter(chain =>
+  const modalChains = mapChainsToOptions(filteredChainsForModal).filter(chain =>
     `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 

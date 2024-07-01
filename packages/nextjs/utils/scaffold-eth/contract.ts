@@ -1,3 +1,4 @@
+import { MutateOptions } from "@tanstack/react-query";
 import {
   Abi,
   AbiParameter,
@@ -18,23 +19,43 @@ import {
   GetTransactionReturnType,
   Log,
   TransactionReceipt,
+  WriteContractErrorType,
 } from "viem";
-import { UseContractEventConfig, UseContractReadConfig, UseContractWriteConfig } from "wagmi";
+import { Config, UseReadContractParameters, UseWatchContractEventParameters } from "wagmi";
+import { WriteContractParameters, WriteContractReturnType } from "wagmi/actions";
+import { WriteContractVariables } from "wagmi/query";
 import deployedContractsData from "~~/contracts/deployedContracts";
 import externalContractsData from "~~/contracts/externalContracts";
 import scaffoldConfig from "~~/scaffold.config";
 
-const deepMergeContracts = <D extends Record<PropertyKey, any>, S extends Record<PropertyKey, any>>(
-  destination: D,
-  source: S,
+type AddExternalFlag<T> = {
+  [ChainId in keyof T]: {
+    [ContractName in keyof T[ChainId]]: T[ChainId][ContractName] & { external?: true };
+  };
+};
+
+const deepMergeContracts = <L extends Record<PropertyKey, any>, E extends Record<PropertyKey, any>>(
+  local: L,
+  external: E,
 ) => {
   const result: Record<PropertyKey, any> = {};
-  const allKeys = Array.from(new Set([...Object.keys(source), ...Object.keys(destination)]));
+  const allKeys = Array.from(new Set([...Object.keys(external), ...Object.keys(local)]));
   for (const key of allKeys) {
-    result[key] = { ...destination[key], ...source[key] };
+    if (!external[key]) {
+      result[key] = local[key];
+      continue;
+    }
+    const amendedExternal = Object.fromEntries(
+      Object.entries(external[key] as Record<string, Record<string, unknown>>).map(([contractName, declaration]) => [
+        contractName,
+        { ...declaration, external: true },
+      ]),
+    );
+    result[key] = { ...local[key], ...amendedExternal };
   }
-  return result as MergeDeepRecord<D, S, { arrayMergeMode: "replace" }>;
+  return result as MergeDeepRecord<AddExternalFlag<L>, AddExternalFlag<E>, { arrayMergeMode: "replace" }>;
 };
+
 const contractsData = deepMergeContracts(deployedContractsData, externalContractsData);
 
 export type InheritedFunctions = { readonly [key: string]: string };
@@ -43,6 +64,7 @@ export type GenericContract = {
   address: Address;
   abi: Abi;
   inheritedFunctions?: InheritedFunctions;
+  external?: true;
 };
 
 export type GenericContractsDeclaration = {
@@ -135,6 +157,9 @@ type UseScaffoldArgsParam<
 > = TFunctionName extends FunctionNamesWithInputs<TContractName>
   ? {
       args: OptionalTupple<UnionToIntersection<AbiFunctionArguments<ContractAbi<TContractName>, TFunctionName>>>;
+      value?: ExtractAbiFunction<ContractAbi<TContractName>, TFunctionName>["stateMutability"] extends "payable"
+        ? bigint | undefined
+        : undefined;
     }
   : {
       args?: never;
@@ -145,28 +170,40 @@ export type UseScaffoldReadConfig<
   TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, ReadAbiStateMutability>,
 > = {
   contractName: TContractName;
+  watch?: boolean;
 } & IsContractDeclarationMissing<
-  Partial<UseContractReadConfig>,
+  Partial<UseReadContractParameters>,
   {
     functionName: TFunctionName;
   } & UseScaffoldArgsParam<TContractName, TFunctionName> &
-    Omit<UseContractReadConfig, "chainId" | "abi" | "address" | "functionName" | "args">
+    Omit<UseReadContractParameters, "chainId" | "abi" | "address" | "functionName" | "args">
 >;
 
-export type UseScaffoldWriteConfig<
+export type ScaffoldWriteContractVariables<
   TContractName extends ContractName,
   TFunctionName extends ExtractAbiFunctionNames<ContractAbi<TContractName>, WriteAbiStateMutability>,
-> = {
-  contractName: TContractName;
-  onBlockConfirmation?: (txnReceipt: TransactionReceipt) => void;
-  blockConfirmations?: number;
-} & IsContractDeclarationMissing<
-  Partial<UseContractWriteConfig>,
+> = IsContractDeclarationMissing<
+  Partial<WriteContractParameters>,
   {
     functionName: TFunctionName;
   } & UseScaffoldArgsParam<TContractName, TFunctionName> &
-    Omit<UseContractWriteConfig, "chainId" | "abi" | "address" | "functionName" | "args" | "mode">
+    Omit<WriteContractParameters, "chainId" | "abi" | "address" | "functionName" | "args">
 >;
+
+type WriteVariables = WriteContractVariables<Abi, string, any[], Config, number>;
+
+export type TransactorFuncOptions = {
+  onBlockConfirmation?: (txnReceipt: TransactionReceipt) => void;
+  blockConfirmations?: number;
+};
+
+export type ScaffoldWriteContractOptions = MutateOptions<
+  WriteContractReturnType,
+  WriteContractErrorType,
+  WriteVariables,
+  unknown
+> &
+  TransactorFuncOptions;
 
 export type UseScaffoldEventConfig<
   TContractName extends ContractName,
@@ -177,9 +214,10 @@ export type UseScaffoldEventConfig<
   >,
 > = {
   contractName: TContractName;
+  eventName: TEventName;
 } & IsContractDeclarationMissing<
-  Omit<UseContractEventConfig, "listener"> & {
-    listener: (
+  Omit<UseWatchContractEventParameters, "onLogs" | "address" | "abi" | "eventName"> & {
+    onLogs: (
       logs: Simplify<
         Omit<Log<bigint, number, any>, "args" | "eventName"> & {
           args: Record<string, unknown>;
@@ -188,8 +226,8 @@ export type UseScaffoldEventConfig<
       >[],
     ) => void;
   },
-  Omit<UseContractEventConfig<ContractAbi<TContractName>, TEventName>, "listener"> & {
-    listener: (
+  Omit<UseWatchContractEventParameters<ContractAbi<TContractName>>, "onLogs" | "address" | "abi" | "eventName"> & {
+    onLogs: (
       logs: Simplify<
         Omit<Log<bigint, number, false, TEvent, false, [TEvent], TEventName>, "args"> & {
           args: AbiParametersToPrimitiveTypes<TEvent["inputs"]> &
