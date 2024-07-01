@@ -1,26 +1,22 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as wagmiChains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
 import { Chain } from "viem";
-import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PlusIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useGlobalState } from "~~/services/store/store";
+import {
+  GroupedOptions,
+  Options,
+  chainToOption,
+  filterChains,
+  formDataToChain,
+  getStoredCustomChains,
+  getStoredOtherChains,
+  mapChainsToOptions,
+} from "~~/utils/abi-ninja/networksDropdownUtils";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
-
-type Options = {
-  value: number | string;
-  label: string;
-  icon?: string | ReactNode;
-  isTestnet?: boolean;
-};
-
-type GroupedOptions = Record<
-  "mainnet" | "testnet" | "localhost" | "other",
-  {
-    label: string;
-    options: Options[];
-  }
->;
 
 type Chains = Record<string, Chain>;
 
@@ -30,6 +26,8 @@ const getIconComponent = (iconName: string | undefined) => {
       return <EyeIcon className="h-6 w-6 mr-2 text-gray-500" />;
     case "localhost":
       return <WrenchScrewdriverIcon className="h-6 w-6 mr-2 text-gray-500" />;
+    case "PlusIcon":
+      return <PlusIcon className="h-6 w-6 mr-2 text-gray-500" />;
     default:
       return <Image src={iconName || "/mainnet.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
   }
@@ -53,7 +51,7 @@ const groupedOptions = networks.reduce<GroupedOptions>(
       value: network.id,
       label: network.name,
       icon: network.icon,
-      isTestnet: network.testnet,
+      testnet: network.testnet,
     });
 
     return groups;
@@ -72,6 +70,16 @@ const groupedOptions = networks.reduce<GroupedOptions>(
         },
       ],
     },
+    custom: {
+      label: "custom",
+      options: [
+        {
+          value: "custom-chains",
+          label: "Add custom chain",
+          icon: "PlusIcon",
+        },
+      ],
+    },
   },
 );
 
@@ -85,31 +93,6 @@ const filteredChains = Object.keys(unfilteredChains)
     obj[key] = unfilteredChains[key];
     return obj;
   }, {} as Chains);
-
-const filterChains = (
-  chains: Record<string, Chain>,
-  networkIds: Set<number>,
-  existingChainIds: Set<number>,
-): Chain[] => {
-  return Object.values(chains).filter(chain => !networkIds.has(chain.id) && !existingChainIds.has(chain.id));
-};
-
-const mapChainsToOptions = (chains: Chain[]): Options[] => {
-  return chains.map(chain => ({
-    value: chain.id,
-    label: chain.name,
-    icon: "",
-    isTestnet: (chain as any).testnet || false,
-  }));
-};
-
-const getStoredChains = (): Options[] => {
-  if (typeof window !== "undefined") {
-    const storedChains = localStorage.getItem("customChains");
-    return storedChains ? JSON.parse(storedChains) : [];
-  }
-  return [];
-};
 
 const networkIds = new Set(networks.map(network => network.id));
 
@@ -129,8 +112,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const { addCustomChain } = useGlobalState(state => ({
+    addCustomChain: state.addChain,
+  }));
+
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const seeAllModalRef = useRef<HTMLDialogElement>(null);
+  const seeOtherChainsModalRef = useRef<HTMLDialogElement>(null);
+  const customChainModalRef = useRef<HTMLDialogElement>(null);
 
   const isDarkMode = resolvedTheme === "dark";
 
@@ -138,14 +126,24 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
-    const customChains = getStoredChains();
-    customChains.forEach((chain: Options) => {
-      const groupName = chain.isTestnet ? "testnet" : "mainnet";
+    const storedCustomChains = getStoredCustomChains();
+    storedCustomChains.forEach(chain => {
+      const groupName = chain.testnet ? "testnet" : "mainnet";
+      if (!groupedOptions[groupName].options.some(option => option.value === chain.id)) {
+        const option = chainToOption(chain);
+        groupedOptions[groupName].options.push(option);
+        addCustomChain(chain);
+      }
+    });
+
+    const storedOtherChains = getStoredOtherChains();
+    storedOtherChains.forEach(chain => {
+      const groupName = chain.testnet ? "testnet" : "mainnet";
       if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
         groupedOptions[groupName].options.push(chain);
       }
     });
-  }, []);
+  }, [addCustomChain]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -161,36 +159,66 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "other-chains") {
-      if (!seeAllModalRef.current || !searchInputRef.current) return;
-      seeAllModalRef.current.showModal();
+      if (!seeOtherChainsModalRef.current || !searchInputRef.current) return;
+      seeOtherChainsModalRef.current.showModal();
       searchInputRef.current.focus();
+    } else if (selected?.value === "custom-chains") {
+      if (!customChainModalRef.current) return;
+      customChainModalRef.current.showModal();
     } else {
       setSelectedOption(selected);
       onChange(selected);
     }
   };
 
-  const handleChainSelect = (option: Options) => {
-    const groupName = option.isTestnet ? "testnet" : "mainnet";
+  const handleSelectOtherChain = (option: Options) => {
+    const groupName = option.testnet ? "testnet" : "mainnet";
     if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
       groupedOptions[groupName].options.push(option);
     }
-    const customChains = [...getStoredChains(), option];
-    localStorage.setItem("customChains", JSON.stringify(customChains));
+    const storedOtherChains = [...getStoredOtherChains(), option];
+    localStorage.setItem("storedOtherChains", JSON.stringify(storedOtherChains));
+
     setSelectedOption(option);
     onChange(option);
-    if (seeAllModalRef.current) {
-      seeAllModalRef.current.close();
+    if (seeOtherChainsModalRef.current) {
+      seeOtherChainsModalRef.current.close();
     }
   };
 
-  const handleModalClose = () => {
+  const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const chain = formDataToChain(formData);
+
+    const storedCustomChains = [...getStoredCustomChains(), chain];
+    localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
+
+    addCustomChain(chain);
+
+    const option = chainToOption(chain);
+    setSelectedOption(option);
+    onChange(option);
+
+    if (customChainModalRef.current) {
+      customChainModalRef.current.close();
+    }
+  };
+
+  const handleSeeOtherChainsModalClose = () => {
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
       setSearchTerm("");
     }
-    if (seeAllModalRef.current) {
-      seeAllModalRef.current.close();
+    if (seeOtherChainsModalRef.current) {
+      seeOtherChainsModalRef.current.close();
+    }
+  };
+
+  const handleCloseCustomChainModalRef = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (customChainModalRef.current) {
+      customChainModalRef.current.close();
     }
   };
 
@@ -240,12 +268,17 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           }),
         }}
       />
-      <dialog id="see-all-modal" className="modal" ref={seeAllModalRef} onClose={handleModalClose}>
+      <dialog
+        id="see-all-modal"
+        className="modal"
+        ref={seeOtherChainsModalRef}
+        onClose={handleSeeOtherChainsModalClose}
+      >
         <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
-              <button className="hover:text-error" onClick={handleModalClose}>
+              <button className="hover:text-error" onClick={handleSeeOtherChainsModalClose}>
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
@@ -264,7 +297,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
               <div
                 key={`${option.label}-${option.value}`}
                 className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
-                onClick={() => handleChainSelect(option)}
+                onClick={() => handleSelectOtherChain(option)}
               >
                 <div className="card-body flex flex-col justify-center items-center p-4">
                   <span className="text-sm font-semibold">Chain Id: {option.value}</span>
@@ -274,6 +307,71 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             ))}
           </div>
         </div>
+      </dialog>
+
+      <dialog
+        id="add-custom-chain-modal"
+        className="modal"
+        ref={customChainModalRef}
+        onClose={handleCloseCustomChainModalRef}
+      >
+        <form method="dialog" className="modal-box p-12 bg-base-200" onSubmit={handleSubmitCustomChain}>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-xl">Add Custom Chain</h3>
+            <div className="modal-action mt-0">
+              <button className="hover:text-error" onClick={handleCloseCustomChainModalRef}>
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Chain ID</span>
+            </label>
+            <input type="number" name="id" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input type="text" name="name" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Name</span>
+            </label>
+            <input type="text" name="nativeCurrencyName" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Symbol</span>
+            </label>
+            <input type="text" name="nativeCurrencySymbol" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Native Currency Decimals</span>
+            </label>
+            <input type="number" name="nativeCurrencyDecimals" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">RPC URL</span>
+            </label>
+            <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
+          </div>
+          <div className="form-control flex-row mt-4 items-center gap-4">
+            <label className="label">
+              <span className="label-text">Testnet?</span>
+            </label>
+            <input type="checkbox" name="isTestnet" className="checkbox checkbox-primary" />
+          </div>
+          <div className="modal-action mt-6">
+            <button type="submit" className="btn btn-primary">
+              Add Chain
+            </button>
+          </div>
+        </form>
       </dialog>
     </>
   );

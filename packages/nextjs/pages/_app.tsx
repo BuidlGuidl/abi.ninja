@@ -11,7 +11,6 @@ import { WagmiProvider } from "wagmi";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import "~~/styles/globals.css";
 
 export const queryClient = new QueryClient({
@@ -55,6 +54,8 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
 };
 
 const ScaffoldEthAppWithProviders = (props: AppProps) => {
+  const wagmiConfig = useGlobalState(state => state.wagmiConfig);
+
   return (
     <PlausibleProvider domain="abi.ninja">
       <ThemeProvider>
