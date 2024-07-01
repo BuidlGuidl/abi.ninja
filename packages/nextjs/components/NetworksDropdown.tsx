@@ -29,7 +29,7 @@ const getIconComponent = (iconName: string | undefined) => {
     case "localhost":
       return <WrenchScrewdriverIcon className="h-6 w-6 mr-2 text-gray-500" />;
     default:
-      return <Image src={iconName || "/mainnet.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
+      return <Image src={iconName || "/ninja-head.svg"} alt="default icon" width={24} height={24} className="mr-2" />;
   }
 };
 
@@ -212,7 +212,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             ...theme.colors,
             primary25: isDarkMode ? "#401574" : "#efeaff",
             primary50: isDarkMode ? "#551d98" : "#c1aeff",
-            primary: isDarkMode ? "#BA8DE8" : "#551d98",
+            primary: isDarkMode ? "#ba8de8" : "#ebcff8",
             neutral0: isDarkMode ? "#130C25" : theme.colors.neutral0,
             neutral80: isDarkMode ? "#ffffff" : theme.colors.neutral80,
           },
@@ -224,6 +224,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           menu: provided => ({
             ...provided,
             border: `1px solid ${isDarkMode ? "#555555" : "#a3a3a3"}`,
+          }),
+          option: provided => ({
+            ...provided,
+            color: isDarkMode ? "#ffffff" : "#000000",
           }),
         }}
       />
