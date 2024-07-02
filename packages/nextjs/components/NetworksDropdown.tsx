@@ -34,7 +34,7 @@ const getIconComponent = (iconName: string | undefined) => {
 };
 
 const networks = getPopularTargetNetworks();
-const groupedOptions = networks.reduce<GroupedOptions>(
+const initialGroupedOptions = networks.reduce<GroupedOptions>(
   (groups, network) => {
     if (network.id === 31337) {
       groups.localhost.options.push({
@@ -109,7 +109,8 @@ const IconOption = (props: OptionProps<Options>) => (
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
   const { resolvedTheme } = useTheme();
-  const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(groupedOptions.mainnet.options[0]);
+  const [groupedOptionsState, setGroupedOptionsState] = useState(initialGroupedOptions);
+  const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const { addCustomChain } = useGlobalState(state => ({
@@ -126,23 +127,33 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   useEffect(() => {
     setMounted(true);
-    const storedCustomChains = getStoredCustomChains();
-    storedCustomChains.forEach(chain => {
-      const groupName = chain.testnet ? "testnet" : "mainnet";
-      if (!groupedOptions[groupName].options.some(option => option.value === chain.id)) {
-        const option = chainToOption(chain);
-        groupedOptions[groupName].options.push(option);
-        addCustomChain(chain);
-      }
-    });
 
-    const storedOtherChains = getStoredOtherChains();
-    storedOtherChains.forEach(chain => {
-      const groupName = chain.testnet ? "testnet" : "mainnet";
-      if (!groupedOptions[groupName].options.some(option => option.value === chain.value)) {
-        groupedOptions[groupName].options.push(chain);
-      }
-    });
+    const updateGroupedOptions = () => {
+      const storedCustomChains = getStoredCustomChains();
+      const newGroupedOptions = { ...groupedOptionsState };
+
+      storedCustomChains.forEach(chain => {
+        const groupName = chain.testnet ? "testnet" : "mainnet";
+        if (!newGroupedOptions[groupName].options.some(option => option.value === chain.id)) {
+          const option = chainToOption(chain);
+          newGroupedOptions[groupName].options.push(option);
+          addCustomChain(chain);
+        }
+      });
+
+      const storedOtherChains = getStoredOtherChains();
+      storedOtherChains.forEach(chain => {
+        const groupName = chain.testnet ? "testnet" : "mainnet";
+        if (!newGroupedOptions[groupName].options.some(option => option.value === chain.value)) {
+          newGroupedOptions[groupName].options.push(chain);
+        }
+      });
+
+      setGroupedOptionsState(newGroupedOptions);
+    };
+
+    updateGroupedOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addCustomChain]);
 
   useEffect(() => {
@@ -173,8 +184,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   const handleSelectOtherChain = (option: Options) => {
     const groupName = option.testnet ? "testnet" : "mainnet";
-    if (!groupedOptions[groupName].options.some(chain => chain.value === option.value)) {
-      groupedOptions[groupName].options.push(option);
+    if (!groupedOptionsState[groupName].options.some(chain => chain.value === option.value)) {
+      const newGroupedOptions = { ...groupedOptionsState };
+      newGroupedOptions[groupName].options.push(option);
+      setGroupedOptionsState(newGroupedOptions);
     }
     const storedOtherChains = [...getStoredOtherChains(), option];
     localStorage.setItem("storedOtherChains", JSON.stringify(storedOtherChains));
@@ -196,11 +209,17 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     addCustomChain(chain);
 
+    const newGroupedOptions = { ...groupedOptionsState };
+    const groupName = chain.testnet ? "testnet" : "mainnet";
+    const newOption = chainToOption(chain);
+    newGroupedOptions[groupName].options.push(newOption);
+
+    setGroupedOptionsState(newGroupedOptions);
+
     e.currentTarget.reset();
 
-    const option = chainToOption(chain);
-    setSelectedOption(option);
-    onChange(option);
+    setSelectedOption(newOption);
+    onChange(newOption);
 
     if (customChainModalRef.current) {
       customChainModalRef.current.close();
@@ -225,7 +244,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   };
 
   const existingChainIds = new Set(
-    Object.values(groupedOptions)
+    Object.values(groupedOptionsState)
       .flatMap(group => group.options.map(option => option.value))
       .filter(value => typeof value === "number") as number[],
   );
@@ -242,9 +261,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     <>
       <Select
         value={selectedOption}
-        defaultValue={groupedOptions["mainnet"].options[0]}
+        defaultValue={groupedOptionsState["mainnet"].options[0]}
         instanceId="network-select"
-        options={Object.values(groupedOptions)}
+        options={Object.values(groupedOptionsState)}
         onChange={handleSelectChange}
         components={{ Option: IconOption }}
         isSearchable={!isMobile}
@@ -366,7 +385,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
             <label className="label">
               <span className="label-text">Testnet?</span>
             </label>
-            <input type="checkbox" name="isTestnet" className="checkbox checkbox-primary" />
+            <input type="checkbox" name="testnet" className="checkbox checkbox-primary" />
           </div>
           <div className="modal-action mt-6">
             <button type="submit" className="btn btn-primary">

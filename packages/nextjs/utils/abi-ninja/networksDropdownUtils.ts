@@ -29,7 +29,7 @@ export const mapChainsToOptions = (chains: Chain[]): Options[] => {
     value: chain.id,
     label: chain.name,
     icon: "",
-    isTestnet: (chain as any).testnet || false,
+    testnet: (chain as any).testnet || false,
   }));
 };
 
