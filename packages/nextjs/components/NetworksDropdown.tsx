@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as wagmiChains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
-import Select, { MultiValue, SingleValue, components } from "react-select";
+import Select, { MultiValue, OptionProps, SingleValue, components } from "react-select";
 import { Chain } from "viem";
 import { EyeIcon, WrenchScrewdriverIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
@@ -120,7 +120,10 @@ const networkIds = new Set(networks.map(network => network.id));
 
 const { Option } = components;
 
-const CustomOption = (props: any) => {
+type CustomOptionProps = OptionProps<Options, false, { label: string; options: Options[] }> & {
+  onDelete: (chain: Options) => void;
+};
+const CustomOption = (props: CustomOptionProps) => {
   const { data } = props;
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
