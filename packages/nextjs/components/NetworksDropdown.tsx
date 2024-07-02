@@ -103,9 +103,10 @@ const mapChainsToOptions = (chains: Chain[]): Options[] => {
   }));
 };
 
+const CUSTOM_CHAINS_LOCAL_STORAGE_KEY = "customChains";
 const getStoredChains = (): Options[] => {
   if (typeof window !== "undefined") {
-    const storedChains = localStorage.getItem("customChains");
+    const storedChains = localStorage.getItem(CUSTOM_CHAINS_LOCAL_STORAGE_KEY);
     return storedChains ? JSON.parse(storedChains) : [];
   }
   return [];
@@ -206,7 +207,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       groupedOptions[groupName].options.push(option);
     }
     const customChains = [...getStoredChains(), option];
-    localStorage.setItem("customChains", JSON.stringify(customChains));
+    localStorage.setItem(CUSTOM_CHAINS_LOCAL_STORAGE_KEY, JSON.stringify(customChains));
     setGroupedOptions({ ...groupedOptions });
     setSelectedOption(option);
     onChange(option);
@@ -241,7 +242,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     const updatedChains = getStoredChains().filter((c: Options) => c.value !== chain.value);
 
     if (typeof window !== "undefined") {
-      localStorage.setItem("customChains", JSON.stringify(updatedChains));
+      localStorage.setItem(CUSTOM_CHAINS_LOCAL_STORAGE_KEY, JSON.stringify(updatedChains));
     }
 
     const updatedGroupedOptions = { ...groupedOptions };
