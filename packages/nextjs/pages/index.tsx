@@ -124,10 +124,24 @@ const Home: NextPage = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
+      localStorage.setItem(`abi_${localAbiContractAddress}_${network}`, JSON.stringify(parsedAbi));
+
       router.push(`/${localAbiContractAddress}/${network}`);
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
+    }
+  };
+
+  const loadStoredAbi = () => {
+    const storedAbi = localStorage.getItem(`abi_${localAbiContractAddress}_${network}`);
+    if (storedAbi) {
+      const parsedAbi = JSON.parse(storedAbi);
+      setContractAbi(parsedAbi);
+      router.push(`/${localAbiContractAddress}/${network}`);
+      notification.success("ABI loaded from local storage.");
+    } else {
+      notification.error("No stored ABI found for this contract. Please first import an ABI.");
     }
   };
 
@@ -262,12 +276,20 @@ const Home: NextPage = () => {
                         value={localContractAbi}
                         onChange={e => setLocalContractAbi(e.target.value)}
                       ></textarea>
-                      <button
-                        className="btn btn-primary min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={handleUserProvidedAbi}
-                      >
-                        Import ABI
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-primary min-h-fit h-10 px-4 mb-2 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
+                          onClick={handleUserProvidedAbi}
+                        >
+                          Import ABI
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-ghos min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
+                          onClick={loadStoredAbi}
+                        >
+                          Load stored ABI
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
