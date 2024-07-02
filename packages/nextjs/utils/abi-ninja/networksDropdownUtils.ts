@@ -40,20 +40,18 @@ export const chainToOption = (chain: Chain): Options => ({
   icon: "",
 });
 
-export const getStoredCustomChains = (): Chain[] => {
+export const getStoredChains = (): Chain[] => {
   if (typeof window !== "undefined") {
-    const storedCustomChains = localStorage.getItem("storedCustomChains");
-    return storedCustomChains ? JSON.parse(storedCustomChains) : [];
+    const storedChains = localStorage.getItem("storedChains");
+    return storedChains ? JSON.parse(storedChains) : [];
   }
   return [];
 };
 
-export const getStoredOtherChains = (): Options[] => {
+export const storeChains = (chains: Chain[]) => {
   if (typeof window !== "undefined") {
-    const storedOtherChains = localStorage.getItem("storedOtherChains");
-    return storedOtherChains ? JSON.parse(storedOtherChains) : [];
+    localStorage.setItem("storedChains", JSON.stringify(chains));
   }
-  return [];
 };
 
 export const formDataToChain = (formData: FormData): Chain => {
@@ -69,8 +67,13 @@ export const formDataToChain = (formData: FormData): Chain => {
       public: { http: [formData.get("rpcUrl") as string] },
       default: { http: [formData.get("rpcUrl") as string] },
     },
-    testnet: formData.get("isTestnet") === "on",
+    testnet: formData.get("testnet") === "on",
   } as const satisfies Chain;
 
   return chain;
+};
+
+export const isChainStored = (option: Options): boolean => {
+  const storedChains = getStoredChains();
+  return storedChains.some(storedChain => storedChain.id === option.value);
 };

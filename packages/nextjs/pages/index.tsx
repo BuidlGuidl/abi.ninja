@@ -284,7 +284,7 @@ const Home: NextPage = () => {
                           Import ABI
                         </button>
                         <button
-                          className="btn btn-secondary btn-ghos min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
+                          className="btn btn-secondary btn-ghost min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                           onClick={loadStoredAbi}
                         >
                           Load stored ABI

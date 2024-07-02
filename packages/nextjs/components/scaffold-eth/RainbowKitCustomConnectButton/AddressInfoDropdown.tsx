@@ -89,19 +89,21 @@ export const AddressInfoDropdown = ({
               <span className="whitespace-nowrap">View QR Code</span>
             </label>
           </li>
-          <li className={selectingNetwork ? "hidden" : ""}>
-            <button className="menu-item btn-sm !rounded-xl flex gap-3 py-3" type="button">
-              <ArrowTopRightOnSquareIcon className="h-6 w-4 ml-2 sm:ml-0" />
-              <a
-                target="_blank"
-                href={blockExplorerAddressLink}
-                rel="noopener noreferrer"
-                className="whitespace-nowrap"
-              >
-                View on Block Explorer
-              </a>
-            </button>
-          </li>
+          {blockExplorerAddressLink && (
+            <li className={selectingNetwork ? "hidden" : ""}>
+              <button className="menu-item btn-sm !rounded-xl flex gap-3 py-3" type="button">
+                <ArrowTopRightOnSquareIcon className="h-6 w-4 ml-2 sm:ml-0" />
+                <a
+                  target="_blank"
+                  href={blockExplorerAddressLink}
+                  rel="noopener noreferrer"
+                  className="whitespace-nowrap"
+                >
+                  View on Block Explorer
+                </a>
+              </button>
+            </li>
+          )}
           <li className={selectingNetwork ? "hidden" : ""}>
             <button
               className="menu-item text-error btn-sm !rounded-xl flex gap-3 py-3"

@@ -12,11 +12,11 @@ import {
   chainToOption,
   filterChains,
   formDataToChain,
-  getStoredCustomChains,
-  getStoredOtherChains,
+  getStoredChains,
+  isChainStored,
   mapChainsToOptions,
 } from "~~/utils/abi-ninja/networksDropdownUtils";
-import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
+import { getPopularTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 type Chains = Record<string, Chain>;
 
@@ -97,14 +97,37 @@ const filteredChains = Object.keys(unfilteredChains)
 const networkIds = new Set(networks.map(network => network.id));
 
 const { Option } = components;
-const IconOption = (props: OptionProps<Options>) => (
-  <Option {...props}>
-    <div className="flex items-center">
-      {typeof props.data.icon === "string" ? getIconComponent(props.data.icon) : props.data.icon}
-      {props.data.label}
-    </div>
-  </Option>
-);
+
+type CustomOptionProps = OptionProps<Options, false, { label: string; options: Options[] }> & {
+  onDelete: (chain: Options) => void;
+};
+const CustomOption = (props: CustomOptionProps) => {
+  const { data } = props;
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    props.onDelete(data);
+  };
+
+  return (
+    <Option {...props}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {typeof data.icon === "string" ? getIconComponent(data.icon) : data.icon}
+          {data.label}
+        </div>
+
+        {isChainStored(data) && (
+          <div
+            className="h-4 w-4 text-red-500 cursor-pointer font-bold flex items-center justify-center"
+            onClick={handleDelete}
+          >
+            ✕
+          </div>
+        )}
+      </div>
+    </Option>
+  );
+};
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -129,7 +152,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     setMounted(true);
 
     const updateGroupedOptions = () => {
-      const storedCustomChains = getStoredCustomChains();
+      const storedCustomChains = getStoredChains();
       const newGroupedOptions = { ...groupedOptionsState };
 
       storedCustomChains.forEach(chain => {
@@ -138,14 +161,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           const option = chainToOption(chain);
           newGroupedOptions[groupName].options.push(option);
           addCustomChain(chain);
-        }
-      });
-
-      const storedOtherChains = getStoredOtherChains();
-      storedOtherChains.forEach(chain => {
-        const groupName = chain.testnet ? "testnet" : "mainnet";
-        if (!newGroupedOptions[groupName].options.some(option => option.value === chain.value)) {
-          newGroupedOptions[groupName].options.push(chain);
         }
       });
 
@@ -182,15 +197,18 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const handleSelectOtherChain = (option: Options) => {
+  const handleSelectOtherChainInModal = (option: Options) => {
     const groupName = option.testnet ? "testnet" : "mainnet";
     if (!groupedOptionsState[groupName].options.some(chain => chain.value === option.value)) {
       const newGroupedOptions = { ...groupedOptionsState };
       newGroupedOptions[groupName].options.push(option);
       setGroupedOptionsState(newGroupedOptions);
     }
-    const storedOtherChains = [...getStoredOtherChains(), option];
-    localStorage.setItem("storedOtherChains", JSON.stringify(storedOtherChains));
+
+    const chain = Object.values(filteredChains).find(chain => chain.id === option.value);
+
+    const storedChains = [...getStoredChains(), chain];
+    localStorage.setItem("storedChains", JSON.stringify(storedChains));
 
     setSelectedOption(option);
     onChange(option);
@@ -204,8 +222,17 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     const formData = new FormData(e.currentTarget);
     const chain = formDataToChain(formData);
 
-    const storedCustomChains = [...getStoredCustomChains(), chain];
-    localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
+    const storedCustomChains = [...getStoredChains(), chain];
+    localStorage.setItem("storedChains", JSON.stringify(storedCustomChains));
+
+    if (storedCustomChains.find(c => c.id === chain.id)) {
+      if (customChainModalRef.current) {
+        customChainModalRef.current.close();
+      }
+      e.currentTarget.reset();
+      notification.error("This chain is already added!");
+      return;
+    }
 
     addCustomChain(chain);
 
@@ -243,6 +270,25 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
+  const handleDeleteCustomChain = (option: Options) => {
+    const updatedChains = getStoredChains().filter((c: Chain) => c.id !== option.value);
+
+    localStorage.setItem("storedChains", JSON.stringify(updatedChains));
+
+    const newGroupedOptions = { ...groupedOptionsState };
+    const groupName = option.testnet ? "testnet" : "mainnet";
+    newGroupedOptions[groupName].options = newGroupedOptions[groupName].options.filter(
+      chain => chain.value !== option.value,
+    );
+
+    setGroupedOptionsState(newGroupedOptions);
+
+    if (selectedOption?.value === option.value) {
+      setSelectedOption(newGroupedOptions.mainnet.options[0]);
+      onChange(newGroupedOptions.mainnet.options[0]);
+    }
+  };
+
   const existingChainIds = new Set(
     Object.values(groupedOptionsState)
       .flatMap(group => group.options.map(option => option.value))
@@ -265,7 +311,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         instanceId="network-select"
         options={Object.values(groupedOptionsState)}
         onChange={handleSelectChange}
-        components={{ Option: IconOption }}
+        components={{ Option: props => <CustomOption {...props} onDelete={handleDeleteCustomChain} /> }}
         isSearchable={!isMobile}
         className="max-w-xs relative text-sm w-44"
         theme={theme => ({
@@ -318,7 +364,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
               <div
                 key={`${option.label}-${option.value}`}
                 className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
-                onClick={() => handleSelectOtherChain(option)}
+                onClick={() => handleSelectOtherChainInModal(option)}
               >
                 <div className="card-body flex flex-col justify-center items-center p-4">
                   <span className="text-sm font-semibold">Chain Id: {option.value}</span>

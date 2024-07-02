@@ -12,7 +12,7 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { formDataToChain, getStoredCustomChains } from "~~/utils/abi-ninja/networksDropdownUtils";
+import { formDataToChain, getStoredChains } from "~~/utils/abi-ninja/networksDropdownUtils";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -79,7 +79,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   });
 
   useEffect(() => {
-    const storedCustomChains = getStoredCustomChains();
+    const storedCustomChains = getStoredChains();
 
     storedCustomChains.forEach(chain => {
       if (+network === chain.id) {
@@ -181,8 +181,8 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     e.currentTarget.reset();
     handleUserProvidedAbi();
 
-    const storedCustomChains = [...getStoredCustomChains(), chain];
-    localStorage.setItem("storedCustomChains", JSON.stringify(storedCustomChains));
+    const storedChains = [...getStoredChains(), chain];
+    localStorage.setItem("storedChains", JSON.stringify(storedChains));
     notification.success("Custom chain successfully loaded.");
   };
 
@@ -297,7 +297,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                         <label className="label">
                           <span className="label-text">Is Testnet?</span>
                         </label>
-                        <input type="checkbox" name="isTestnet" className="checkbox" />
+                        <input type="checkbox" name="testnet" className="checkbox" />
                       </div>
                       <div className="form-control">
                         <label className="label">
