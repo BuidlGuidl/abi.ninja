@@ -196,6 +196,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     addCustomChain(chain);
 
+    e.currentTarget.reset();
+
     const option = chainToOption(chain);
     setSelectedOption(option);
     onChange(option);

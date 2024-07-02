@@ -178,6 +178,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     const chain = formDataToChain(formData);
 
     addChain(chain);
+    e.currentTarget.reset();
     handleUserProvidedAbi();
 
     const storedCustomChains = [...getStoredCustomChains(), chain];
