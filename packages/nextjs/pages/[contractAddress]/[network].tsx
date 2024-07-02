@@ -63,13 +63,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
-  const {
-    contractAbi: storedAbi,
-    setMainChainId,
-    chainId,
-    setImplementationAddress,
-  } = useAbiNinjaState(state => ({
-    contractAbi: state.contractAbi,
+  const { setMainChainId, chainId, setImplementationAddress } = useAbiNinjaState(state => ({
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
@@ -120,8 +114,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       const fetchContractAbi = async () => {
         setIsLoading(true);
 
-        if (storedAbi && storedAbi.length > 0) {
-          setContractData({ abi: storedAbi, address: contractAddress });
+        const storedAbi = localStorage.getItem(`abi_${contractAddress}_${network}`);
+        if (storedAbi) {
+          const parsedAbi = JSON.parse(storedAbi);
+          setContractData({ abi: parsedAbi, address: contractAddress });
           setError(null);
           setIsLoading(false);
           return;
@@ -163,12 +159,13 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
         }
       }
     }
-  }, [contractAddress, network, storedAbi, setMainChainId, setImplementationAddress, publicClient, chains]);
+  }, [contractAddress, network, setMainChainId, setImplementationAddress, publicClient, chains]);
 
   const handleUserProvidedAbi = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractData({ abi: parsedAbi, address: contractAddress });
+      localStorage.setItem(`abi_${contractAddress}_${network}`, JSON.stringify(parsedAbi));
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
@@ -214,7 +211,13 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               <div className="flex justify-center gap-12">
                 {chains.some(chain => chain.id === chainId) ? (
                   <div className="w-1/2">
-                    <form className="bg-base-200" onSubmit={handleUserProvidedAbi}>
+                    <form
+                      className="bg-base-200"
+                      onSubmit={e => {
+                        e.preventDefault();
+                        handleUserProvidedAbi();
+                      }}
+                    >
                       <h3 className="font-bold text-xl">Add Custom ABI</h3>
                       <div className="form-control">
                         <label className="label">
