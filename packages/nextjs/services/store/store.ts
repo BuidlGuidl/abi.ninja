@@ -69,14 +69,17 @@ export const useGlobalState = create<GlobalState>(set => ({
   chains: enabledChains as Chain[],
   addChain: (newChain: Chain): void =>
     set(state => {
-      const updatedChains = [...state.chains, newChain];
-      const updatedWagmiConfig = createConfig({
-        chains: updatedChains as [Chain, ...Chain[]],
-        connectors: wagmiConnectors,
-        ssr: true,
-        client: createWagmiClient,
-      });
-      return { chains: updatedChains, wagmiConfig: updatedWagmiConfig };
+      if (!state.chains.some(chain => chain.id === newChain.id)) {
+        const updatedChains = [...state.chains, newChain];
+        const updatedWagmiConfig = createConfig({
+          chains: updatedChains as [Chain, ...Chain[]],
+          connectors: wagmiConnectors,
+          ssr: true,
+          client: createWagmiClient,
+        });
+        return { chains: updatedChains, wagmiConfig: updatedWagmiConfig };
+      }
+      return state;
     }),
 }));
 
