@@ -102,15 +102,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     setSelectedOption(option);
     onChange(option);
-    handleSeeOtherChainsModalClose();
+    handleCloseOtherChainsModal();
   };
 
   const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const chain = formDataToChain(formData);
-
-    storeChainInLocalStorage(chain);
 
     const storedChains = getStoredChainsFromLocalStorage();
 
@@ -122,6 +120,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       notification.error("This chain is already added!");
       return;
     }
+
+    storeChainInLocalStorage(chain);
 
     addCustomChain(chain);
 
@@ -137,10 +137,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     setSelectedOption(newOption);
     onChange(newOption);
 
-    handleSeeOtherChainsModalClose();
+    handleCloseCustomChainModalRef();
   };
 
-  const handleSeeOtherChainsModalClose = () => {
+  const handleCloseOtherChainsModal = () => {
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
       setSearchTerm("");
@@ -150,8 +150,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const handleCloseCustomChainModalRef = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCloseCustomChainModalRef = () => {
     if (customChainModalRef.current) {
       customChainModalRef.current.close();
     }
@@ -222,16 +221,16 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         }}
       />
       <dialog
-        id="see-all-modal"
+        id="see-other-chains-modal"
         className="modal"
         ref={seeOtherChainsModalRef}
-        onClose={handleSeeOtherChainsModalClose}
+        onClose={handleCloseOtherChainsModal}
       >
         <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">All Chains</h3>
             <div className="modal-action mt-0">
-              <button className="hover:text-error" onClick={handleSeeOtherChainsModalClose}>
+              <button className="hover:text-error" onClick={handleCloseOtherChainsModal}>
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
@@ -272,7 +271,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-xl">Add Custom Chain</h3>
             <div className="modal-action mt-0">
-              <button className="hover:text-error" onClick={handleCloseCustomChainModalRef}>
+              <button className="hover:text-error" type="button" onClick={handleCloseCustomChainModalRef}>
                 <XMarkIcon className="h-6 w-6" />
               </button>
             </div>
