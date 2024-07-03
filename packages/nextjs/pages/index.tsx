@@ -10,6 +10,7 @@ import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outlin
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdown";
+import { getAbiFromLocalStorage, storeAbiInLocalStorage } from "~~/components/NetworksDropdown/utils";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
@@ -124,7 +125,7 @@ const Home: NextPage = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
-      localStorage.setItem(`abi_${localAbiContractAddress}_${network}`, JSON.stringify(parsedAbi));
+      storeAbiInLocalStorage(localAbiContractAddress, parseInt(network), parsedAbi);
 
       router.push(`/${localAbiContractAddress}/${network}`);
       notification.success("ABI successfully loaded.");
@@ -134,10 +135,9 @@ const Home: NextPage = () => {
   };
 
   const loadStoredAbi = () => {
-    const storedAbi = localStorage.getItem(`abi_${localAbiContractAddress}_${network}`);
+    const storedAbi = getAbiFromLocalStorage(localAbiContractAddress, parseInt(network));
     if (storedAbi) {
-      const parsedAbi = JSON.parse(storedAbi);
-      setContractAbi(parsedAbi);
+      setContractAbi(storedAbi);
       router.push(`/${localAbiContractAddress}/${network}`);
       notification.success("ABI loaded from local storage.");
     } else {

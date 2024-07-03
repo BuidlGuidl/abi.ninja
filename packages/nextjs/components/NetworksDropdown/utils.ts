@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import * as wagmiChains from "@wagmi/core/chains";
-import { Chain } from "viem";
+import { Abi, Address, Chain } from "viem";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 export type Options = {
@@ -108,9 +108,13 @@ export const chainToOption = (chain: Chain): Options => ({
   icon: "",
 });
 
+const ABI_STORAGE_KEY = "contractAbis";
+
+const STORED_CHAINS_STORAGE_KEY = "storedChains";
+
 export const getStoredChainsFromLocalStorage = (): Chain[] => {
   if (typeof window !== "undefined") {
-    const storedChains = localStorage.getItem("storedChains");
+    const storedChains = localStorage.getItem(STORED_CHAINS_STORAGE_KEY);
     return storedChains ? JSON.parse(storedChains) : [];
   }
   return [];
@@ -119,14 +123,14 @@ export const getStoredChainsFromLocalStorage = (): Chain[] => {
 export const storeChainInLocalStorage = (chain: Chain) => {
   if (typeof window !== "undefined") {
     const chains = [...getStoredChainsFromLocalStorage(), chain];
-    localStorage.setItem("storedChains", JSON.stringify(chains));
+    localStorage.setItem(STORED_CHAINS_STORAGE_KEY, JSON.stringify(chains));
   }
 };
 
 export const removeChainFromLocalStorage = (chainId: number) => {
   if (typeof window !== "undefined") {
     const chains = getStoredChainsFromLocalStorage().filter(chain => chain.id !== chainId);
-    localStorage.setItem("storedChains", JSON.stringify(chains));
+    localStorage.setItem(STORED_CHAINS_STORAGE_KEY, JSON.stringify(chains));
   }
 };
 
@@ -154,20 +158,23 @@ export const isChainStored = (option: Options): boolean => {
   return storedChains.some(storedChain => storedChain.id === option.value);
 };
 
-const ABI_STORAGE_KEY = "contractAbis";
-
-export const getAbisFromLocalStorage = (): Record<string, any> => {
+export const getAbisFromLocalStorage = () => {
   const abis = localStorage.getItem(ABI_STORAGE_KEY);
   return abis ? JSON.parse(abis) : {};
 };
 
-export const storeAbiInLocalStorage = (contractAddress: string, chainId: number, abi: any) => {
+export const getAbiFromLocalStorage = (contractAddress: Address, chainId: number) => {
+  const abis = getAbisFromLocalStorage();
+  return abis[`${contractAddress}_${chainId}`];
+};
+
+export const storeAbiInLocalStorage = (contractAddress: Address, chainId: number, abi: Abi) => {
   const abis = getAbisFromLocalStorage();
   abis[`${contractAddress}_${chainId}`] = abi;
   localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
 };
 
-export const removeAbiFromLocalStorage = (contractAddress: string, chainId: number) => {
+export const removeAbiFromLocalStorage = (contractAddress: Address, chainId: number) => {
   const abis = getAbisFromLocalStorage();
   delete abis[`${contractAddress}_${chainId}`];
   localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));

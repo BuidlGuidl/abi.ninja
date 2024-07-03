@@ -10,6 +10,7 @@ import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import {
   formDataToChain,
+  getAbiFromLocalStorage,
   getStoredChainsFromLocalStorage,
   storeAbiInLocalStorage,
   storeChainInLocalStorage,
@@ -119,10 +120,9 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       const fetchContractAbi = async () => {
         setIsLoading(true);
 
-        const storedAbi = localStorage.getItem(`abi_${contractAddress}_${network}`);
+        const storedAbi = getAbiFromLocalStorage(contractAddress, parsedNetworkId);
         if (storedAbi) {
-          const parsedAbi = JSON.parse(storedAbi);
-          setContractData({ abi: parsedAbi, address: contractAddress });
+          setContractData({ abi: storedAbi, address: contractAddress });
           setError(null);
           setIsLoading(false);
           return;
