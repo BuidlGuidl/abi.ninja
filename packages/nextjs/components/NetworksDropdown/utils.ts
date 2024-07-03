@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { getIconComponent } from "./CustomOption";
 import * as wagmiChains from "@wagmi/core/chains";
 import { Chain } from "viem";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
@@ -27,7 +26,7 @@ export const initialGroupedOptions = networks.reduce<GroupedOptions>(
       groups.localhost.options.push({
         value: network.id,
         label: "31337 - Localhost",
-        icon: getIconComponent("localhost"),
+        icon: "localhost",
       });
       return groups;
     }
