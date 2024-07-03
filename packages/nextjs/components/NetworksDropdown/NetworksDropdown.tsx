@@ -102,9 +102,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     setSelectedOption(option);
     onChange(option);
-    if (seeOtherChainsModalRef.current) {
-      seeOtherChainsModalRef.current.close();
-    }
+    handleSeeOtherChainsModalClose();
   };
 
   const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
@@ -139,9 +137,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     setSelectedOption(newOption);
     onChange(newOption);
 
-    if (customChainModalRef.current) {
-      customChainModalRef.current.close();
-    }
+    handleSeeOtherChainsModalClose();
   };
 
   const handleSeeOtherChainsModalClose = () => {
@@ -173,8 +169,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     setGroupedOptionsState(newGroupedOptions);
 
     if (selectedOption?.value === option.value) {
-      setSelectedOption(newGroupedOptions.mainnet.options[0]);
-      onChange(newGroupedOptions.mainnet.options[0]);
+      const mainnet = newGroupedOptions.mainnet.options[0];
+      setSelectedOption(mainnet);
+      onChange(mainnet);
     }
   };
 
