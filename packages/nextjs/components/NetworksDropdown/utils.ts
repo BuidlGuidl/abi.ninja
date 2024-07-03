@@ -153,3 +153,32 @@ export const isChainStored = (option: Options): boolean => {
   const storedChains = getStoredChainsFromLocalStorage();
   return storedChains.some(storedChain => storedChain.id === option.value);
 };
+
+const ABI_STORAGE_KEY = "contractAbis";
+
+export const getAbisFromLocalStorage = (): Record<string, any> => {
+  const abis = localStorage.getItem(ABI_STORAGE_KEY);
+  return abis ? JSON.parse(abis) : {};
+};
+
+export const storeAbiInLocalStorage = (contractAddress: string, chainId: number, abi: any) => {
+  const abis = getAbisFromLocalStorage();
+  abis[`${contractAddress}_${chainId}`] = abi;
+  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
+};
+
+export const removeAbiFromLocalStorage = (contractAddress: string, chainId: number) => {
+  const abis = getAbisFromLocalStorage();
+  delete abis[`${contractAddress}_${chainId}`];
+  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
+};
+
+export const removeAbisForChain = (chainId: number) => {
+  const abis = getAbisFromLocalStorage();
+  Object.keys(abis).forEach(key => {
+    if (key.endsWith(`_${chainId}`)) {
+      delete abis[key];
+    }
+  });
+  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
+};

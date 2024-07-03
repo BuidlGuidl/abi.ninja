@@ -46,6 +46,7 @@ type GlobalState = {
   setWagmiConfig: (newWagmiConfig: typeof wagmiConfig) => void;
   chains: Chain[];
   addChain: (newChain: Chain) => void;
+  removeChain: (chainId: number) => void;
 };
 
 type AbiNinjaState = {
@@ -80,6 +81,17 @@ export const useGlobalState = create<GlobalState>(set => ({
         return { chains: updatedChains, wagmiConfig: updatedWagmiConfig };
       }
       return state;
+    }),
+  removeChain: (chainId: number): void =>
+    set(state => {
+      const updatedChains = state.chains.filter(chain => chain.id !== chainId);
+      const updatedWagmiConfig = createConfig({
+        chains: updatedChains as [Chain, ...Chain[]],
+        connectors: wagmiConnectors,
+        ssr: true,
+        client: createWagmiClient,
+      });
+      return { chains: updatedChains, wagmiConfig: updatedWagmiConfig };
     }),
 }));
 

@@ -11,6 +11,7 @@ import { MiniHeader } from "~~/components/MiniHeader";
 import {
   formDataToChain,
   getStoredChainsFromLocalStorage,
+  storeAbiInLocalStorage,
   storeChainInLocalStorage,
 } from "~~/components/NetworksDropdown/utils";
 import { SwitchTheme } from "~~/components/SwitchTheme";
@@ -169,7 +170,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractData({ abi: parsedAbi, address: contractAddress });
-      localStorage.setItem(`abi_${contractAddress}_${network}`, JSON.stringify(parsedAbi));
+      storeAbiInLocalStorage(contractAddress, parseInt(network), parsedAbi);
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
@@ -203,15 +204,20 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
             <ContractUI key={contractName} initialContractData={contractData} />
           ) : (
             <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
-              <ExclamationTriangleIcon className="text-red-500 mt-4 h-8 w-8" />
-              <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
-              <p className="break-all">
-                There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
-                <strong>{getNetworkName(chainId)}</strong>.
-              </p>
-              <p className="pb-2">
-                Make sure the data is correct and you are connected to the right network. Or add the chain/ABI below.
-              </p>
+              <div className="flex items-center">
+                <ExclamationTriangleIcon className="text-red-500 mt-4 h-20 w-20 pr-4" />
+                <div>
+                  <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
+                  <p className="break-all">
+                    There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
+                    <strong>{getNetworkName(chainId)}</strong>.
+                  </p>
+                  <p className="pb-2">
+                    Make sure the data is correct and you are connected to the right network. Or add the chain/ABI
+                    below.
+                  </p>
+                </div>
+              </div>
               <div className="flex justify-center gap-12">
                 {chains.some(chain => chain.id === chainId) ? (
                   <div className="w-1/2">

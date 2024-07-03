@@ -10,6 +10,7 @@ import {
   initialGroupedOptions,
   mapChainsToOptions,
   networkIds,
+  removeAbisForChain,
   removeChainFromLocalStorage,
   storeChainInLocalStorage,
 } from "./utils";
@@ -27,8 +28,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { addCustomChain } = useGlobalState(state => ({
+  const { addCustomChain, removeChain } = useGlobalState(state => ({
     addCustomChain: state.addChain,
+    removeChain: state.removeChain,
   }));
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -157,6 +159,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   };
 
   const handleDeleteCustomChain = (option: Options) => {
+    const chainId = +option.value;
+
+    removeAbisForChain(chainId);
+    removeChain(chainId);
     removeChainFromLocalStorage(+option.value);
 
     const newGroupedOptions = { ...groupedOptionsState };
