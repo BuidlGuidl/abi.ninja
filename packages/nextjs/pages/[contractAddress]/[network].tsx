@@ -8,15 +8,15 @@ import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
-import { SwitchTheme } from "~~/components/SwitchTheme";
-import { ContractUI } from "~~/components/scaffold-eth";
-import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import {
   formDataToChain,
   getStoredChainsFromLocalStorage,
   storeChainInLocalStorage,
-} from "~~/utils/abi-ninja/networksDropdownUtils";
+} from "~~/components/NetworksDropdown/utils";
+import { SwitchTheme } from "~~/components/SwitchTheme";
+import { ContractUI } from "~~/components/scaffold-eth";
+import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
+import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 import { notification } from "~~/utils/scaffold-eth";
 

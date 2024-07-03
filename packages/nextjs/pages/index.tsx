@@ -9,7 +9,7 @@ import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
-import { NetworksDropdown } from "~~/components/NetworksDropdown";
+import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdown";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
