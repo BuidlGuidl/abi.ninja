@@ -1,88 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { CustomOption, getIconComponent } from "./CustomOption";
+import { CustomOption } from "./CustomOption";
 import {
-  GroupedOptions,
   Options,
   chainToOption,
   filterChains,
+  filteredChains,
   formDataToChain,
   getStoredChainsFromLocalStorage,
+  initialGroupedOptions,
   mapChainsToOptions,
+  networkIds,
   removeChainFromLocalStorage,
   storeChainInLocalStorage,
 } from "./utils";
-import * as wagmiChains from "@wagmi/core/chains";
 import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { Chain } from "viem";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "~~/services/store/store";
-import { getPopularTargetNetworks, notification } from "~~/utils/scaffold-eth";
-
-type Chains = Record<string, Chain>;
-
-const networks = getPopularTargetNetworks();
-const initialGroupedOptions = networks.reduce<GroupedOptions>(
-  (groups, network) => {
-    if (network.id === 31337) {
-      groups.localhost.options.push({
-        value: network.id,
-        label: "31337 - Localhost",
-        icon: getIconComponent("localhost"),
-      });
-      return groups;
-    }
-
-    const groupName = network.testnet ? "testnet" : "mainnet";
-
-    groups[groupName].options.push({
-      value: network.id,
-      label: network.name,
-      icon: network.icon,
-      testnet: network.testnet,
-    });
-
-    return groups;
-  },
-  {
-    mainnet: { label: "mainnet", options: [] },
-    testnet: { label: "testnet", options: [] },
-    localhost: { label: "localhost", options: [] },
-    other: {
-      label: "other",
-      options: [
-        {
-          value: "other-chains",
-          label: "Other chains",
-          icon: "EyeIcon",
-        },
-      ],
-    },
-    custom: {
-      label: "custom",
-      options: [
-        {
-          value: "custom-chains",
-          label: "Add custom chain",
-          icon: "PlusIcon",
-        },
-      ],
-    },
-  },
-);
-
-const excludeChainKeys = ["lineaTestnet", "x1Testnet"]; // duplicate chains in viem chains
-
-const unfilteredChains: Chains = wagmiChains as Chains;
-
-const filteredChains = Object.keys(unfilteredChains)
-  .filter(key => !excludeChainKeys.includes(key))
-  .reduce((obj: Chains, key) => {
-    obj[key] = unfilteredChains[key];
-    return obj;
-  }, {} as Chains);
-
-const networkIds = new Set(networks.map(network => network.id));
+import { notification } from "~~/utils/scaffold-eth";
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);

@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
+import { getIconComponent } from "./CustomOption";
+import * as wagmiChains from "@wagmi/core/chains";
 import { Chain } from "viem";
+import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 export type Options = {
   value: number | string;
@@ -16,6 +19,59 @@ export type GroupedOptions = Record<
   }
 >;
 
+export const networks = getPopularTargetNetworks();
+
+export const initialGroupedOptions = networks.reduce<GroupedOptions>(
+  (groups, network) => {
+    if (network.id === 31337) {
+      groups.localhost.options.push({
+        value: network.id,
+        label: "31337 - Localhost",
+        icon: getIconComponent("localhost"),
+      });
+      return groups;
+    }
+
+    const groupName = network.testnet ? "testnet" : "mainnet";
+
+    groups[groupName].options.push({
+      value: network.id,
+      label: network.name,
+      icon: network.icon,
+      testnet: network.testnet,
+    });
+
+    return groups;
+  },
+  {
+    mainnet: { label: "mainnet", options: [] },
+    testnet: { label: "testnet", options: [] },
+    localhost: { label: "localhost", options: [] },
+    other: {
+      label: "other",
+      options: [
+        {
+          value: "other-chains",
+          label: "Other chains",
+          icon: "EyeIcon",
+        },
+      ],
+    },
+    custom: {
+      label: "custom",
+      options: [
+        {
+          value: "custom-chains",
+          label: "Add custom chain",
+          icon: "PlusIcon",
+        },
+      ],
+    },
+  },
+);
+
+export const networkIds = new Set(networks.map(network => network.id));
+
 export const filterChains = (
   chains: Record<string, Chain>,
   networkIds: Set<number>,
@@ -23,6 +79,19 @@ export const filterChains = (
 ): Chain[] => {
   return Object.values(chains).filter(chain => !networkIds.has(chain.id) && !existingChainIds.has(chain.id));
 };
+
+const excludeChainKeys = ["lineaTestnet", "x1Testnet"]; // duplicate chains in viem chains
+
+type Chains = Record<string, Chain>;
+
+const unfilteredChains: Chains = wagmiChains as Chains;
+
+export const filteredChains = Object.keys(unfilteredChains)
+  .filter(key => !excludeChainKeys.includes(key))
+  .reduce((obj: Chains, key) => {
+    obj[key] = unfilteredChains[key];
+    return obj;
+  }, {} as Chains);
 
 export const mapChainsToOptions = (chains: Chain[]): Options[] => {
   return chains.map(chain => ({
