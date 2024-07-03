@@ -40,7 +40,7 @@ export const chainToOption = (chain: Chain): Options => ({
   icon: "",
 });
 
-export const getStoredChains = (): Chain[] => {
+export const getStoredChainsFromLocalStorage = (): Chain[] => {
   if (typeof window !== "undefined") {
     const storedChains = localStorage.getItem("storedChains");
     return storedChains ? JSON.parse(storedChains) : [];
@@ -48,8 +48,16 @@ export const getStoredChains = (): Chain[] => {
   return [];
 };
 
-export const storeChains = (chains: Chain[]) => {
+export const storeChainInLocalStorage = (chain: Chain) => {
   if (typeof window !== "undefined") {
+    const chains = [...getStoredChainsFromLocalStorage(), chain];
+    localStorage.setItem("storedChains", JSON.stringify(chains));
+  }
+};
+
+export const removeChainFromLocalStorage = (chainId: number) => {
+  if (typeof window !== "undefined") {
+    const chains = getStoredChainsFromLocalStorage().filter(chain => chain.id !== chainId);
     localStorage.setItem("storedChains", JSON.stringify(chains));
   }
 };
@@ -74,6 +82,6 @@ export const formDataToChain = (formData: FormData): Chain => {
 };
 
 export const isChainStored = (option: Options): boolean => {
-  const storedChains = getStoredChains();
+  const storedChains = getStoredChainsFromLocalStorage();
   return storedChains.some(storedChain => storedChain.id === option.value);
 };

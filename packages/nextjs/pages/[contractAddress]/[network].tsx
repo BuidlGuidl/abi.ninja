@@ -12,7 +12,11 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
 import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { formDataToChain, getStoredChains } from "~~/utils/abi-ninja/networksDropdownUtils";
+import {
+  formDataToChain,
+  getStoredChainsFromLocalStorage,
+  storeChainInLocalStorage,
+} from "~~/utils/abi-ninja/networksDropdownUtils";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -79,7 +83,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   });
 
   useEffect(() => {
-    const storedCustomChains = getStoredChains();
+    const storedCustomChains = getStoredChainsFromLocalStorage();
 
     storedCustomChains.forEach(chain => {
       if (+network === chain.id) {
@@ -181,8 +185,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     e.currentTarget.reset();
     handleUserProvidedAbi();
 
-    const storedChains = [...getStoredChains(), chain];
-    localStorage.setItem("storedChains", JSON.stringify(storedChains));
+    storeChainInLocalStorage(chain);
     notification.success("Custom chain successfully loaded.");
   };
 

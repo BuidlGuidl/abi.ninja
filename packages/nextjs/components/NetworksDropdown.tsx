@@ -12,9 +12,11 @@ import {
   chainToOption,
   filterChains,
   formDataToChain,
-  getStoredChains,
+  getStoredChainsFromLocalStorage,
   isChainStored,
   mapChainsToOptions,
+  removeChainFromLocalStorage,
+  storeChainInLocalStorage,
 } from "~~/utils/abi-ninja/networksDropdownUtils";
 import { getPopularTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
@@ -152,10 +154,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     setMounted(true);
 
     const updateGroupedOptions = () => {
-      const storedCustomChains = getStoredChains();
+      const storedChains = getStoredChainsFromLocalStorage();
       const newGroupedOptions = { ...groupedOptionsState };
 
-      storedCustomChains.forEach(chain => {
+      storedChains.forEach(chain => {
         const groupName = chain.testnet ? "testnet" : "mainnet";
         if (!newGroupedOptions[groupName].options.some(option => option.value === chain.id)) {
           const option = chainToOption(chain);
@@ -207,8 +209,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     const chain = Object.values(filteredChains).find(chain => chain.id === option.value);
 
-    const storedChains = [...getStoredChains(), chain];
-    localStorage.setItem("storedChains", JSON.stringify(storedChains));
+    storeChainInLocalStorage(chain as Chain);
 
     setSelectedOption(option);
     onChange(option);
@@ -222,10 +223,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     const formData = new FormData(e.currentTarget);
     const chain = formDataToChain(formData);
 
-    const storedCustomChains = [...getStoredChains(), chain];
-    localStorage.setItem("storedChains", JSON.stringify(storedCustomChains));
+    storeChainInLocalStorage(chain);
 
-    if (storedCustomChains.find(c => c.id === chain.id)) {
+    const storedChains = getStoredChainsFromLocalStorage();
+
+    if (storedChains.find(c => c.id === chain.id)) {
       if (customChainModalRef.current) {
         customChainModalRef.current.close();
       }
@@ -271,9 +273,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   };
 
   const handleDeleteCustomChain = (option: Options) => {
-    const updatedChains = getStoredChains().filter((c: Chain) => c.id !== option.value);
-
-    localStorage.setItem("storedChains", JSON.stringify(updatedChains));
+    removeChainFromLocalStorage(+option.value);
 
     const newGroupedOptions = { ...groupedOptionsState };
     const groupName = option.testnet ? "testnet" : "mainnet";
