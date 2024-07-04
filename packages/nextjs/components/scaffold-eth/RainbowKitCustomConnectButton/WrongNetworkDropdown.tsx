@@ -13,7 +13,7 @@ export const WrongNetworkDropdown = () => {
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content menu p-2 mt-1 bg-white border shadow-xl rounded-2xl text-black gap-1"
+        className="dropdown-content menu p-2 mt-1 bg-base-200 shadow-xl rounded-2xl text-secondary-content gap-1"
       >
         <NetworkOptions />
         <li>

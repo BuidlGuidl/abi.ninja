@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Address as AddressType, isAddress } from "viem";
 import { hardhat } from "viem/chains";
+import { normalize } from "viem/ens";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
@@ -35,12 +36,20 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
 
   const { targetNetwork } = useTargetNetwork();
 
-  const { data: fetchedEns } = useEnsName({ address, enabled: isAddress(address ?? ""), chainId: 1 });
-  const { data: fetchedEnsAvatar } = useEnsAvatar({
-    name: fetchedEns,
-    enabled: Boolean(fetchedEns),
+  const { data: fetchedEns } = useEnsName({
+    address: address,
     chainId: 1,
-    cacheTime: 30_000,
+    query: {
+      enabled: isAddress(address ?? ""),
+    },
+  });
+  const { data: fetchedEnsAvatar } = useEnsAvatar({
+    name: fetchedEns ? normalize(fetchedEns) : undefined,
+    chainId: 1,
+    query: {
+      enabled: Boolean(fetchedEns),
+      gcTime: 30_000,
+    },
   });
 
   // We need to apply this pattern to avoid Hydration errors.

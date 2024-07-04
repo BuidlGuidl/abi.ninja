@@ -1,5 +1,5 @@
 import { useDarkMode } from "usehooks-ts";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import { getNetworkColor } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
@@ -13,7 +13,7 @@ type NetworkOptionsProps = {
 
 export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
   const { isDarkMode } = useDarkMode();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
 
   return (
@@ -26,7 +26,7 @@ export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
               className="menu-item btn-sm !rounded-xl flex gap-3 py-3 whitespace-nowrap"
               type="button"
               onClick={() => {
-                switchNetwork?.(allowedNetwork.id);
+                switchChain?.({ chainId: allowedNetwork.id });
               }}
             >
               <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" />

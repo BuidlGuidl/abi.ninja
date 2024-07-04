@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
-import { mainnet, usePublicClient } from "wagmi";
+import { mainnet } from "viem/chains";
+import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -73,7 +74,7 @@ const Home: NextPage = () => {
           setIsAbiAvailable(false);
           console.error("Error fetching ABI from Etherscan: ", etherscanError);
 
-          const bytecode = await publicClient.getBytecode({
+          const bytecode = await publicClient?.getBytecode({
             address: verifiedContractAddress,
           });
           const isContract = Boolean(bytecode) && bytecode !== "0x";

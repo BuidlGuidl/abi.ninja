@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Address as AddressType, createWalletClient, http, parseEther } from "viem";
 import { hardhat } from "viem/chains";
-import { useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { BanknotesIcon } from "@heroicons/react/24/outline";
-import { Address, AddressInput, Balance, EtherInput, getParsedError } from "~~/components/scaffold-eth";
+import { Address, AddressInput, Balance, EtherInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -24,7 +24,7 @@ export const Faucet = () => {
   const [faucetAddress, setFaucetAddress] = useState<AddressType>();
   const [sendValue, setSendValue] = useState("");
 
-  const { chain: ConnectedChain } = useNetwork();
+  const { chain: ConnectedChain } = useAccount();
 
   const faucetTxn = useTransactor(localWalletClient);
 
@@ -53,7 +53,7 @@ export const Faucet = () => {
   }, []);
 
   const sendETH = async () => {
-    if (!faucetAddress) {
+    if (!faucetAddress || !inputAddress) {
       return;
     }
     try {
@@ -62,15 +62,12 @@ export const Faucet = () => {
         to: inputAddress,
         value: parseEther(sendValue as `${number}`),
         account: faucetAddress,
-        chain: hardhat,
       });
       setLoading(false);
       setInputAddress(undefined);
       setSendValue("");
     } catch (error) {
-      const parsedError = getParsedError(error);
       console.error("⚡️ ~ file: Faucet.tsx:sendETH ~ error", error);
-      notification.error(parsedError);
       setLoading(false);
     }
   };
@@ -82,7 +79,7 @@ export const Faucet = () => {
 
   return (
     <div>
-      <label htmlFor="faucet-modal" className="btn btn-primary btn-sm font-normal normal-case gap-1">
+      <label htmlFor="faucet-modal" className="btn btn-primary btn-sm font-normal gap-1">
         <BanknotesIcon className="h-4 w-4" />
         <span>Faucet</span>
       </label>

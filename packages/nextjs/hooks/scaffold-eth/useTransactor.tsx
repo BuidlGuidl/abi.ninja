@@ -1,15 +1,14 @@
-import { WriteContractResult, getPublicClient } from "@wagmi/core";
-import { Hash, SendTransactionParameters, TransactionReceipt, WalletClient } from "viem";
-import { useWalletClient } from "wagmi";
-import { getParsedError } from "~~/components/scaffold-eth";
-import { getBlockExplorerTxLink, notification } from "~~/utils/scaffold-eth";
+import { getPublicClient } from "@wagmi/core";
+import { Hash, SendTransactionParameters, WalletClient } from "viem";
+import { Config, useWalletClient } from "wagmi";
+import { SendTransactionMutate } from "wagmi/query";
+import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { getBlockExplorerTxLink, getParsedError, notification } from "~~/utils/scaffold-eth";
+import { TransactorFuncOptions } from "~~/utils/scaffold-eth/contract";
 
 type TransactionFunc = (
-  tx: (() => Promise<WriteContractResult>) | (() => Promise<Hash>) | SendTransactionParameters,
-  options?: {
-    onBlockConfirmation?: (txnReceipt: TransactionReceipt) => void;
-    blockConfirmations?: number;
-  },
+  tx: (() => Promise<Hash>) | Parameters<SendTransactionMutate<Config, undefined>>[0],
+  options?: TransactorFuncOptions,
 ) => Promise<Hash | undefined>;
 
 /**
@@ -29,9 +28,9 @@ const TxnNotification = ({ message, blockExplorerLink }: { message: string; bloc
 };
 
 /**
- * @description Runs Transaction passed in to returned function showing UI feedback.
- * @param _walletClient
- * @returns function that takes a transaction and returns a promise of the transaction hash
+ * Runs Transaction passed in to returned function showing UI feedback.
+ * @param _walletClient - Optional wallet client to use. If not provided, will use the one from useWalletClient.
+ * @returns function that takes in transaction function as callback, shows UI feedback for transaction and returns a promise of the transaction hash
  */
 export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => {
   let walletClient = _walletClient;
@@ -48,23 +47,19 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
     }
 
     let notificationId = null;
-    let transactionHash: Awaited<WriteContractResult>["hash"] | undefined = undefined;
+    let transactionHash: Hash | undefined = undefined;
     try {
       const network = await walletClient.getChainId();
       // Get full transaction from public client
-      const publicClient = getPublicClient();
+      const publicClient = getPublicClient(wagmiConfig);
 
       notificationId = notification.loading(<TxnNotification message="Awaiting for user confirmation" />);
       if (typeof tx === "function") {
         // Tx is already prepared by the caller
         const result = await tx();
-        if (typeof result === "string") {
-          transactionHash = result;
-        } else {
-          transactionHash = result.hash;
-        }
+        transactionHash = result;
       } else if (tx != null) {
-        transactionHash = await walletClient.sendTransaction(tx);
+        transactionHash = await walletClient.sendTransaction(tx as SendTransactionParameters);
       } else {
         throw new Error("Incorrect transaction passed to transactor");
       }
@@ -76,7 +71,7 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
         <TxnNotification message="Waiting for transaction to complete." blockExplorerLink={blockExplorerTxURL} />,
       );
 
-      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+      const transactionReceipt = await publicClient?.waitForTransactionReceipt({
         hash: transactionHash,
         confirmations: options?.blockConfirmations,
       });
@@ -89,7 +84,7 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
         },
       );
 
-      if (options?.onBlockConfirmation) options.onBlockConfirmation(transactionReceipt);
+      if (options?.onBlockConfirmation && transactionReceipt) options.onBlockConfirmation(transactionReceipt);
     } catch (error: any) {
       if (notificationId) {
         notification.remove(notificationId);
@@ -97,6 +92,7 @@ export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => 
       console.error("⚡️ ~ file: useTransactor.ts ~ error", error);
       const message = getParsedError(error);
       notification.error(message);
+      throw error;
     }
 
     return transactionHash;

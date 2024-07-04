@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
-import { useContractRead } from "wagmi";
+import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { displayTxResult } from "~~/components/scaffold-eth";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type DisplayVariableProps = {
   contractAddress: Address;
@@ -29,15 +29,20 @@ export const DisplayVariable = ({
     data: result,
     isFetching,
     refetch,
-  } = useContractRead({
+    error,
+  } = useReadContract({
     address: contractAddress,
     functionName: abiFunction.name,
     abi: abi,
     chainId: mainChainId,
-    onError: error => {
-      notification.error(error.message);
-    },
   });
+
+  useEffect(() => {
+    if (error) {
+      const parsedError = getParsedError(error);
+      notification.error(parsedError);
+    }
+  }, [error]);
 
   const { showAnimation } = useAnimationConfig(result);
 
