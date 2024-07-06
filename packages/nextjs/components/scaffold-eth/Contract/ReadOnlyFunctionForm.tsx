@@ -28,7 +28,28 @@ export const ReadOnlyFunctionForm = ({
   abi,
 }: ReadOnlyFunctionFormProps) => {
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
+
+  const getQueryParams = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const params: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      params[key] = value;
+    }
+    return params;
+  };
+
+  const initialFormState = getInitialFormState(abiFunction);
+  const queryParams = getQueryParams();
+
+  abiFunction.inputs.forEach((input, index) => {
+    const paramKey = `${abiFunction.name}_input_${index}`;
+    if (queryParams.hasOwnProperty(paramKey)) {
+      const key = getFunctionInputKey(abiFunction.name, input, index);
+      initialFormState[key] = queryParams[paramKey];
+    }
+  });
+
+  const [form, setForm] = useState<Record<string, any>>(initialFormState);
   const [result, setResult] = useState<unknown>();
 
   const { isFetching, refetch, error } = useReadContract({
