@@ -15,9 +15,9 @@ type AbiNinjaState = {
   setMainChainId: (newMainChainId: number) => void;
   contractAbi: Abi;
   setContractAbi: (newAbi: Abi) => void;
-  abiContractAddress: Address;
+  abiContractAddress: Address | "";
   setAbiContractAddress: (newAbiContractAddress: Address) => void;
-  implementationAddress: Address;
+  implementationAddress: Address | "";
   setImplementationAddress: (newImplementationAddress: Address) => void;
 };
 
