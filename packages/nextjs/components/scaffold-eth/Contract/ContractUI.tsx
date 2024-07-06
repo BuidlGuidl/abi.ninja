@@ -4,7 +4,7 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { AbiFunction } from "abitype";
-import { Abi } from "viem";
+import { Abi, Address as AddressT } from "viem";
 import { useContractRead } from "wagmi";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
@@ -14,7 +14,7 @@ import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type ContractUIProps = {
   className?: string;
-  initialContractData: { address: string; abi: Abi };
+  initialContractData: { address: AddressT; abi: Abi };
 };
 
 export interface AugmentedAbiFunction extends AbiFunction {

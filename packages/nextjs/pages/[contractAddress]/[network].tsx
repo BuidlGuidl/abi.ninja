@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { Abi, isAddress } from "viem";
+import { Abi, Address, isAddress } from "viem";
 import * as chains from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -16,17 +16,17 @@ import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/ut
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
-  contractAddress: string;
+  contractAddress: Address;
   network: string;
 }
 
 type ContractData = {
   abi: Abi;
-  address: string;
+  address: Address;
 };
 
 type ServerSideProps = {
-  addressFromUrl: string | null;
+  addressFromUrl: Address | null;
   chainIdFromUrl: number | null;
 };
 
