@@ -4,7 +4,6 @@ import {
   chainToOption,
   filterChains,
   filteredChains,
-  formDataToChain,
   getStoredChainsFromLocalStorage,
   initialGroupedOptions,
   mapChainsToOptions,
@@ -16,10 +15,8 @@ import {
 import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { Chain } from "viem";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { CustomOption, OtherChainsModal } from "~~/components/NetworksDropdown";
+import { AddCustomChainModal, CustomOption, OtherChainsModal } from "~~/components/NetworksDropdown";
 import { useGlobalState } from "~~/services/store/store";
-import { notification } from "~~/utils/scaffold-eth";
 
 export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -76,11 +73,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "other-chains") {
-      if (!seeOtherChainsModalRef.current) return;
-      seeOtherChainsModalRef.current.showModal();
+      if (seeOtherChainsModalRef.current) {
+        seeOtherChainsModalRef.current.showModal();
+      }
     } else if (selected?.value === "custom-chains") {
-      if (!customChainModalRef.current) return;
-      customChainModalRef.current.showModal();
+      if (customChainModalRef.current) {
+        customChainModalRef.current.showModal();
+      }
     } else {
       setSelectedOption(selected);
       onChange(selected);
@@ -106,53 +105,12 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     }
   };
 
-  const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const chain = formDataToChain(formData);
-
-    const storedChains = getStoredChainsFromLocalStorage();
-
-    if (storedChains.find(c => c.id === chain.id)) {
-      if (customChainModalRef.current) {
-        customChainModalRef.current.close();
-      }
-      e.currentTarget.reset();
-      notification.error("This chain is already added!");
-      return;
-    }
-
-    storeChainInLocalStorage(chain);
-
-    addCustomChain(chain);
-
-    const newGroupedOptions = { ...groupedOptionsState };
-    const groupName = chain.testnet ? "testnet" : "mainnet";
-    const newOption = chainToOption(chain);
-    newGroupedOptions[groupName].options.push(newOption);
-
-    setGroupedOptionsState(newGroupedOptions);
-
-    e.currentTarget.reset();
-
-    setSelectedOption(newOption);
-    onChange(newOption);
-
-    handleCloseCustomChainModalRef();
-  };
-
-  const handleCloseCustomChainModalRef = () => {
-    if (customChainModalRef.current) {
-      customChainModalRef.current.close();
-    }
-  };
-
   const handleDeleteCustomChain = (option: Options) => {
     const chainId = +option.value;
 
     removeAbisForChain(chainId);
     removeChain(chainId);
-    removeChainFromLocalStorage(+option.value);
+    removeChainFromLocalStorage(chainId);
 
     const newGroupedOptions = { ...groupedOptionsState };
     const groupName = option.testnet ? "testnet" : "mainnet";
@@ -218,71 +176,13 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         modalChains={modalChains}
         onSelect={handleSelectOtherChainInModal}
       />
-
-      <dialog
-        id="add-custom-chain-modal"
-        className="modal"
+      <AddCustomChainModal
         ref={customChainModalRef}
-        onClose={handleCloseCustomChainModalRef}
-      >
-        <form method="dialog" className="modal-box p-12 bg-base-200" onSubmit={handleSubmitCustomChain}>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-xl">Add Custom Chain</h3>
-            <div className="modal-action mt-0">
-              <button className="hover:text-error" type="button" onClick={handleCloseCustomChainModalRef}>
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Chain ID</span>
-            </label>
-            <input type="number" name="id" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Name</span>
-            </label>
-            <input type="text" name="name" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Native Currency Name</span>
-            </label>
-            <input type="text" name="nativeCurrencyName" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Native Currency Symbol</span>
-            </label>
-            <input type="text" name="nativeCurrencySymbol" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Native Currency Decimals</span>
-            </label>
-            <input type="number" name="nativeCurrencyDecimals" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">RPC URL</span>
-            </label>
-            <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
-          </div>
-          <div className="form-control flex-row mt-4 items-center gap-4">
-            <label className="label">
-              <span className="label-text">Testnet?</span>
-            </label>
-            <input type="checkbox" name="testnet" className="checkbox checkbox-primary" />
-          </div>
-          <div className="modal-action mt-6">
-            <button type="submit" className="btn btn-primary">
-              Add Chain
-            </button>
-          </div>
-        </form>
-      </dialog>
+        groupedOptionsState={groupedOptionsState}
+        setGroupedOptionsState={setGroupedOptionsState}
+        setSelectedOption={setSelectedOption}
+        onChange={onChange}
+      />
     </>
   );
 };
