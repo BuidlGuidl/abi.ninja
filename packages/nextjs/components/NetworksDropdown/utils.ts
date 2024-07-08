@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import * as wagmiChains from "@wagmi/core/chains";
-import { Abi, Address, Chain } from "viem";
+import { Chain } from "viem";
 import { getPopularTargetNetworks } from "~~/utils/scaffold-eth";
 
 export type Options = {
@@ -108,8 +108,6 @@ export const chainToOption = (chain: Chain): Options => ({
   icon: "",
 });
 
-const ABI_STORAGE_KEY = "contractAbis";
-
 const STORED_CHAINS_STORAGE_KEY = "storedChains";
 
 export const getStoredChainsFromLocalStorage = (): Chain[] => {
@@ -156,36 +154,4 @@ export const formDataToChain = (formData: FormData): Chain => {
 export const isChainStored = (option: Options): boolean => {
   const storedChains = getStoredChainsFromLocalStorage();
   return storedChains.some(storedChain => storedChain.id === option.value);
-};
-
-export const getAbisFromLocalStorage = () => {
-  const abis = localStorage.getItem(ABI_STORAGE_KEY);
-  return abis ? JSON.parse(abis) : {};
-};
-
-export const getAbiFromLocalStorage = (contractAddress: Address, chainId: number) => {
-  const abis = getAbisFromLocalStorage();
-  return abis[`${contractAddress}_${chainId}`];
-};
-
-export const storeAbiInLocalStorage = (contractAddress: Address, chainId: number, abi: Abi) => {
-  const abis = getAbisFromLocalStorage();
-  abis[`${contractAddress}_${chainId}`] = abi;
-  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
-};
-
-export const removeAbiFromLocalStorage = (contractAddress: Address, chainId: number) => {
-  const abis = getAbisFromLocalStorage();
-  delete abis[`${contractAddress}_${chainId}`];
-  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
-};
-
-export const removeAbisForChain = (chainId: number) => {
-  const abis = getAbisFromLocalStorage();
-  Object.keys(abis).forEach(key => {
-    if (key.endsWith(`_${chainId}`)) {
-      delete abis[key];
-    }
-  });
-  localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(abis));
 };

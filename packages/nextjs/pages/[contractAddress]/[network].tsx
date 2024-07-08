@@ -8,12 +8,7 @@ import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
-import {
-  formDataToChain,
-  getAbiFromLocalStorage,
-  storeAbiInLocalStorage,
-  storeChainInLocalStorage,
-} from "~~/components/NetworksDropdown/utils";
+import { formDataToChain, storeChainInLocalStorage } from "~~/components/NetworksDropdown/utils";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
@@ -68,10 +63,11 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
-  const { setMainChainId, chainId, setImplementationAddress } = useAbiNinjaState(state => ({
+  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
+    contractAbi: state.contractAbi,
   }));
 
   const { addChain, chains } = useGlobalState(state => ({
@@ -89,6 +85,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   };
 
   useEffect(() => {
+    if (contractAbi.length > 0) {
+      setContractData({ abi: contractAbi, address: contractAddress });
+    }
+
     if (network) {
       let normalizedNetwork = network.toLowerCase();
       if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
@@ -108,14 +108,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
 
       const fetchContractAbi = async () => {
         setIsLoading(true);
-
-        const storedAbi = getAbiFromLocalStorage(contractAddress, parsedNetworkId);
-        if (storedAbi) {
-          setContractData({ abi: storedAbi, address: contractAddress });
-          setError(null);
-          setIsLoading(false);
-          return;
-        }
 
         try {
           const implementationAddress = await detectProxyTarget(contractAddress, publicClient);
@@ -159,7 +151,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractData({ abi: parsedAbi, address: contractAddress });
-      storeAbiInLocalStorage(contractAddress, parseInt(network), parsedAbi);
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");

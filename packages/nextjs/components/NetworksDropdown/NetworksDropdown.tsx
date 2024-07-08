@@ -8,7 +8,6 @@ import {
   initialGroupedOptions,
   mapChainsToOptions,
   networkIds,
-  removeAbisForChain,
   removeChainFromLocalStorage,
   storeChainInLocalStorage,
 } from "./utils";
@@ -107,7 +106,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleDeleteCustomChain = (option: Options) => {
     const chainId = +option.value;
 
-    removeAbisForChain(chainId);
     removeChain(chainId);
     removeChainFromLocalStorage(chainId);
 
