@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { CustomOption } from "./CustomOption";
 import {
   Options,
   chainToOption,
@@ -18,6 +17,7 @@ import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { Chain } from "viem";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { CustomOption, OtherChainsModal } from "~~/components/NetworksDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -26,14 +26,12 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const { resolvedTheme } = useTheme();
   const [groupedOptionsState, setGroupedOptionsState] = useState(initialGroupedOptions);
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const { addCustomChain, removeChain } = useGlobalState(state => ({
     addCustomChain: state.addChain,
     removeChain: state.removeChain,
   }));
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const seeOtherChainsModalRef = useRef<HTMLDialogElement>(null);
   const customChainModalRef = useRef<HTMLDialogElement>(null);
 
@@ -78,9 +76,8 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const handleSelectChange = (newValue: SingleValue<Options> | MultiValue<Options>) => {
     const selected = newValue as SingleValue<Options>;
     if (selected?.value === "other-chains") {
-      if (!seeOtherChainsModalRef.current || !searchInputRef.current) return;
+      if (!seeOtherChainsModalRef.current) return;
       seeOtherChainsModalRef.current.showModal();
-      searchInputRef.current.focus();
     } else if (selected?.value === "custom-chains") {
       if (!customChainModalRef.current) return;
       customChainModalRef.current.showModal();
@@ -104,7 +101,9 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     setSelectedOption(option);
     onChange(option);
-    handleCloseOtherChainsModal();
+    if (seeOtherChainsModalRef.current) {
+      seeOtherChainsModalRef.current.close();
+    }
   };
 
   const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,16 +139,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     onChange(newOption);
 
     handleCloseCustomChainModalRef();
-  };
-
-  const handleCloseOtherChainsModal = () => {
-    if (searchInputRef.current) {
-      searchInputRef.current.value = "";
-      setSearchTerm("");
-    }
-    if (seeOtherChainsModalRef.current) {
-      seeOtherChainsModalRef.current.close();
-    }
   };
 
   const handleCloseCustomChainModalRef = () => {
@@ -188,9 +177,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
   const filteredChainsForModal = filterChains(filteredChains, networkIds, existingChainIds);
 
-  const modalChains = mapChainsToOptions(filteredChainsForModal).filter(chain =>
-    `${chain.label} ${chain.value}`.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const modalChains = mapChainsToOptions(filteredChainsForModal);
 
   if (!mounted) return <div className="skeleton bg-neutral max-w-xs w-44 relative h-[38px]" />;
 
@@ -226,46 +213,11 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
           }),
         }}
       />
-      <dialog
-        id="see-other-chains-modal"
-        className="modal"
+      <OtherChainsModal
         ref={seeOtherChainsModalRef}
-        onClose={handleCloseOtherChainsModal}
-      >
-        <div className="flex flex-col modal-box justify-center px-12 h-3/4 sm:w-1/2 max-w-5xl bg-base-200">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-xl">All Chains</h3>
-            <div className="modal-action mt-0">
-              <button className="hover:text-error" onClick={handleCloseOtherChainsModal}>
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-          <input
-            type="text"
-            placeholder="Search chains..."
-            className="input input-bordered w-full mb-4 bg-neutral"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            ref={searchInputRef}
-          />
-
-          <div className="flex flex-wrap content-start justify-center gap-4 overflow-y-auto h-5/6 p-2">
-            {modalChains.map(option => (
-              <div
-                key={`${option.label}-${option.value}`}
-                className="card shadow-md bg-base-100 cursor-pointer h-28 w-60 text-center"
-                onClick={() => handleSelectOtherChainInModal(option)}
-              >
-                <div className="card-body flex flex-col justify-center items-center p-4">
-                  <span className="text-sm font-semibold">Chain Id: {option.value}</span>
-                  <span className="text-sm">{option.label}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </dialog>
+        modalChains={modalChains}
+        onSelect={handleSelectOtherChainInModal}
+      />
 
       <dialog
         id="add-custom-chain-modal"
