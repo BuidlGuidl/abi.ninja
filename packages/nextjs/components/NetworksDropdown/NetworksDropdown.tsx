@@ -48,7 +48,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
         if (!newGroupedOptions[groupName].options.some(option => option.value === chain.id)) {
           const option = chainToOption(chain);
           newGroupedOptions[groupName].options.push(option);
-          addCustomChain(chain);
         }
       });
 

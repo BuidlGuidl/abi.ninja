@@ -11,7 +11,6 @@ import { MiniHeader } from "~~/components/MiniHeader";
 import {
   formDataToChain,
   getAbiFromLocalStorage,
-  getStoredChainsFromLocalStorage,
   storeAbiInLocalStorage,
   storeChainInLocalStorage,
 } from "~~/components/NetworksDropdown/utils";
@@ -83,16 +82,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const publicClient = usePublicClient({
     chainId: parseInt(network),
   });
-
-  useEffect(() => {
-    const storedCustomChains = getStoredChainsFromLocalStorage();
-
-    storedCustomChains.forEach(chain => {
-      if (+network === chain.id) {
-        addChain(chain);
-      }
-    });
-  }, [addChain, network]);
 
   const getNetworkName = (chainId: number) => {
     const chain = Object.values(chains).find(chain => chain.id === chainId);
