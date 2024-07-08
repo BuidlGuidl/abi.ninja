@@ -12,19 +12,25 @@ export const enabledChains = targetNetworks.find((network: Chain) => network.id 
   ? targetNetworks
   : ([...targetNetworks, mainnet] as const);
 
-export const wagmiConfig = createConfig({
+export const createWagmiClient = ({ chain }: { chain: Chain }) =>
+  createClient({
+    chain: {
+      id: chain.id,
+      name: chain.name,
+      nativeCurrency: chain.nativeCurrency,
+      rpcUrls: chain.rpcUrls,
+    },
+    transport: http(getAlchemyHttpUrl(chain.id)),
+    ...(chain.id !== (hardhat as Chain).id
+      ? {
+          pollingInterval: scaffoldConfig.pollingInterval,
+        }
+      : {}),
+  });
+
+export const baseWagmiConfig = createConfig({
   chains: enabledChains as [Chain, ...Chain[]],
   connectors: wagmiConnectors,
   ssr: true,
-  client({ chain }) {
-    return createClient({
-      chain,
-      transport: http(getAlchemyHttpUrl(chain.id)),
-      ...(chain.id !== (hardhat as Chain).id
-        ? {
-            pollingInterval: scaffoldConfig.pollingInterval,
-          }
-        : {}),
-    });
-  },
+  client: createWagmiClient,
 });
