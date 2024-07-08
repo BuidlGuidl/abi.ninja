@@ -2,7 +2,7 @@ import { getPublicClient } from "@wagmi/core";
 import { Hash, SendTransactionParameters, WalletClient } from "viem";
 import { Config, useWalletClient } from "wagmi";
 import { SendTransactionMutate } from "wagmi/query";
-import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerTxLink, getParsedError, notification } from "~~/utils/scaffold-eth";
 import { TransactorFuncOptions } from "~~/utils/scaffold-eth/contract";
 
@@ -35,6 +35,7 @@ const TxnNotification = ({ message, blockExplorerLink }: { message: string; bloc
 export const useTransactor = (_walletClient?: WalletClient): TransactionFunc => {
   let walletClient = _walletClient;
   const { data } = useWalletClient();
+  const wagmiConfig = useGlobalState(state => state.wagmiConfig);
   if (walletClient === undefined && data) {
     walletClient = data;
   }
