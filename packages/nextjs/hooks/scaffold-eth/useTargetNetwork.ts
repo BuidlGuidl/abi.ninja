@@ -15,8 +15,7 @@ export function useTargetNetwork(): { targetNetwork: ChainWithAttributes } {
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
 
   useEffect(() => {
-    const newSelectedNetwork =
-      chains.find(network => network.id === chain?.id) || chains.find(network => network.id === mainChainId);
+    const newSelectedNetwork = chains.find(network => network.id === chain?.id || network.id === mainChainId);
     if (newSelectedNetwork && newSelectedNetwork.id !== targetNetwork.id) {
       setTargetNetwork(newSelectedNetwork);
     }
