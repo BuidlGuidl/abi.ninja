@@ -145,7 +145,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
         }
       }
     }
-  }, [contractAddress, network, setMainChainId, setImplementationAddress, publicClient, chains]);
+  }, [contractAddress, network, setMainChainId, setImplementationAddress, publicClient, chains, contractAbi]);
 
   const handleUserProvidedAbi = () => {
     try {
