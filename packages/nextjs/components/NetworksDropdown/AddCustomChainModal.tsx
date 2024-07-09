@@ -5,12 +5,12 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
-interface AddCustomChainModalProps {
+type AddCustomChainModalProps = {
   groupedOptionsState: any; // @todo type anys
   setGroupedOptionsState: React.Dispatch<React.SetStateAction<any>>;
   setSelectedOption: React.Dispatch<React.SetStateAction<Options | null>>;
   onChange: (option: Options | null) => void;
-}
+};
 
 export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainModalProps>(
   ({ groupedOptionsState, setGroupedOptionsState, setSelectedOption, onChange }, ref) => {

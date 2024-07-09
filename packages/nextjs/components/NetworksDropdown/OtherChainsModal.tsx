@@ -2,10 +2,10 @@ import { forwardRef, useRef, useState } from "react";
 import { Options } from "./utils";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-interface OtherChainsModalProps {
+type OtherChainsModalProps = {
   modalChains: Options[];
   onSelect: (option: Options) => void;
-}
+};
 
 export const OtherChainsModal = forwardRef<HTMLDialogElement, OtherChainsModalProps>(
   ({ modalChains, onSelect }, ref) => {
