@@ -26,7 +26,7 @@ export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainM
       const storedChains = getStoredChainsFromLocalStorage();
 
       if (storedChains.find(c => c.id === chain.id)) {
-        handleCloseModal;
+        handleCloseModal();
         e.currentTarget.reset();
         notification.error("This chain is already added!");
         return;
