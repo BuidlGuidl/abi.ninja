@@ -15,6 +15,8 @@ export const enabledChains = targetNetworks.find((network: Chain) => network.id 
 export const createWagmiClient = ({ chain }: { chain: Chain }) =>
   createClient({
     chain: {
+      ...chain,
+
       id: chain.id,
       name: chain.name,
       nativeCurrency: chain.nativeCurrency,
