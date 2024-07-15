@@ -8,10 +8,10 @@ import { ThemeProvider, useTheme } from "next-themes";
 import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
+import { getStoredChainsFromLocalStorage } from "~~/components/NetworksDropdown/utils";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import "~~/styles/globals.css";
 
 export const queryClient = new QueryClient({
@@ -24,10 +24,21 @@ export const queryClient = new QueryClient({
 
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   const price = useNativeCurrencyPrice();
-  const setNativeCurrencyPrice = useGlobalState(state => state.setNativeCurrencyPrice);
+  const { addChain, setNativeCurrencyPrice } = useGlobalState(state => ({
+    addChain: state.addChain,
+    setNativeCurrencyPrice: state.setNativeCurrencyPrice,
+  }));
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const storedCustomChains = getStoredChainsFromLocalStorage();
+
+    storedCustomChains.forEach(chain => {
+      addChain(chain);
+    });
+  }, [addChain]);
 
   useEffect(() => {
     setMounted(true);
@@ -55,6 +66,8 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
 };
 
 const ScaffoldEthAppWithProviders = (props: AppProps) => {
+  const wagmiConfig = useGlobalState(state => state.wagmiConfig);
+
   return (
     <PlausibleProvider domain="abi.ninja">
       <ThemeProvider>

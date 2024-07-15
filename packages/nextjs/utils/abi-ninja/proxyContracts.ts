@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import { UsePublicClientReturnType } from "wagmi";
 
 const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
@@ -12,7 +13,7 @@ const EIP_897_INTERFACE = ["0x5c60da1b000000000000000000000000000000000000000000
 const GNOSIS_SAFE_PROXY_INTERFACE = ["0xa619486e00000000000000000000000000000000000000000000000000000000"] as const;
 const COMPTROLLER_PROXY_INTERFACE = ["0xbb82aa5e00000000000000000000000000000000000000000000000000000000"] as const;
 
-const readAddress = (value: string | undefined) => {
+const readAddress = (value: string | undefined): Address => {
   if (typeof value !== "string" || value === "0x") {
     throw new Error(`Invalid address value: ${value}`);
   }
@@ -21,13 +22,13 @@ const readAddress = (value: string | undefined) => {
   if (address === zeroAddress) {
     throw new Error("Empty address");
   }
-  return address;
+  return address as Address;
 };
 
 const EIP_1167_BYTECODE_PREFIX = "0x363d3d373d3d3d363d";
 const EIP_1167_BYTECODE_SUFFIX = "57fd5bf3";
 
-export const parse1167Bytecode = (bytecode: unknown): string => {
+export const parse1167Bytecode = (bytecode: unknown): Address => {
   if (typeof bytecode !== "string" || !bytecode.startsWith(EIP_1167_BYTECODE_PREFIX)) {
     throw new Error("Not an EIP-1167 bytecode");
   }
@@ -56,10 +57,10 @@ export const parse1167Bytecode = (bytecode: unknown): string => {
   }
 
   // padStart is needed for vanity addresses
-  return `0x${addressFromBytecode.padStart(40, "0")}`;
+  return `0x${addressFromBytecode.padStart(40, "0")}` as Address;
 };
 
-export const detectProxyTarget = async (proxyAddress: string, client: UsePublicClientReturnType) => {
+export const detectProxyTarget = async (proxyAddress: Address, client: UsePublicClientReturnType) => {
   if (!client) {
     console.error("No client provided");
     return;

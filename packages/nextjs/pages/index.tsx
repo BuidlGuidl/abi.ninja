@@ -9,7 +9,7 @@ import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
-import { NetworksDropdown } from "~~/components/NetworksDropdown";
+import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdown";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
@@ -27,7 +27,7 @@ const tabValues = Object.values(TabName) as TabName[];
 const Home: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TabName.verifiedContract);
   const [network, setNetwork] = useState(mainnet.id.toString());
-  const [verifiedContractAddress, setVerifiedContractAddress] = useState<Address>("");
+  const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
@@ -50,7 +50,7 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const implementationAddress = await detectProxyTarget(verifiedContractAddress, publicClient);
+        const implementationAddress = await detectProxyTarget(verifiedContractAddress as Address, publicClient);
 
         if (implementationAddress) {
           setImplementationAddress(implementationAddress);
@@ -75,7 +75,7 @@ const Home: NextPage = () => {
           console.error("Error fetching ABI from Etherscan: ", etherscanError);
 
           const bytecode = await publicClient?.getBytecode({
-            address: verifiedContractAddress,
+            address: verifiedContractAddress as Address,
           });
           const isContract = Boolean(bytecode) && bytecode !== "0x";
 
@@ -131,7 +131,7 @@ const Home: NextPage = () => {
     }
   };
 
-  const fetchAbiFromHeimdall = async (contractAddress: string) => {
+  const fetchAbiFromHeimdall = async (contractAddress: Address) => {
     setIsFetchingAbi(true);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${network}/${contractAddress}`);
@@ -249,7 +249,7 @@ const Home: NextPage = () => {
                       </h4>
                       <button
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={() => fetchAbiFromHeimdall(localAbiContractAddress)}
+                        onClick={() => fetchAbiFromHeimdall(localAbiContractAddress as Address)}
                       >
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
                       </button>
@@ -263,7 +263,7 @@ const Home: NextPage = () => {
                         onChange={e => setLocalContractAbi(e.target.value)}
                       ></textarea>
                       <button
-                        className="btn btn-primary min-h-fit h-10 px-4 mb-12 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
+                        className="btn btn-primary min-h-fit h-10 px-4 mb-2 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={handleUserProvidedAbi}
                       >
                         Import ABI

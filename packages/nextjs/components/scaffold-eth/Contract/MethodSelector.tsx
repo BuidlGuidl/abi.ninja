@@ -2,12 +2,12 @@ import { type KeyboardEvent, useState } from "react";
 import { AugmentedAbiFunction } from "./ContractUI";
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-interface MethodSelectorProps {
+type MethodSelectorProps = {
   readMethodsWithInputsAndWriteMethods: AugmentedAbiFunction[];
   abi: AugmentedAbiFunction[];
   onMethodSelect: (uid: string) => void;
   removeMethod: (uid: string) => void;
-}
+};
 
 export const MethodSelector = ({
   readMethodsWithInputsAndWriteMethods,
