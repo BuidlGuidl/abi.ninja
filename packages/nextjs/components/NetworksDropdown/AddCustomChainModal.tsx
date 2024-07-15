@@ -109,6 +109,12 @@ export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainM
             </label>
             <input type="text" name="rpcUrl" className="input input-bordered bg-neutral" required />
           </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Block explorer link (optional)</span>
+            </label>
+            <input type="text" name="blockExplorer" className="input input-bordered bg-neutral" />
+          </div>
           <div className="form-control flex-row mt-4 items-center gap-4">
             <label className="label">
               <span className="label-text">Testnet?</span>

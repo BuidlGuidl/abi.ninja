@@ -133,6 +133,15 @@ export const removeChainFromLocalStorage = (chainId: number) => {
 };
 
 export const formDataToChain = (formData: FormData): Chain => {
+  const blockExplorers: Chain["blockExplorers"] | undefined = Boolean(formData.get("blockExplorer"))
+    ? {
+        default: {
+          name: "Block Explorer",
+          url: formData.get("blockExplorer") as string,
+        },
+      }
+    : undefined;
+
   const chain = {
     id: Number(formData.get("id")),
     name: formData.get("name") as string,
@@ -146,6 +155,7 @@ export const formDataToChain = (formData: FormData): Chain => {
       default: { http: [formData.get("rpcUrl") as string] },
     },
     testnet: formData.get("testnet") === "on",
+    blockExplorers,
   } as const satisfies Chain;
 
   return chain;
