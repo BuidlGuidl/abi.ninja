@@ -1,13 +1,19 @@
 import { forwardRef } from "react";
-import { chainToOption, formDataToChain, getStoredChainsFromLocalStorage, storeChainInLocalStorage } from "./utils";
+import {
+  GroupedOptions,
+  chainToOption,
+  formDataToChain,
+  getStoredChainsFromLocalStorage,
+  storeChainInLocalStorage,
+} from "./utils";
 import { Options } from "./utils";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useGlobalState } from "~~/services/store/store";
 import { notification } from "~~/utils/scaffold-eth";
 
 type AddCustomChainModalProps = {
-  groupedOptionsState: any; // @todo type anys
-  setGroupedOptionsState: React.Dispatch<React.SetStateAction<any>>;
+  groupedOptionsState: GroupedOptions;
+  setGroupedOptionsState: React.Dispatch<React.SetStateAction<GroupedOptions>>;
   setSelectedOption: React.Dispatch<React.SetStateAction<Options | null>>;
   onChange: (option: Options | null) => void;
 };
