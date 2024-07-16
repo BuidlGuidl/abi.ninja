@@ -14,6 +14,7 @@ import {
 import { useTheme } from "next-themes";
 import Select, { MultiValue, SingleValue } from "react-select";
 import { Chain } from "viem";
+import { mainnet } from "viem/chains";
 import { AddCustomChainModal, CustomOption, OtherChainsModal } from "~~/components/NetworksDropdown";
 import { useGlobalState } from "~~/services/store/store";
 
@@ -23,9 +24,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const [groupedOptionsState, setGroupedOptionsState] = useState(initialGroupedOptions);
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
 
-  const { addCustomChain, removeChain } = useGlobalState(state => ({
+  const { addCustomChain, removeChain, resetTargetNetwork } = useGlobalState(state => ({
     addCustomChain: state.addChain,
     removeChain: state.removeChain,
+    resetTargetNetwork: () => state.setTargetNetwork(mainnet),
   }));
 
   const seeOtherChainsModalRef = useRef<HTMLDialogElement>(null);
@@ -108,6 +110,7 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
 
     removeChain(chainId);
     removeChainFromLocalStorage(chainId);
+    resetTargetNetwork();
 
     const newGroupedOptions = { ...groupedOptionsState };
     const groupName = option.testnet ? "testnet" : "mainnet";
