@@ -134,7 +134,10 @@ const Home: NextPage = () => {
   const fetchAbiFromHeimdall = async (contractAddress: Address) => {
     setIsFetchingAbi(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${network}/${contractAddress}`);
+      const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`,
+      );
       const abi = await response.json();
       if (abi.length === 0) {
         notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
