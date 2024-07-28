@@ -12,7 +12,7 @@ declare namespace Cypress {
      * Custom command to load a contract by address.
      * @example cy.loadContract('0x1234...')
      */
-    loadContract(address: string): Chainable<void>;
+    loadContract(address: string, timeToWait: number): Chainable<void>;
 
     /**
      * Custom command to select a network from the dropdown.
