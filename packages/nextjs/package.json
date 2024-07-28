@@ -13,7 +13,7 @@
     "vercel": "vercel",
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run --browser chrome"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.11",
