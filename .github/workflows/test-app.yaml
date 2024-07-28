@@ -1,0 +1,26 @@
+name: E2E on Chrome
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: packages/nextjs
+          browser: chrome
+          start: yarn dev
+          wait-on: "http://localhost:3000"
+        env:
+          NEXT_PUBLIC_HEIMDALL_URL: "${{ secrets.NEXT_PUBLIC_HEIMDALL_URL }}"
