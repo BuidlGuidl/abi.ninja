@@ -42,6 +42,50 @@ yarn start
 
 Visit your local instance of ABI Ninja at: `http://localhost:3000`.
 
+# 🧪 Testing
+
+ABI Ninja uses Cypress for end-to-end testing. Our test suite covers user flows and ensures the application works correctly across different networks and contract types. The test suite will automatically run on pull requests.
+
+## Running Tests
+
+To run the Cypress tests:
+
+1. Ensure your development server is running:
+
+```
+yarn start
+```
+
+2. In a new terminal window, run the Cypress tests:
+
+```
+yarn cypress:open
+```
+
+This will open the Cypress Test Runner, where you can run individual tests or the entire suite.
+
+3. For headless testing, use:
+
+```
+yarn cypress:run
+```
+
+## Test Coverage
+
+Our tests cover the following key areas:
+
+- Loading and interacting with verified contracts on various networks
+- Handling unverified contracts and manual ABI input
+- Detecting and interacting with proxy contracts
+- Network switching and custom network addition
+
+## Writing New Tests
+
+When adding new features or modifying existing ones, please update or add corresponding tests. Test files are located in the `cypress/e2e` directory.
+
+For more information on writing Cypress tests, refer to the Cypress Documentation.
+
+
 ## Contributing to ABI Ninja
 
 We welcome contributions to ABI Ninja!
