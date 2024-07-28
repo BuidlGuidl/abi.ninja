@@ -680,6 +680,7 @@ describe("Contract Interaction", () => {
     cy.selectNetwork("Sepolia");
     cy.loadContract("0x759c0e9d7858566df8ab751026bedce462ff42df", 6000);
     cy.get("button:visible").contains("Decompile (beta)", { timeout: 10000 }).click({ force: true });
+    cy.wait(2000);
     cy.url().should("include", "/0x759c0e9d7858566df8ab751026bedce462ff42df/11155111");
     cy.contains("changeOwner").click();
   });
