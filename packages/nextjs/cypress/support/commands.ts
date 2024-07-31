@@ -6,7 +6,7 @@ Cypress.Commands.add("wakeUpHeimdall", () => {
 
   cy.request({
     method: "GET",
-    url: `${Cypress.env("heimdall_url")}/${contractAddress}?rpc_url=${rpcUrl}`,
+    url: `${Cypress.env("HEIMDALL_URL")}/${contractAddress}?rpc_url=${rpcUrl}`,
     failOnStatusCode: false,
     timeout: 30000,
   }).then(response => {
