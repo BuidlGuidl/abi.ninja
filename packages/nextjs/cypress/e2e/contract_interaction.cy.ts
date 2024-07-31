@@ -1,8 +1,4 @@
 describe("Contract Interaction", () => {
-  before(() => {
-    cy.wakeUpHeimdall();
-  });
-
   it("should load DAI contract and interact with its balanceOf method", () => {
     cy.visit("http://localhost:3000");
     cy.loadContract("0x6B175474E89094C44Da98b954EedeAC495271d0F");
@@ -21,6 +17,7 @@ describe("Contract Interaction", () => {
   });
 
   it("should load unverified contract on Sepolia and ADD changeOwner write method to the UI", () => {
+    cy.wakeUpHeimdall();
     cy.visit("http://localhost:3000");
     cy.selectNetwork("Sepolia");
     cy.get('input[placeholder="Contract address"]').type("0x759c0e9d7858566df8ab751026bedce462ff42df");
