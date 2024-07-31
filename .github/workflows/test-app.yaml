@@ -24,4 +24,5 @@ jobs:
           wait-on: "http://localhost:3000"
         env:
           NEXT_PUBLIC_HEIMDALL_URL: "${{ secrets.HEIMDALL_URL }}"
-          CYPRESS_heimdall_url: "${{ secrets.HEIMDALL_URL }}"
+          CYPRESS_HEIMDALL_URL: "${{ secrets.HEIMDALL_URL }}"
+
