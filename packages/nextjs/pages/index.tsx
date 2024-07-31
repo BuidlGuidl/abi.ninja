@@ -181,7 +181,7 @@ const Home: NextPage = () => {
                     <Image src="/logo_inv.svg" alt="logo" width={119} height={87} className="mb-4" />{" "}
                     <h2 className="mb-0 text-5xl font-bold">ABI Ninja</h2>
                     <p>Interact with any contract on Ethereum</p>
-                    <div className="mt-4">
+                    <div className="mt-4" id="react-select-container">
                       <NetworksDropdown onChange={option => setNetwork(option ? option.value.toString() : "")} />
                     </div>
                     <div className="w-10/12 my-8">
