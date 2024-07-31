@@ -30,10 +30,13 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-cypress.env.json
 
 # vercel
 .vercel
+
+# Cypress
+cypress/downloads/
+cypress.env.json
 
 # typescript
 *.tsbuildinfo
