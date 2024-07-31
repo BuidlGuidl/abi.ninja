@@ -14,10 +14,9 @@ Cypress.Commands.add("wakeUpHeimdall", () => {
   });
 });
 
-Cypress.Commands.add("loadContract", (address: string, timeToWait: number) => {
+Cypress.Commands.add("loadContract", (address: string) => {
   cy.get('input[placeholder="Contract address"]').type(address);
-  cy.wait(timeToWait);
-  cy.get("button").contains("Load contract").click({ force: true });
+  cy.get("button").contains("Load contract").click();
 });
 
 Cypress.Commands.add("selectNetwork", (networkName: string) => {
