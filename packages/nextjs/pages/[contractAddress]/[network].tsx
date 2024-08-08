@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, Address, isAddress } from "viem";
-import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
@@ -12,8 +11,7 @@ import { formDataToChain, storeChainInLocalStorage } from "~~/components/Network
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
+import { AbiData, fetchDataFromGetAbi2000, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -47,14 +45,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
   };
 };
 
-const toCamelCase = (str: string) => {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    })
-    .replace(/\s+/g, "");
-};
-
 const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps) => {
   const router = useRouter();
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
@@ -63,8 +53,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
-  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
-    setMainChainId: state.setMainChainId,
+  const { chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
     contractAbi: state.contractAbi,
@@ -74,10 +63,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     addChain: state.addChain,
     chains: state.chains,
   }));
-
-  const publicClient = usePublicClient({
-    chainId: parseInt(network),
-  });
 
   const getNetworkName = (chainId: number) => {
     const chain = Object.values(chains).find(chain => chain.id === chainId);
@@ -90,47 +75,29 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     }
 
     if (network) {
-      let normalizedNetwork = network.toLowerCase();
-      if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
-        normalizedNetwork = "ethereum"; // chain.network for mainnet in viem/chains
-      }
-
-      const chain = Object.values(chains).find(chain => toCamelCase(chain.name) === normalizedNetwork);
-
-      let parsedNetworkId = 1;
-      if (chain) {
-        parsedNetworkId = chain.id;
-      } else {
-        parsedNetworkId = parseInt(network);
-      }
-
-      setMainChainId(parsedNetworkId);
-
       const fetchContractAbi = async () => {
+        if (contractAbi.length > 0) {
+          setIsLoading(false);
+          return;
+        }
+
         setIsLoading(true);
-
         try {
-          const implementationAddress = await detectProxyTarget(contractAddress, publicClient);
+          const abiData: AbiData = await fetchDataFromGetAbi2000(contractAddress, parseInt(network));
 
+          const implementationAddress = abiData.implementation || null;
           if (implementationAddress) {
             setImplementationAddress(implementationAddress);
           }
-          const abi = await fetchContractABIFromAnyABI(implementationAddress || contractAddress, parsedNetworkId);
-          if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
-          setContractData({ abi, address: contractAddress });
+
+          if (abiData.isDecompiled) {
+            return;
+          }
+
+          setContractData({ abi: JSON.parse(abiData.abi), address: contractAddress });
           setError(null);
         } catch (error: any) {
-          console.error("Error fetching ABI from AnyABI: ", error);
-          console.log("Trying to fetch ABI from Etherscan...");
-          try {
-            const abiString = await fetchContractABIFromEtherscan(contractAddress, parsedNetworkId);
-            const parsedAbi = JSON.parse(abiString);
-            setContractData({ abi: parsedAbi, address: contractAddress });
-            setError(null);
-          } catch (etherscanError: any) {
-            console.error("Error fetching ABI from Etherscan: ", etherscanError);
-            setError(etherscanError.message || "Error occurred while fetching ABI");
-          }
+          setError("There was an error loading the contract. Please try again.");
         } finally {
           setIsLoading(false);
         }
@@ -145,7 +112,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
         }
       }
     }
-  }, [contractAddress, network, setMainChainId, setImplementationAddress, publicClient, chains, contractAbi]);
+  }, [contractAddress, network, setImplementationAddress, contractAbi]);
 
   const handleUserProvidedAbi = () => {
     try {
@@ -168,6 +135,19 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
 
     storeChainInLocalStorage(chain);
     notification.success("Custom chain successfully loaded.");
+  };
+
+  const handleDecompile = async () => {
+    const abiData: AbiData = await fetchDataFromGetAbi2000(contractAddress, parseInt(network));
+
+    const implementationAddress = abiData.implementation || null;
+    if (implementationAddress) {
+      setImplementationAddress(implementationAddress);
+    }
+
+    setContractData({ abi: JSON.parse(abiData.abi), address: contractAddress });
+
+    console.log("decompile");
   };
 
   return (
@@ -226,6 +206,14 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                         </button>
                       </div>
                     </form>
+                    <div>
+                      <h3 className="font-bold text-xl">Or, Decompile</h3>
+                      <div className="modal-action mt-6">
+                        <button type="button" className="btn btn-primary" onClick={handleDecompile}>
+                          Decompile
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="w-1/2">

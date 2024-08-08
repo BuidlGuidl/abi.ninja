@@ -1,4 +1,25 @@
 import { NETWORKS_EXTRA_DATA, getTargetNetworks } from "./scaffold-eth";
+import { Address } from "viem";
+
+export type AbiData = {
+  abi: string;
+  implementation: Address | null;
+  isProxy: boolean;
+  isDecompiled: boolean;
+};
+
+export const fetchDataFromGetAbi2000 = async (verifiedContractAddress: string, chainId: number) => {
+  const url = `https://get-abi-2000.fly.dev/abi/${chainId}/${verifiedContractAddress}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data) {
+    return data;
+  } else {
+    console.error("Could not fetch ABI from GetAbi2000:", data.error);
+    return;
+  }
+};
 
 export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string, chainId: number) => {
   const chain = getTargetNetworks().find(network => network.id === chainId);

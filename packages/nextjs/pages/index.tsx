@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
-import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -13,8 +12,7 @@ import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdow
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
+import { AbiData, fetchDataFromGetAbi2000, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -32,10 +30,6 @@ const Home: NextPage = () => {
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
 
-  const publicClient = usePublicClient({
-    chainId: parseInt(network),
-  });
-
   const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
@@ -50,42 +44,20 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const implementationAddress = await detectProxyTarget(verifiedContractAddress as Address, publicClient);
+        const abiData: AbiData = await fetchDataFromGetAbi2000(verifiedContractAddress, parseInt(network));
+        const abi = JSON.parse(abiData.abi);
 
-        if (implementationAddress) {
-          setImplementationAddress(implementationAddress);
+        if (abiData.isDecompiled) {
+          setActiveTab(TabName.addressAbi);
+          setContractAbi(abi);
+          return;
         }
-        const abi = await fetchContractABIFromAnyABI(
-          implementationAddress || verifiedContractAddress,
-          parseInt(network),
-        );
-        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
+        setImplementationAddress(abiData.implementation || "");
         setContractAbi(abi);
         setIsAbiAvailable(true);
       } catch (error) {
-        console.error("Error fetching ABI from AnyABI: ", error);
-        console.log("Trying to fetch ABI from Etherscan...");
-        try {
-          const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-          const abi = JSON.parse(abiString);
-          setContractAbi(abi);
-          setIsAbiAvailable(true);
-        } catch (etherscanError: any) {
-          setIsAbiAvailable(false);
-          console.error("Error fetching ABI from Etherscan: ", etherscanError);
-
-          const bytecode = await publicClient?.getBytecode({
-            address: verifiedContractAddress as Address,
-          });
-          const isContract = Boolean(bytecode) && bytecode !== "0x";
-
-          if (isContract) {
-            setLocalAbiContractAddress(verifiedContractAddress);
-            setActiveTab(TabName.addressAbi);
-          } else {
-            notification.error("Address is not a contract, are you sure you are on the correct chain?");
-          }
-        }
+        setIsAbiAvailable(false);
+        notification.error("Address is not a contract, are you sure you are on the correct chain?");
       } finally {
         setIsFetchingAbi(false);
       }
@@ -101,7 +73,7 @@ const Home: NextPage = () => {
     } else {
       setIsAbiAvailable(false);
     }
-  }, [verifiedContractAddress, network, setContractAbi, publicClient, setImplementationAddress]);
+  }, [verifiedContractAddress, network, setContractAbi, setImplementationAddress]);
 
   useEffect(() => {
     if (router.pathname === "/") {
@@ -131,30 +103,10 @@ const Home: NextPage = () => {
     }
   };
 
-  const fetchAbiFromHeimdall = async (contractAddress: Address) => {
-    setIsFetchingAbi(true);
-    try {
-      const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`,
-      );
-      const abi = await response.json();
-      if (abi.length === 0) {
-        notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-        setIsFetchingAbi(false);
-        return;
-      }
-      setContractAbi(abi);
-      setIsAbiAvailable(true);
-      setAbiContractAddress(contractAddress);
-      router.push(`/${contractAddress}/${network}`);
-    } catch (error) {
-      console.error("Error fetching ABI from Heimdall: ", error);
-      notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-      setIsAbiAvailable(false);
-    } finally {
-      setIsFetchingAbi(false);
-    }
+  const fetchAbiFromHeimdall = async () => {
+    setIsAbiAvailable(true);
+    setAbiContractAddress(verifiedContractAddress as Address);
+    router.push(`/${verifiedContractAddress}/${network}`);
   };
 
   return (
@@ -246,13 +198,13 @@ const Home: NextPage = () => {
                         <MagnifyingGlassIcon className="h-5 w-5" />
                         <h1 className="font-semibold text-lg mb-0">Contract not verified</h1>
                       </div>
-                      <p className="bg-neutral px-2 rounded-md  text-sm shadow-sm">{localAbiContractAddress}</p>
+                      <p className="bg-neutral px-2 rounded-md  text-sm shadow-sm">{verifiedContractAddress}</p>
                       <h4 className="text-center mb-6 font-semibold leading-tight">
                         You can decompile the contract (beta) or import the ABI manually below.
                       </h4>
                       <button
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={() => fetchAbiFromHeimdall(localAbiContractAddress as Address)}
+                        onClick={() => fetchAbiFromHeimdall()}
                       >
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
                       </button>
