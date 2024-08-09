@@ -45,6 +45,14 @@ export const getServerSideProps: GetServerSideProps = async context => {
   };
 };
 
+const toCamelCase = (str: string) => {
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, "");
+};
+
 const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps) => {
   const router = useRouter();
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
@@ -53,7 +61,8 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const contractName = contractData.address;
-  const { chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
+  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
+    setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
     contractAbi: state.contractAbi,
@@ -75,6 +84,22 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     }
 
     if (network) {
+      let normalizedNetwork = network.toLowerCase();
+      if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
+        normalizedNetwork = "ethereum"; // chain.network for mainnet in viem/chains
+      }
+
+      const chain = Object.values(chains).find(chain => toCamelCase(chain.name) === normalizedNetwork);
+
+      let parsedNetworkId = 1;
+      if (chain) {
+        parsedNetworkId = chain.id;
+      } else {
+        parsedNetworkId = parseInt(network);
+      }
+
+      setMainChainId(parsedNetworkId);
+
       const fetchContractAbi = async () => {
         if (contractAbi.length > 0) {
           setIsLoading(false);
