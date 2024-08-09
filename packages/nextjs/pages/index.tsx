@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { Address, isAddress } from "viem";
 import { mainnet } from "viem/chains";
+import { usePublicClient } from "wagmi";
 import { ChevronLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniFooter } from "~~/components/MiniFooter";
@@ -30,6 +31,10 @@ const Home: NextPage = () => {
   const [localContractAbi, setLocalContractAbi] = useState("");
   const [isFetchingAbi, setIsFetchingAbi] = useState(false);
 
+  const publicClient = usePublicClient({
+    chainId: parseInt(network),
+  });
+
   const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
@@ -44,7 +49,13 @@ const Home: NextPage = () => {
     const fetchContractAbi = async () => {
       setIsFetchingAbi(true);
       try {
-        const abiData: AbiData = await fetchDataFromGetAbi2000(verifiedContractAddress, parseInt(network));
+        const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
+
+        const abiData: AbiData = await fetchDataFromGetAbi2000(
+          verifiedContractAddress,
+          parseInt(network),
+          rpcUrlWithoutHttps as string,
+        );
         const abi = JSON.parse(abiData.abi);
 
         if (abiData.isDecompiled) {

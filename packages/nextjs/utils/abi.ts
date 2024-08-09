@@ -8,8 +8,12 @@ export type AbiData = {
   isDecompiled: boolean;
 };
 
-export const fetchDataFromGetAbi2000 = async (verifiedContractAddress: string, chainId: number) => {
-  const url = `https://get-abi-2000.fly.dev/abi/${chainId}/${verifiedContractAddress}`;
+export const fetchDataFromGetAbi2000 = async (
+  verifiedContractAddress: string,
+  chainId: number,
+  rpcUrlWithoutHttps: string,
+) => {
+  const url = `https://get-abi-2000.fly.dev/abi/${chainId}/${verifiedContractAddress}/${rpcUrlWithoutHttps}`;
 
   const response = await fetch(url);
   const data = await response.json();

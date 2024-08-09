@@ -60,6 +60,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [returnedAbi, setReturnedAbi] = useState<string>("");
   const contractName = contractData.address;
   const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
     setMainChainId: state.setMainChainId,
@@ -108,7 +109,12 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
 
         setIsLoading(true);
         try {
-          const abiData: AbiData = await fetchDataFromGetAbi2000(contractAddress, parseInt(network));
+          const chain = chains.find(chain => chain.id === parsedNetworkId);
+          if (!chain) return;
+          const rpcUrl = chain.rpcUrls.default.http[0].substring(8);
+          const abiData: AbiData = await fetchDataFromGetAbi2000(contractAddress, parseInt(network), rpcUrl);
+
+          setReturnedAbi(abiData.abi);
 
           const implementationAddress = abiData.implementation || null;
           if (implementationAddress) {
@@ -137,7 +143,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
         }
       }
     }
-  }, [contractAddress, network, setImplementationAddress, contractAbi]);
+  }, [contractAddress, network, setImplementationAddress, contractAbi, chains, setMainChainId]);
 
   const handleUserProvidedAbi = () => {
     try {
@@ -163,16 +169,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   };
 
   const handleDecompile = async () => {
-    const abiData: AbiData = await fetchDataFromGetAbi2000(contractAddress, parseInt(network));
-
-    const implementationAddress = abiData.implementation || null;
-    if (implementationAddress) {
-      setImplementationAddress(implementationAddress);
-    }
-
-    setContractData({ abi: JSON.parse(abiData.abi), address: contractAddress });
-
-    console.log("decompile");
+    setContractData({ abi: JSON.parse(returnedAbi), address: contractAddress });
   };
 
   return (
