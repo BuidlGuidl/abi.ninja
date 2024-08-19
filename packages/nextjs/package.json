@@ -22,7 +22,7 @@
     "@uniswap/sdk-core": "^4.0.1",
     "@uniswap/v2-sdk": "^3.0.1",
     "@vercel/og": "^0.6.2",
-    "@web3icons/react": "^3.5.2",
+    "@web3icons/react": "^3.6.0",
     "blo": "^1.0.1",
     "burner-connector": "^0.0.8",
     "daisyui": "^4.4.19",
