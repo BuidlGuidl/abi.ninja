@@ -1659,6 +1659,7 @@ __metadata:
     "@uniswap/sdk-core": ^4.0.1
     "@uniswap/v2-sdk": ^3.0.1
     "@vercel/og": ^0.6.2
+    "@web3icons/react": ^3.6.0
     abitype: 1.0.2
     autoprefixer: ^10.4.12
     blo: ^1.0.1
@@ -2973,6 +2974,27 @@ __metadata:
     "@walletconnect/window-getters": ^1.0.1
     tslib: 1.14.1
   checksum: e82aea7195c6fe95c00e87bb38051c5549838c2e8302da94f1afa48206f79f0b620166c9820f847494505d282d1568e2086a1561b0493d2d0a1fa115f9106aef
+  languageName: node
+  linkType: hard
+
+"@web3icons/core@npm:3.6.0":
+  version: 3.6.0
+  resolution: "@web3icons/core@npm:3.6.0"
+  peerDependencies:
+    typescript: ^5.0.0
+  checksum: de65124a8fe739f0fdea78176219aa7255f93077077cb2768ba14f13834069517203e639ca82ac5daaca19815f9865bb0583a88a01f2369d93b621cbd95fbbc6
+  languageName: node
+  linkType: hard
+
+"@web3icons/react@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "@web3icons/react@npm:3.6.0"
+  dependencies:
+    "@web3icons/core": 3.6.0
+    react: ^18.2.0
+  peerDependencies:
+    react: ^18.2.0
+  checksum: 59b97581e1d7c0409c16ed173956beeb578097c7d459a7681a96aad15438331e34ef490a57510d869d50712ef8f17d3a295409553285231c41121249c3f6f83a
   languageName: node
   linkType: hard
 
