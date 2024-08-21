@@ -54,6 +54,7 @@ const useFetchContractAbi = ({ contractAddress, chainId, publicClient }: FetchCo
     queryKey: ["contractAbi", { contractAddress, chainId: chainId }],
     queryFn: fetchAbi,
     enabled: isAddress(contractAddress) && chainId !== 31337,
+    retry: false,
   });
 
   return {
