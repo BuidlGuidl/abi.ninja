@@ -11,9 +11,10 @@ type FetchContractAbiParams = {
   contractAddress: string;
   chainId: number;
   publicClient: UsePublicClientReturnType;
+  disabled?: boolean;
 };
 
-const useFetchContractAbi = ({ contractAddress, chainId, publicClient }: FetchContractAbiParams) => {
+const useFetchContractAbi = ({ contractAddress, chainId, publicClient, disabled = false }: FetchContractAbiParams) => {
   const [implementationAddress, setImplementationAddress] = useState<string | null>(null);
 
   const fetchAbi = async () => {
@@ -46,6 +47,7 @@ const useFetchContractAbi = ({ contractAddress, chainId, publicClient }: FetchCo
 
       const abiString = await fetchContractABIFromEtherscan(contractAddress, chainId);
       const parsedAbi = parseAndCorrectJSON(abiString);
+
       return { abi: parsedAbi, address: contractAddress };
     }
   };
@@ -53,7 +55,7 @@ const useFetchContractAbi = ({ contractAddress, chainId, publicClient }: FetchCo
   const { data, error, isLoading } = useQuery({
     queryKey: ["contractAbi", { contractAddress, chainId: chainId }],
     queryFn: fetchAbi,
-    enabled: isAddress(contractAddress) && chainId !== 31337,
+    enabled: !disabled && isAddress(contractAddress) && chainId !== 31337,
     retry: false,
   });
 

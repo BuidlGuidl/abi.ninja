@@ -59,12 +59,12 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
   const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
-  const [contractData, setContractData] = useState<ContractData | null>(null);
-  const contractName = contractAddress;
-  const { setMainChainId, chainId, setImplementationAddress } = useAbiNinjaState(state => ({
+  const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
+  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
+    contractAbi: state.contractAbi,
   }));
 
   const { addChain, chains } = useGlobalState(state => ({
@@ -86,9 +86,19 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     error: fetchError,
     isLoading,
     implementationAddress,
-  } = useFetchContractAbi({ contractAddress, chainId: parseInt(network), publicClient });
+  } = useFetchContractAbi({
+    contractAddress,
+    chainId: parseInt(network),
+    publicClient,
+    disabled: contractAbi.length > 0,
+  });
 
-  const effectiveContractData = isUseLocalAbi && contractData ? contractData : fetchedContractData;
+  const effectiveContractData =
+    contractAbi.length > 0
+      ? { abi: contractAbi, address: contractAddress }
+      : isUseLocalAbi && localContractData
+      ? localContractData
+      : fetchedContractData;
 
   const error = isUseLocalAbi ? null : fetchError;
 
@@ -114,7 +124,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       if (parsedAbi) {
         setIsUseLocalAbi(true);
-        setContractData({ abi: parsedAbi, address: contractAddress });
+        setLocalContractData({ abi: parsedAbi, address: contractAddress });
         notification.success("ABI successfully loaded.");
       } else {
         throw new Error("Parsed ABI is null or undefined");
@@ -150,7 +160,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
           ) : effectiveContractData && effectiveContractData?.abi?.length > 0 ? (
-            <ContractUI key={contractName} initialContractData={effectiveContractData} />
+            <ContractUI key={contractAddress} initialContractData={effectiveContractData} />
           ) : (
             <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
               <div className="flex items-center">
