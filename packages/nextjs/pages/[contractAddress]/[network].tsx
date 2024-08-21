@@ -11,9 +11,9 @@ import { MiniHeader } from "~~/components/MiniHeader";
 import { formDataToChain, storeChainInLocalStorage } from "~~/components/NetworksDropdown/utils";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
+import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
+import { parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -32,7 +32,6 @@ type ServerSideProps = {
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  // Assume that 'contractAddress' and 'network' cannot be arrays.
   const contractAddress = context.params?.contractAddress as Address | undefined;
   const network = context.params?.network as string | undefined;
 
@@ -58,16 +57,14 @@ const toCamelCase = (str: string) => {
 const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps) => {
   const router = useRouter();
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
-  const [contractData, setContractData] = useState<ContractData>({ abi: [], address: contractAddress });
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const contractName = contractData.address;
-  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
+  const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
+  const [contractData, setContractData] = useState<ContractData | null>(null);
+  const contractName = contractAddress;
+  const { setMainChainId, chainId, setImplementationAddress } = useAbiNinjaState(state => ({
     setMainChainId: state.setMainChainId,
     chainId: state.mainChainId,
     setImplementationAddress: state.setImplementationAddress,
-    contractAbi: state.contractAbi,
   }));
 
   const { addChain, chains } = useGlobalState(state => ({
@@ -84,75 +81,47 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     return chain ? chain.name : "Unknown Network";
   };
 
-  useEffect(() => {
-    if (contractAbi.length > 0) {
-      setContractData({ abi: contractAbi, address: contractAddress });
-    }
+  const {
+    contractData: fetchedContractData,
+    error: fetchError,
+    isLoading,
+    implementationAddress,
+  } = useFetchContractAbi(contractAddress, parseInt(network), publicClient);
 
+  const effectiveContractData = isUseLocalAbi && contractData ? contractData : fetchedContractData;
+
+  const error = isUseLocalAbi ? null : fetchError;
+
+  useEffect(() => {
     if (network) {
       let normalizedNetwork = network.toLowerCase();
       if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
-        normalizedNetwork = "ethereum"; // chain.network for mainnet in viem/chains
+        normalizedNetwork = "ethereum";
       }
 
       const chain = Object.values(chains).find(chain => toCamelCase(chain.name) === normalizedNetwork);
-
-      let parsedNetworkId = 1;
-      if (chain) {
-        parsedNetworkId = chain.id;
-      } else {
-        parsedNetworkId = parseInt(network);
-      }
-
+      const parsedNetworkId = chain ? chain.id : parseInt(network);
       setMainChainId(parsedNetworkId);
-
-      const fetchContractAbi = async () => {
-        setIsLoading(true);
-
-        try {
-          const implementationAddress = await detectProxyTarget(contractAddress, publicClient);
-
-          if (implementationAddress) {
-            setImplementationAddress(implementationAddress);
-          }
-          const abi = await fetchContractABIFromAnyABI(implementationAddress || contractAddress, parsedNetworkId);
-          if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
-          setContractData({ abi, address: contractAddress });
-          setError(null);
-        } catch (error: any) {
-          console.error("Error fetching ABI from AnyABI: ", error);
-          console.log("Trying to fetch ABI from Etherscan...");
-          try {
-            const abiString = await fetchContractABIFromEtherscan(contractAddress, parsedNetworkId);
-            const parsedAbi = JSON.parse(abiString);
-            setContractData({ abi: parsedAbi, address: contractAddress });
-            setError(null);
-          } catch (etherscanError: any) {
-            console.error("Error fetching ABI from Etherscan: ", etherscanError);
-            setError(etherscanError.message || "Error occurred while fetching ABI");
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      if (contractAddress && network) {
-        if (isAddress(contractAddress)) {
-          fetchContractAbi();
-        } else {
-          setIsLoading(false);
-          setError("Please enter a valid address");
-        }
-      }
     }
-  }, [contractAddress, network, setMainChainId, setImplementationAddress, publicClient, chains, contractAbi]);
+
+    if (implementationAddress) {
+      setImplementationAddress(implementationAddress);
+    }
+  }, [network, implementationAddress, chains, setMainChainId, setImplementationAddress]);
 
   const handleUserProvidedAbi = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
-      setContractData({ abi: parsedAbi, address: contractAddress });
-      notification.success("ABI successfully loaded.");
+      if (parsedAbi) {
+        setIsUseLocalAbi(true);
+        setContractData({ abi: parsedAbi, address: contractAddress });
+        notification.success("ABI successfully loaded.");
+      } else {
+        throw new Error("Parsed ABI is null or undefined");
+      }
     } catch (error) {
+      console.error("Error parsing ABI:", error);
+      setIsUseLocalAbi(false);
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
     }
   };
@@ -176,18 +145,18 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
-          {isLoading ? (
+          {isLoading && !isUseLocalAbi ? (
             <div className="flex justify-center h-full mt-14">
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
-          ) : contractData.abi?.length > 0 ? (
-            <ContractUI key={contractName} initialContractData={contractData} />
+          ) : effectiveContractData && effectiveContractData?.abi?.length > 0 ? (
+            <ContractUI key={contractName} initialContractData={effectiveContractData} />
           ) : (
             <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
               <div className="flex items-center">
                 <ExclamationTriangleIcon className="text-red-500 mt-4 h-20 w-20 pr-4" />
                 <div>
-                  <h2 className="text-2xl pt-2 flex items-end">{error}</h2>
+                  <h2 className="text-2xl pt-2 flex items-end">{error?.message}</h2>
                   <p className="break-all">
                     There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
                     <strong>{getNetworkName(chainId)}</strong>.
