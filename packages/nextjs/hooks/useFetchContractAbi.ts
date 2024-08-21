@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { isAddress } from "viem";
 import { UsePublicClientReturnType } from "wagmi";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
+import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
 import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
 
 const ANYABI_TIMEOUT = 3000;
@@ -22,13 +22,14 @@ const useFetchContractAbi = ({ contractAddress, chainId, publicClient, disabled 
       throw new Error("Invalid contract address");
     }
 
+    let addressToUse: string = contractAddress;
     try {
       const implAddress = await detectProxyTarget(contractAddress, publicClient);
       if (implAddress) {
         setImplementationAddress(implAddress);
       }
 
-      const addressToUse = implAddress || contractAddress;
+      addressToUse = implAddress || contractAddress;
 
       // Create a promise that resolves after ANYABI_TIMEOUT
       const timeoutPromise = new Promise((_, reject) => {
@@ -40,13 +41,13 @@ const useFetchContractAbi = ({ contractAddress, chainId, publicClient, disabled 
 
       if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
 
-      return { abi, address: contractAddress };
+      return { abi, address: addressToUse };
     } catch (error) {
       console.error("Error or timeout fetching ABI from AnyABI: ", error);
       console.log("Falling back to Etherscan...");
 
-      const abiString = await fetchContractABIFromEtherscan(contractAddress, chainId);
-      const parsedAbi = parseAndCorrectJSON(abiString);
+      const abiString = await fetchContractABIFromEtherscan(addressToUse, chainId);
+      const parsedAbi = JSON.parse(abiString);
 
       return { abi: parsedAbi, address: contractAddress };
     }
