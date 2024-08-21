@@ -86,7 +86,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     error: fetchError,
     isLoading,
     implementationAddress,
-  } = useFetchContractAbi(contractAddress, parseInt(network), publicClient);
+  } = useFetchContractAbi({ contractAddress, chainId: parseInt(network), publicClient });
 
   const effectiveContractData = isUseLocalAbi && contractData ? contractData : fetchedContractData;
 
