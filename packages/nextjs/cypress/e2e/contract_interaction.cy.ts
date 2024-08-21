@@ -40,24 +40,24 @@ describe("Contract Interaction", () => {
     cy.interactWithMethod("balanceOf", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
   });
 
-  it("should add Parex as a custom chain and interact with a contract by submitting an ABI manually", () => {
+  it("should add Viction as a custom chain and interact with a contract by submitting an ABI manually", () => {
     cy.visit("http://localhost:3000");
     cy.addCustomChain({
-      id: "322202",
-      name: "Parex",
-      nativeCurrencyName: "PAREX",
-      nativeCurrencySymbol: "PAREX",
+      id: "88",
+      name: "Viction",
+      nativeCurrencyName: "VIC",
+      nativeCurrencySymbol: "VIC",
       nativeCurrencyDecimals: "18",
-      rpcUrl: "https://mainnet-rpc.parex.network",
-      blockExplorer: "https://scan.parex.network/",
+      rpcUrl: "https://rpc.viction.xyz",
+      blockExplorer: "https://tomoscan.io/",
     });
-    cy.get("#react-select-container").should("contain", "Parex");
-    cy.get('input[placeholder="Contract address"]').type("0x6058518142C6AD506530F5A62dCc58050bf6fC28");
-    cy.fixture("parex_abi").then(parexContractABI => {
-      cy.importABI(JSON.stringify(parexContractABI));
+    cy.get("#react-select-container").should("contain", "Viction");
+    cy.get('input[placeholder="Contract address"]').type("0x381B31409e4D220919B2cFF012ED94d70135A59e");
+    cy.fixture("viction_abi").then(victionABI => {
+      cy.importABI(JSON.stringify(victionABI));
     });
-    cy.url().should("include", "/0x6058518142C6AD506530F5A62dCc58050bf6fC28/322202");
+    cy.url().should("include", "/0x381B31409e4D220919B2cFF012ED94d70135A59e/88");
     cy.get(".loading-spinner", { timeout: 10000 }).should("not.exist");
-    cy.interactWithMethod("getUserBalance", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
+    cy.interactWithMethod("balanceOf", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
   });
 });
