@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,9 +12,9 @@ import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdown";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
+import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useAbiNinjaState } from "~~/services/store/store";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan, parseAndCorrectJSON } from "~~/utils/abi";
-import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
+import { parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -30,7 +30,6 @@ const Home: NextPage = () => {
   const [verifiedContractAddress, setVerifiedContractAddress] = useState("");
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
-  const [isFetchingAbi, setIsFetchingAbi] = useState(false);
 
   const publicClient = usePublicClient({
     chainId: parseInt(network),
@@ -42,66 +41,64 @@ const Home: NextPage = () => {
     setImplementationAddress: state.setImplementationAddress,
   }));
 
-  const [isAbiAvailable, setIsAbiAvailable] = useState(false);
-
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchContractAbi = async () => {
-      setIsFetchingAbi(true);
-      try {
-        const implementationAddress = await detectProxyTarget(verifiedContractAddress as Address, publicClient);
+  const {
+    contractData,
+    error,
+    isLoading: isFetchingAbi,
+    implementationAddress,
+  } = useFetchContractAbi({ contractAddress: verifiedContractAddress, chainId: parseInt(network), publicClient });
 
-        if (implementationAddress) {
-          setImplementationAddress(implementationAddress);
-        }
-        const abi = await fetchContractABIFromAnyABI(
-          implementationAddress || verifiedContractAddress,
-          parseInt(network),
-        );
-        if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
-        setContractAbi(abi);
-        setIsAbiAvailable(true);
-      } catch (error) {
-        console.error("Error fetching ABI from AnyABI: ", error);
-        console.log("Trying to fetch ABI from Etherscan...");
-        try {
-          const abiString = await fetchContractABIFromEtherscan(verifiedContractAddress, parseInt(network));
-          const abi = JSON.parse(abiString);
-          setContractAbi(abi);
-          setIsAbiAvailable(true);
-        } catch (etherscanError: any) {
-          setIsAbiAvailable(false);
-          console.error("Error fetching ABI from Etherscan: ", etherscanError);
+  const isAbiAvailable = contractData?.abi && contractData.abi.length > 0;
 
-          const bytecode = await publicClient?.getBytecode({
-            address: verifiedContractAddress as Address,
-          });
-          const isContract = Boolean(bytecode) && bytecode !== "0x";
+  const handleFetchError = useCallback(async () => {
+    try {
+      const bytecode = await publicClient?.getBytecode({
+        address: verifiedContractAddress as Address,
+      });
+      const isContract = Boolean(bytecode) && bytecode !== "0x";
 
-          if (isContract) {
-            setLocalAbiContractAddress(verifiedContractAddress);
-            setActiveTab(TabName.addressAbi);
-          } else {
-            notification.error("Address is not a contract, are you sure you are on the correct chain?");
-          }
-        }
-      } finally {
-        setIsFetchingAbi(false);
-      }
-    };
-
-    if (isAddress(verifiedContractAddress)) {
-      if (network === "31337") {
-        setActiveTab(TabName.addressAbi);
+      if (isContract) {
         setLocalAbiContractAddress(verifiedContractAddress);
-        return;
+        setActiveTab(TabName.addressAbi);
+      } else {
+        notification.error("Address is not a contract, are you sure you are on the correct chain?");
       }
-      fetchContractAbi();
-    } else {
-      setIsAbiAvailable(false);
+    } catch (error) {
+      console.error("Error checking if address is a contract:", error);
+      notification.error("Error checking if address is a contract. Please try again.");
     }
-  }, [verifiedContractAddress, network, setContractAbi, publicClient, setImplementationAddress]);
+  }, [publicClient, verifiedContractAddress, setLocalAbiContractAddress, setActiveTab]);
+
+  useEffect(() => {
+    if (implementationAddress) {
+      setImplementationAddress(implementationAddress);
+    }
+
+    if (contractData?.abi) {
+      setContractAbi(contractData.abi);
+    }
+
+    if (network === "31337") {
+      setActiveTab(TabName.addressAbi);
+      setLocalAbiContractAddress(verifiedContractAddress);
+      return;
+    }
+
+    if (error && isAddress(verifiedContractAddress)) {
+      handleFetchError();
+    }
+  }, [
+    contractData,
+    error,
+    implementationAddress,
+    network,
+    verifiedContractAddress,
+    handleFetchError,
+    setContractAbi,
+    setImplementationAddress,
+  ]);
 
   useEffect(() => {
     if (router.pathname === "/") {
@@ -132,7 +129,6 @@ const Home: NextPage = () => {
   };
 
   const fetchAbiFromHeimdall = async (contractAddress: Address) => {
-    setIsFetchingAbi(true);
     try {
       const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
       const response = await fetch(
@@ -141,19 +137,14 @@ const Home: NextPage = () => {
       const abi = await response.json();
       if (abi.length === 0) {
         notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-        setIsFetchingAbi(false);
         return;
       }
       setContractAbi(abi);
-      setIsAbiAvailable(true);
       setAbiContractAddress(contractAddress);
       router.push(`/${contractAddress}/${network}`);
     } catch (error) {
       console.error("Error fetching ABI from Heimdall: ", error);
       notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-      setIsAbiAvailable(false);
-    } finally {
-      setIsFetchingAbi(false);
     }
   };
 

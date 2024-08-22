@@ -43,7 +43,8 @@ export const getAlchemyHttpUrl = (chainId: number) => {
     : undefined;
 };
 
-const MAINNET_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+const MAINNET_ETHERSCAN_API_KEY =
+  process.env.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 const OPTIMISM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY || "";
 const POLYGON_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY || "";
 const ARBITRUM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY || "";
@@ -114,12 +115,13 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   },
   [chains.base.id]: {
     color: "#1450EE",
-    etherscanEndpoint: "https://api-sepolia.basescan.org",
+    etherscanEndpoint: "https://api.basescan.org",
     etherscanApiKey: BASE_ETHERSCAN_API_KEY,
     icon: "/base.svg",
   },
   [chains.baseSepolia.id]: {
     color: "#1450EE",
+    etherscanEndpoint: "https://api-sepolia.basescan.org",
     etherscanApiKey: BASE_ETHERSCAN_API_KEY,
     icon: "/base.svg",
   },
