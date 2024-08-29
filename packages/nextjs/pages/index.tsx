@@ -17,8 +17,6 @@ import { useAbiNinjaState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
-// console.log("Hello world");
-
 enum TabName {
   verifiedContract,
   addressAbi,
