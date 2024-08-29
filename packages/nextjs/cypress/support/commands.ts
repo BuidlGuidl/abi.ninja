@@ -20,8 +20,12 @@ Cypress.Commands.add("loadContract", (address: string) => {
 });
 
 Cypress.Commands.add("selectNetwork", (networkName: string) => {
-  cy.get("#react-select-container").click();
-  cy.get('[role="option"]').contains(networkName).click();
+  cy.get("#react-select-container")
+    .click()
+    .find("input")
+    .first()
+    .type(networkName, { force: true })
+    .type("{enter}", { force: true });
 });
 
 Cypress.Commands.add("interactWithMethod", (methodName: string, inputValue: string) => {
@@ -42,8 +46,6 @@ Cypress.Commands.add(
     rpcUrl: string;
     blockExplorer: string;
   }) => {
-    cy.get("#react-select-container").click();
-    cy.get('[role="option"]').contains("Add custom chain").click();
     cy.get("#add-custom-chain-modal").should("be.visible");
     cy.get('input[name="id"]').type(chainDetails.id);
     cy.get('input[name="name"]').type(chainDetails.name);

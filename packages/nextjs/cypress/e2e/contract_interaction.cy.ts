@@ -12,7 +12,6 @@ describe("Contract Interaction", () => {
     cy.loadContract("0xca808b3eada02d53073e129b25f74b31d8647ae0");
     cy.url().should("include", "/0xca808b3eada02d53073e129b25f74b31d8647ae0/8453");
     cy.contains("Implementation Address").should("be.visible");
-    cy.wait(1000); // wait for: the method card to re-render
     cy.interactWithMethod("balanceOf", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
   });
 
@@ -42,6 +41,8 @@ describe("Contract Interaction", () => {
 
   it("should add Viction as a custom chain and interact with a contract by submitting an ABI manually", () => {
     cy.visit("http://localhost:3000");
+    cy.selectNetwork("Add custom chain");
+    cy.get("#add-custom-chain-modal").should("be.visible");
     cy.addCustomChain({
       id: "88",
       name: "Viction",
