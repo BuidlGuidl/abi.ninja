@@ -15,6 +15,7 @@ import { AddressInput } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useAbiNinjaState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
+import { HEIMDALL_API_URL } from "~~/utils/constants";
 import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -131,9 +132,7 @@ const Home: NextPage = () => {
   const fetchAbiFromHeimdall = async (contractAddress: Address) => {
     try {
       const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_HEIMDALL_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`,
-      );
+      const response = await fetch(`${HEIMDALL_API_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`);
       const abi = await response.json();
       if (abi.length === 0) {
         notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
