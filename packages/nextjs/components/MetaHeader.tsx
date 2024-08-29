@@ -20,7 +20,7 @@ export const MetaHeader = ({
   address,
   network,
   title = "ABI Ninja",
-  description = "Interact with any contract on Ethereum",
+  description = "Interact with any contract on any EVM chain",
   image = "thumbnail.png",
   twitterCard = "summary_large_image",
   children,

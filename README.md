@@ -1,6 +1,6 @@
 # ABI Ninja
 
-Interact with any contract on Ethereum. ABI Ninja provides an intuitive frontend for contracts from most popular EVM networks, currently supporting:
+Interact with any contract on any EVM chain. ABI Ninja provides an intuitive frontend for contracts from most popular EVM networks, currently supporting:
 
 - **Verified contracts**. Pulls the code from [AnyABI](https://anyabi.xyz/) and [Etherscan API](https://docs.etherscan.io/) as a fallback option.
 - **Unverified contracts**. Two different options are available:
