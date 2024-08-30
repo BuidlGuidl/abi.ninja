@@ -46,19 +46,6 @@ Visit your local instance of ABI Ninja at: `http://localhost:3000`.
 
 ABI Ninja uses Cypress for end-to-end testing. Our test suite covers user flows and ensures the application works correctly across different networks and contract types. The test suite will automatically run on pull requests.
 
-## Setting Up Cypress Environment
-
-Before running the tests, you need to set up your Cypress environment:
-
-1. Copy the example environment file:
-  
-```
-cp cypress.env.example.json cypress.env.json
-```
-
-2. Edit `cypress.env.json` and fill in heimdall_url
-
-
 ## Running Tests
 
 To run the Cypress tests:
@@ -97,7 +84,6 @@ Our tests cover the following key areas:
 When adding new features or modifying existing ones, please update or add corresponding tests. Test files are located in the `cypress/e2e` directory.
 
 For more information on writing Cypress tests, refer to the Cypress Documentation.
-
 
 ## Contributing to ABI Ninja
 

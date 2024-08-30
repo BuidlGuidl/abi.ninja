@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { HEIMDALL_API_URL } from "~~/utils/constants";
 
 Cypress.Commands.add("wakeUpHeimdall", () => {
   const contractAddress = "0x759c0e9d7858566df8ab751026bedce462ff42df";
@@ -6,7 +7,7 @@ Cypress.Commands.add("wakeUpHeimdall", () => {
 
   cy.request({
     method: "GET",
-    url: `${Cypress.env("HEIMDALL_URL")}/${contractAddress}?rpc_url=${rpcUrl}`,
+    url: `${HEIMDALL_API_URL}/${contractAddress}?rpc_url=${rpcUrl}`,
     failOnStatusCode: false,
     timeout: 30000,
   }).then(response => {
