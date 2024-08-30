@@ -6,7 +6,7 @@ This guide aims to provide an overview of the contribution workflow to help us m
 
 ## About the Project
 
-ABI Ninja is a tool to interact with any contract on Ethereum, using the Contract address (if it's verified) or its ABI + Contract address.
+ABI Ninja is a tool to interact with smart contracts on any EVM chain, using the Contract address (if it's verified) or its ABI + Contract address.
 
 The current version is built with [Scaffold-ETH 2](https://github.com/scaffold-eth/scaffold-eth-2).
 
