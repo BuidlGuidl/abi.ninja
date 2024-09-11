@@ -1,21 +1,4 @@
-import { NETWORKS_EXTRA_DATA, getTargetNetworks } from "./scaffold-eth";
-
-export const fetchContractABIFromAnyABI = async (verifiedContractAddress: string, chainId: number) => {
-  const chain = getTargetNetworks().find(network => network.id === chainId);
-
-  if (!chain) throw new Error(`ChainId ${chainId} not found in supported networks`);
-
-  const url = `https://anyabi.xyz/api/get-abi/${chainId}/${verifiedContractAddress}`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-  if (data.abi) {
-    return data.abi;
-  } else {
-    console.error("Could not fetch ABI from AnyABI:", data.error);
-    return;
-  }
-};
+import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string, chainId: number) => {
   const chain = NETWORKS_EXTRA_DATA[chainId];
@@ -25,17 +8,43 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: str
 
   const apiKey = chain.etherscanApiKey ?? "";
   const apiKeyUrlParam = apiKey.trim().length > 0 ? `&apikey=${apiKey}` : "";
-  const url = `${chain.etherscanEndpoint}/api?module=contract&action=getabi&address=${verifiedContractAddress}${apiKeyUrlParam}`;
 
-  const response = await fetch(url);
-  const data = await response.json();
-  if (data.status === "1") {
-    return data.result;
-  } else {
-    console.error("Got non-1 status from Etherscan API", data);
-    if (data.result) throw new Error(data.result);
-    throw new Error("Got non-1 status from Etherscan API");
+  // First call to get source code and check for implementation
+  const sourceCodeUrl = `${chain.etherscanEndpoint}/api?module=contract&action=getsourcecode&address=${verifiedContractAddress}${apiKeyUrlParam}`;
+
+  const sourceCodeResponse = await fetch(sourceCodeUrl);
+  const sourceCodeData = await sourceCodeResponse.json();
+
+  if (sourceCodeData.status !== "1" || !sourceCodeData.result || sourceCodeData.result.length === 0) {
+    console.error("Error fetching source code from Etherscan:", sourceCodeData);
+    throw new Error("Failed to fetch source code from Etherscan");
   }
+
+  const contractData = sourceCodeData.result[0];
+  const implementation = contractData.Implementation || null;
+
+  // If there's an implementation address, make a second call to get its ABI
+  if (implementation && implementation !== "0x0000000000000000000000000000000000000000") {
+    const abiUrl = `${chain.etherscanEndpoint}/api?module=contract&action=getabi&address=${implementation}${apiKeyUrlParam}`;
+    const abiResponse = await fetch(abiUrl);
+    const abiData = await abiResponse.json();
+
+    if (abiData.status === "1" && abiData.result) {
+      return {
+        abi: JSON.parse(abiData.result),
+        implementation,
+      };
+    } else {
+      console.error("Error fetching ABI for implementation from Etherscan:", abiData);
+      throw new Error("Failed to fetch ABI for implementation from Etherscan");
+    }
+  }
+
+  // If no implementation or failed to get implementation ABI, return original contract ABI
+  return {
+    abi: JSON.parse(contractData.ABI),
+    implementation,
+  };
 };
 
 export function parseAndCorrectJSON(input: string): any {
