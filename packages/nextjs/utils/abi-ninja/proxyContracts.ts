@@ -3,7 +3,7 @@ import { UsePublicClientReturnType } from "wagmi";
 
 const EIP_1967_LOGIC_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
 const EIP_1967_BEACON_SLOT = "0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50" as const;
-// const OPEN_ZEPPELIN_IMPLEMENTATION_SLOT = "0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3";
+const OPEN_ZEPPELIN_IMPLEMENTATION_SLOT = "0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3" as const;
 const EIP_1822_LOGIC_SLOT = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7" as const;
 const EIP_1167_BEACON_METHODS = [
   "0x5c60da1b00000000000000000000000000000000000000000000000000000000",
@@ -89,7 +89,24 @@ export const detectProxyTarget = async (proxyAddress: Address, client: UsePublic
     throw new Error("Beacon method calls failed");
   };
 
-  const detectionMethods = [detectUsingBytecode, detectUsingEIP1967LogicSlot, detectUsingEIP1967BeaconSlot];
+  const detectUsingOpenZeppelinSlot = async () => {
+    const implementationAddr = await client.getStorageAt({
+      address: proxyAddress,
+      slot: OPEN_ZEPPELIN_IMPLEMENTATION_SLOT,
+    });
+    const resolvedAddress = readAddress(implementationAddr);
+    if (resolvedAddress === "0x" + "0".repeat(40)) {
+      throw new Error("Zero address in OpenZeppelin implementation slot");
+    }
+    return resolvedAddress;
+  };
+
+  const detectionMethods = [
+    detectUsingBytecode,
+    detectUsingEIP1967LogicSlot,
+    detectUsingEIP1967BeaconSlot,
+    detectUsingOpenZeppelinSlot,
+  ];
 
   try {
     return await Promise.any(detectionMethods.map(method => method()));
