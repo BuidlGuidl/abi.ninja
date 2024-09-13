@@ -95,9 +95,6 @@ export const detectProxyTarget = async (proxyAddress: Address, client: UsePublic
       slot: OPEN_ZEPPELIN_IMPLEMENTATION_SLOT,
     });
     const resolvedAddress = readAddress(implementationAddr);
-    if (resolvedAddress === "0x" + "0".repeat(40)) {
-      throw new Error("Zero address in OpenZeppelin implementation slot");
-    }
     return resolvedAddress;
   };
 
