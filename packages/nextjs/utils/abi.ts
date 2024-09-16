@@ -24,7 +24,6 @@ const getEtherscanApiKey = (chainId: number): string => {
   };
 
   const apiKey = apiKeys[chainId];
-  console.log("API key for chain", chainId, ":", apiKey);
 
   if (!apiKey) {
     console.warn(`No API key found for chain ID ${chainId}`);
