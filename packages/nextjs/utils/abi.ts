@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import * as chains from "viem/chains";
 
 const findChainById = (chainId: number): chains.Chain => {
@@ -32,7 +33,7 @@ const getEtherscanApiKey = (chainId: number): string => {
   return apiKey || "";
 };
 
-export const fetchContractABIFromEtherscan = async (verifiedContractAddress: string, chainId: number) => {
+export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
   const chain = findChainById(chainId);
 
   if (!chain || !chain.blockExplorers?.default?.apiUrl) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { UsePublicClientReturnType } from "wagmi";
 import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
@@ -19,7 +19,7 @@ const useFetchContractAbi = ({ contractAddress, chainId, disabled = false }: Fet
       throw new Error("Invalid contract address");
     }
 
-    const addressToUse: string = contractAddress;
+    const addressToUse: Address = contractAddress;
     try {
       const { abi, implementation } = await fetchContractABIFromEtherscan(addressToUse, chainId);
 
