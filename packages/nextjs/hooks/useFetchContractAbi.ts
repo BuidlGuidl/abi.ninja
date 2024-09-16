@@ -12,7 +12,7 @@ type FetchContractAbiParams = {
 };
 
 const useFetchContractAbi = ({ contractAddress, chainId, disabled = false }: FetchContractAbiParams) => {
-  const [implementationAddress, setImplementationAddress] = useState<string | null>(null);
+  const [implementationAddress, setImplementationAddress] = useState<Address | null>(null);
 
   const fetchAbi = async () => {
     if (!isAddress(contractAddress)) {
