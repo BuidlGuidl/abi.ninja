@@ -33,7 +33,7 @@ export const WriteOnlyFunctionForm = ({
 }: WriteOnlyFunctionFormProps) => {
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
-  const [txValue, setTxValue] = useState<string | bigint>("");
+  const [txValue, setTxValue] = useState<string>("");
   const { chain } = useAccount();
   const writeTxn = useTransactor();
   const { address: connectedAddress } = useAccount();
