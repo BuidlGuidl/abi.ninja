@@ -18,6 +18,8 @@ const getEtherscanApiKey = (chainId: number): string => {
     1: process.env.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY,
     10: process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY,
     8453: process.env.NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY,
+    100: process.env.NEXT_PUBLIC_GNOSIS_ETHERSCAN_API_KEY,
+    324: process.env.NEXT_PUBLIC_ZKSYNC_ETHERSCAN_API_KEY,
     137: process.env.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY,
     42161: process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY,
     534352: process.env.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY,
@@ -45,6 +47,8 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Add
 
   // First call to get source code and check for implementation
   const sourceCodeUrl = `${chain.blockExplorers.default.apiUrl}?module=contract&action=getsourcecode&address=${verifiedContractAddress}${apiKeyUrlParam}`;
+
+  console.log("Source code URL:", sourceCodeUrl);
 
   const sourceCodeResponse = await fetch(sourceCodeUrl);
   const sourceCodeData = await sourceCodeResponse.json();
