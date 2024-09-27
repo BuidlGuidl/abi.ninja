@@ -15,33 +15,35 @@ export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
   const mainChainId = useAbiNinjaState(state => state.mainChainId);
   const chains = useGlobalState(state => state.chains);
 
+  const filteredChains = chains.filter(allowedNetwork => allowedNetwork.id === mainChainId);
+  // if chainId is 31337 we render one element, since viem chains have 3 chains with same chainId.
+  const networksToRender = mainChainId === 31337 ? [filteredChains[0]] : filteredChains;
+
   return (
     <>
-      {chains
-        .filter(allowedNetwork => allowedNetwork.id === mainChainId)
-        .map(allowedNetwork => (
-          <li key={allowedNetwork.id} className={hidden ? "hidden" : ""}>
-            <button
-              className="menu-item btn-sm !rounded-xl flex gap-3 py-3 whitespace-nowrap"
-              type="button"
-              onClick={() => {
-                switchChain?.({ chainId: allowedNetwork.id });
-              }}
-            >
-              <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" />
-              <span>
-                Switch to{" "}
-                <span
-                  style={{
-                    color: getNetworkColor(allowedNetwork, isDarkMode),
-                  }}
-                >
-                  {allowedNetwork.name}
-                </span>
+      {networksToRender.map(allowedNetwork => (
+        <li key={`${allowedNetwork.id}-${allowedNetwork.name}`} className={hidden ? "hidden" : ""}>
+          <button
+            className="menu-item btn-sm !rounded-xl flex gap-3 py-3 whitespace-nowrap"
+            type="button"
+            onClick={() => {
+              switchChain?.({ chainId: allowedNetwork.id });
+            }}
+          >
+            <ArrowsRightLeftIcon className="h-6 w-4 ml-2 sm:ml-0" />
+            <span>
+              Switch to{" "}
+              <span
+                style={{
+                  color: getNetworkColor(allowedNetwork, isDarkMode),
+                }}
+              >
+                {allowedNetwork.id === 31337 ? "Localhost" : allowedNetwork.name}
               </span>
-            </button>
-          </li>
-        ))}
+            </span>
+          </button>
+        </li>
+      ))}
     </>
   );
 };

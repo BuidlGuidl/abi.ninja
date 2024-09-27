@@ -81,7 +81,7 @@ const Home: NextPage = () => {
       setContractAbi(contractData.abi);
     }
 
-    if (network === "31337") {
+    if (network === "31337" && isAddress(verifiedContractAddress)) {
       setActiveTab(TabName.addressAbi);
       setLocalAbiContractAddress(verifiedContractAddress);
       return;
@@ -243,6 +243,7 @@ const Home: NextPage = () => {
                       <button
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={() => fetchAbiFromHeimdall(localAbiContractAddress as Address)}
+                        disabled={network === "31337"}
                       >
                         {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
                       </button>
