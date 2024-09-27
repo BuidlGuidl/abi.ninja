@@ -81,7 +81,7 @@ const Home: NextPage = () => {
       setContractAbi(contractData.abi);
     }
 
-    if (network === "31337") {
+    if (network === "31337" && isAddress(verifiedContractAddress)) {
       setActiveTab(TabName.addressAbi);
       setLocalAbiContractAddress(verifiedContractAddress);
       return;
