@@ -12,6 +12,19 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
+      - name: Create .env.local in nextjs
+        run: |
+          touch packages/nextjs/.env.local
+          echo NEXT_PUBLIC_GNOSIS_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_GNOSIS_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_BSC_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_BSC_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_HEIMDALL_URL=${{ secrets.NEXT_PUBLIC_HEIMDALL_URL }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+          echo NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
+
       - name: Checkout
         uses: actions/checkout@v4
 
