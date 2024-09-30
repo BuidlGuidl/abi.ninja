@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Address, isAddress } from "viem";
-import { UsePublicClientReturnType } from "wagmi";
 import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 type FetchContractAbiParams = {
   contractAddress: string;
   chainId: number;
-  publicClient: UsePublicClientReturnType;
   disabled?: boolean;
 };
 

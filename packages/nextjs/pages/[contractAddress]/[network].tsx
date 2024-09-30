@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, Address, isAddress } from "viem";
-import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
@@ -72,10 +71,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     chains: state.chains,
   }));
 
-  const publicClient = usePublicClient({
-    chainId: parseInt(network),
-  });
-
   const getNetworkName = (chainId: number) => {
     const chain = Object.values(chains).find(chain => chain.id === chainId);
     return chain ? chain.name : "Unknown Network";
@@ -89,7 +84,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   } = useFetchContractAbi({
     contractAddress,
     chainId: parseInt(network),
-    publicClient,
     disabled: contractAbi.length > 0,
   });
 
