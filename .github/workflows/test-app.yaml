@@ -12,6 +12,9 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Create .env.local in nextjs
         run: |
           touch packages/nextjs/.env.local
@@ -24,9 +27,6 @@ jobs:
           echo NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
           echo NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
           echo NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY=${{ secrets.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY }} >> packages/nextjs/.env.local
-
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
