@@ -1,3 +1,5 @@
+import { NETWORKS_EXTRA_DATA } from "./scaffold-eth";
+import { isZeroAddress } from "./scaffold-eth/common";
 import { Address } from "viem";
 import * as chains from "viem/chains";
 
@@ -14,25 +16,14 @@ const findChainById = (chainId: number): chains.Chain => {
 };
 
 const getEtherscanApiKey = (chainId: number): string => {
-  const apiKeys: { [key: number]: string | undefined } = {
-    1: process.env.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY,
-    10: process.env.NEXT_PUBLIC_OPTIMISM_ETHERSCAN_API_KEY,
-    8453: process.env.NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY,
-    100: process.env.NEXT_PUBLIC_GNOSIS_ETHERSCAN_API_KEY,
-    324: process.env.NEXT_PUBLIC_ZKSYNC_ETHERSCAN_API_KEY,
-    137: process.env.NEXT_PUBLIC_POLYGON_ETHERSCAN_API_KEY,
-    42161: process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_API_KEY,
-    534352: process.env.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY,
-    56: process.env.NEXT_PUBLIC_BSC_ETHERSCAN_API_KEY,
-  };
+  const networkData = NETWORKS_EXTRA_DATA[chainId];
 
-  const apiKey = apiKeys[chainId];
-
-  if (!apiKey) {
+  if (!networkData || !networkData.etherscanApiKey) {
     console.warn(`No API key found for chain ID ${chainId}`);
+    return "";
   }
 
-  return apiKey || "";
+  return networkData.etherscanApiKey;
 };
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
@@ -48,8 +39,6 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Add
   // First call to get source code and check for implementation
   const sourceCodeUrl = `${chain.blockExplorers.default.apiUrl}?module=contract&action=getsourcecode&address=${verifiedContractAddress}${apiKeyUrlParam}`;
 
-  console.log("Source code URL:", sourceCodeUrl);
-
   const sourceCodeResponse = await fetch(sourceCodeUrl);
   const sourceCodeData = await sourceCodeResponse.json();
 
@@ -62,7 +51,7 @@ export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Add
   const implementation = contractData.Implementation || null;
 
   // If there's an implementation address, make a second call to get its ABI
-  if (implementation && implementation !== "0x0000000000000000000000000000000000000000") {
+  if (implementation && !isZeroAddress(implementation)) {
     const abiUrl = `${chain.blockExplorers.default.apiUrl}?module=contract&action=getabi&address=${implementation}${apiKeyUrlParam}`;
     const abiResponse = await fetch(abiUrl);
     const abiData = await abiResponse.json();
