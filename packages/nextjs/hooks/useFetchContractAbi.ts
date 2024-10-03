@@ -1,55 +1,36 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { isAddress } from "viem";
-import { UsePublicClientReturnType } from "wagmi";
-import { fetchContractABIFromAnyABI, fetchContractABIFromEtherscan } from "~~/utils/abi";
-import { detectProxyTarget } from "~~/utils/abi-ninja/proxyContracts";
-
-const ANYABI_TIMEOUT = 3000;
+import { Address, isAddress } from "viem";
+import { fetchContractABIFromEtherscan } from "~~/utils/abi";
 
 type FetchContractAbiParams = {
   contractAddress: string;
   chainId: number;
-  publicClient: UsePublicClientReturnType;
   disabled?: boolean;
 };
 
-const useFetchContractAbi = ({ contractAddress, chainId, publicClient, disabled = false }: FetchContractAbiParams) => {
-  const [implementationAddress, setImplementationAddress] = useState<string | null>(null);
+const useFetchContractAbi = ({ contractAddress, chainId, disabled = false }: FetchContractAbiParams) => {
+  const [implementationAddress, setImplementationAddress] = useState<Address | null>(null);
 
   const fetchAbi = async () => {
     if (!isAddress(contractAddress)) {
       throw new Error("Invalid contract address");
     }
 
-    let addressToUse: string = contractAddress;
+    const addressToUse: Address = contractAddress;
     try {
-      const implAddress = await detectProxyTarget(contractAddress, publicClient);
-      if (implAddress) {
-        setImplementationAddress(implAddress);
+      const { abi, implementation } = await fetchContractABIFromEtherscan(addressToUse, chainId);
+
+      if (!abi) throw new Error("Got empty or undefined ABI from Etherscan");
+
+      if (implementation && implementation !== "0x0000000000000000000000000000000000000000") {
+        setImplementationAddress(implementation);
       }
-
-      addressToUse = implAddress || contractAddress;
-
-      // Create a promise that resolves after ANYABI_TIMEOUT
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("AnyABI request timed out")), ANYABI_TIMEOUT);
-      });
-
-      // Race between the AnyABI fetch and the timeout
-      const abi = await Promise.race([fetchContractABIFromAnyABI(addressToUse, chainId), timeoutPromise]);
-
-      if (!abi) throw new Error("Got empty or undefined ABI from AnyABI");
 
       return { abi, address: addressToUse };
     } catch (error) {
-      console.error("Error or timeout fetching ABI from AnyABI: ", error);
-      console.log("Falling back to Etherscan...");
-
-      const abiString = await fetchContractABIFromEtherscan(addressToUse, chainId);
-      const parsedAbi = JSON.parse(abiString);
-
-      return { abi: parsedAbi, address: contractAddress };
+      console.error("Error fetching ABI from Etherscan: ", error);
+      throw error;
     }
   };
 

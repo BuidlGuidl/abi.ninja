@@ -51,6 +51,7 @@ const ARBITRUM_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ARBITRUM_ETHERSCAN_AP
 const ZKSYNC_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ZKSYNC_ETHERSCAN_API_KEY || "";
 const BASE_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_BASE_ETHERSCAN_API_KEY || "";
 const SCROLL_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_SCROLL_ETHERSCAN_API_KEY || "";
+const BSC_ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_BSC_ETHERSCAN_API_KEY || "";
 
 export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
   [chains.hardhat.id]: {
@@ -136,6 +137,12 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     etherscanEndpoint: "https://api-sepolia.scrollscan.com",
     etherscanApiKey: SCROLL_ETHERSCAN_API_KEY,
     icon: "/scroll.svg",
+  },
+  [chains.bsc.id]: {
+    color: "#f0b90b",
+    etherscanEndpoint: "https://api.bscscan.com",
+    etherscanApiKey: BSC_ETHERSCAN_API_KEY,
+    icon: "/bsc.svg",
   },
 };
 

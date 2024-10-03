@@ -49,7 +49,7 @@ const Home: NextPage = () => {
     error,
     isLoading: isFetchingAbi,
     implementationAddress,
-  } = useFetchContractAbi({ contractAddress: verifiedContractAddress, chainId: parseInt(network), publicClient });
+  } = useFetchContractAbi({ contractAddress: verifiedContractAddress, chainId: parseInt(network) });
 
   const isAbiAvailable = contractData?.abi && contractData.abi.length > 0;
 
