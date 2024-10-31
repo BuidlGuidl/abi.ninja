@@ -2,7 +2,7 @@ import { isZeroAddress } from "./scaffold-eth/common";
 import { Address } from "viem";
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
-  const apiKey = process.env.NEXT_PUBLIC_MAINNET_ETHERSCAN_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY;
 
   // First call to get source code and check for implementation
   const sourceCodeUrl = `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=getsourcecode&address=${verifiedContractAddress}&apikey=${apiKey}`;
