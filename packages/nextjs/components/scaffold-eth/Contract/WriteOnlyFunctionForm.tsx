@@ -14,7 +14,7 @@ import {
   transformAbiFunction,
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
-import { useAbiNinjaState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
@@ -31,7 +31,7 @@ export const WriteOnlyFunctionForm = ({
   contractAddress,
   inheritedFrom,
 }: WriteOnlyFunctionFormProps) => {
-  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const mainChainId = useGlobalState(state => state.targetNetwork.id);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [txValue, setTxValue] = useState<string>("");
   const { chain } = useAccount();

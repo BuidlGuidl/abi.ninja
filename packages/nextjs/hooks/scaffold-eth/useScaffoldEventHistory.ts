@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { Abi, AbiEvent, ExtractAbiEventNames } from "abitype";
 import { useInterval } from "usehooks-ts";
 import { Hash } from "viem";
@@ -7,6 +6,7 @@ import * as chains from "viem/chains";
 import { usePublicClient } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import scaffoldConfig from "~~/scaffold.config";
+import { useGlobalState } from "~~/services/store/store";
 import { replacer } from "~~/utils/scaffold-eth/common";
 import {
   ContractAbi,
@@ -51,7 +51,7 @@ export const useScaffoldEventHistory = <
   const [fromBlockUpdated, setFromBlockUpdated] = useState<bigint>(fromBlock);
 
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName);
-  const { targetNetwork } = useTargetNetwork();
+  const targetNetwork = useGlobalState(state => state.targetNetwork);
   const publicClient = usePublicClient({
     chainId: targetNetwork.id,
   });

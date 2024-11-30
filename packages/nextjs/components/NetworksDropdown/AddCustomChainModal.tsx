@@ -20,8 +20,9 @@ type AddCustomChainModalProps = {
 
 export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainModalProps>(
   ({ groupedOptionsState, setGroupedOptionsState, setSelectedOption, onChange }, ref) => {
-    const { addCustomChain } = useGlobalState(state => ({
+    const { addCustomChain, setTargetNetwork } = useGlobalState(state => ({
       addCustomChain: state.addChain,
+      setTargetNetwork: state.setTargetNetwork,
     }));
 
     const handleSubmitCustomChain = (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,6 +52,8 @@ export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainM
       e.currentTarget.reset();
 
       setSelectedOption(newOption);
+      setTargetNetwork(chain);
+      console.log("chain", chain);
       onChange(newOption);
 
       handleCloseModal();

@@ -13,7 +13,7 @@ import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdow
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
-import { useAbiNinjaState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
 import { HEIMDALL_API_URL } from "~~/utils/constants";
 import { notification } from "~~/utils/scaffold-eth";
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
     chainId: parseInt(network),
   });
 
-  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useAbiNinjaState(state => ({
+  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useGlobalState(state => ({
     setContractAbi: state.setContractAbi,
     setAbiContractAddress: state.setAbiContractAddress,
     setImplementationAddress: state.setImplementationAddress,

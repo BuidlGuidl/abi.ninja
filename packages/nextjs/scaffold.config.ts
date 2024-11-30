@@ -22,7 +22,6 @@ const scaffoldConfig = {
     chains.arbitrum,
     chains.gnosis,
     chains.zkSync,
-    chains.zkSyncTestnet,
     chains.scroll,
     chains.scrollSepolia,
     chains.hardhat,

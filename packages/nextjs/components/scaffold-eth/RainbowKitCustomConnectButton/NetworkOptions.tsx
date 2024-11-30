@@ -2,7 +2,7 @@ import { useTheme } from "next-themes";
 import { useSwitchChain } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/solid";
 import { getNetworkColor } from "~~/hooks/scaffold-eth";
-import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 
 type NetworkOptionsProps = {
   hidden?: boolean;
@@ -12,8 +12,13 @@ export const NetworkOptions = ({ hidden = false }: NetworkOptionsProps) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
   const { switchChain } = useSwitchChain();
-  const mainChainId = useAbiNinjaState(state => state.mainChainId);
-  const chains = useGlobalState(state => state.chains);
+  const {
+    chains,
+    targetNetwork: { id: mainChainId },
+  } = useGlobalState(state => ({
+    chains: state.chains,
+    targetNetwork: state.targetNetwork,
+  }));
 
   const filteredChains = chains.filter(allowedNetwork => allowedNetwork.id === mainChainId);
   // if chainId is 31337 we render one element, since viem chains have 3 chains with same chainId.

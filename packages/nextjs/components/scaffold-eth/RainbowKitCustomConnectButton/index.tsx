@@ -5,17 +5,18 @@ import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useAbiNinjaState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
-  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const { mainChainId, targetNetwork } = useGlobalState(state => ({
+    mainChainId: state.targetNetwork.id,
+    targetNetwork: state.targetNetwork,
+  }));
   const networkColor = useNetworkColor();
-  const { targetNetwork } = useTargetNetwork();
 
   return (
     <ConnectButton.Custom>
