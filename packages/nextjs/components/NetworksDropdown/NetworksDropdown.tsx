@@ -32,13 +32,6 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
     chains: state.chains,
   }));
 
-  useEffect(() => {
-    if (selectedOption) {
-      const chain = Object.values(chains).find(chain => chain.id === selectedOption.value);
-      setTargetNetwork(chain as Chain);
-    }
-  }, [selectedOption, setTargetNetwork, chains]);
-
   const seeOtherChainsModalRef = useRef<HTMLDialogElement>(null);
   const customChainModalRef = useRef<HTMLDialogElement>(null);
 
@@ -91,6 +84,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       }
     } else {
       setSelectedOption(selected);
+      if (selected) {
+        const chain = Object.values(chains).find(chain => chain.id === selected.value);
+        setTargetNetwork(chain as Chain);
+      }
       onChange(selected);
     }
   };
