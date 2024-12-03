@@ -53,7 +53,6 @@ export const AddCustomChainModal = forwardRef<HTMLDialogElement, AddCustomChainM
 
       setSelectedOption(newOption);
       setTargetNetwork(chain);
-      console.log("chain", chain);
       onChange(newOption);
 
       handleCloseModal();
