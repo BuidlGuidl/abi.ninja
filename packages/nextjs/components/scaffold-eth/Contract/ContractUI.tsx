@@ -4,17 +4,17 @@ import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
 import { AbiFunction } from "abitype";
-import { Abi } from "viem";
+import { Abi, Address as AddressType } from "viem";
 import { useContractRead } from "wagmi";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
-import { useAbiNinjaState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 type ContractUIProps = {
   className?: string;
-  initialContractData: { address: string; abi: Abi };
+  initialContractData: { address: AddressType; abi: Abi };
 };
 
 export interface AugmentedAbiFunction extends AbiFunction {
@@ -61,8 +61,8 @@ const mainNetworks = getTargetNetworks();
  **/
 export const ContractUI = ({ className = "", initialContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { implementationAddress, chainId } = useAbiNinjaState(state => ({
-    chainId: state.mainChainId,
+  const { implementationAddress, chainId } = useGlobalState(state => ({
+    chainId: state.targetNetwork.id,
     implementationAddress: state.implementationAddress,
   }));
   const mainNetwork = mainNetworks.find(network => network.id === chainId);

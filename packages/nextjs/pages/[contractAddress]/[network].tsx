@@ -11,8 +11,8 @@ import { formDataToChain, storeChainInLocalStorage } from "~~/components/Network
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
-import { useAbiNinjaState, useGlobalState } from "~~/services/store/store";
-import { parseAndCorrectJSON } from "~~/utils/abi";
+import { useGlobalState } from "~~/services/store/store";
+import { getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -45,36 +45,23 @@ export const getServerSideProps: GetServerSideProps = async context => {
   };
 };
 
-const toCamelCase = (str: string) => {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    })
-    .replace(/\s+/g, "");
-};
-
 const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps) => {
   const router = useRouter();
   const { contractAddress, network } = router.query as ParsedQueryContractDetailsPage;
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
   const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
-  const { setMainChainId, chainId, setImplementationAddress, contractAbi } = useAbiNinjaState(state => ({
-    setMainChainId: state.setMainChainId,
-    chainId: state.mainChainId,
-    setImplementationAddress: state.setImplementationAddress,
-    contractAbi: state.contractAbi,
-  }));
 
-  const { addChain, chains } = useGlobalState(state => ({
-    addChain: state.addChain,
-    chains: state.chains,
-  }));
-
-  const getNetworkName = (chainId: number) => {
-    const chain = Object.values(chains).find(chain => chain.id === chainId);
-    return chain ? chain.name : "Unknown Network";
-  };
+  const { chainId, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } = useGlobalState(
+    state => ({
+      chains: state.chains,
+      addChain: state.addChain,
+      chainId: state.targetNetwork.id,
+      setTargetNetwork: state.setTargetNetwork,
+      setImplementationAddress: state.setImplementationAddress,
+      contractAbi: state.contractAbi,
+    }),
+  );
 
   const {
     contractData: fetchedContractData,
@@ -98,20 +85,16 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
 
   useEffect(() => {
     if (network) {
-      let normalizedNetwork = network.toLowerCase();
-      if (normalizedNetwork === "ethereum" || normalizedNetwork === "mainnet") {
-        normalizedNetwork = "ethereum";
+      const chain = Object.values(chains).find(chain => chain.id === parseInt(network));
+      if (chain) {
+        setTargetNetwork(chain);
       }
-
-      const chain = Object.values(chains).find(chain => toCamelCase(chain.name) === normalizedNetwork);
-      const parsedNetworkId = chain ? chain.id : parseInt(network);
-      setMainChainId(parsedNetworkId);
     }
 
     if (implementationAddress) {
       setImplementationAddress(implementationAddress);
     }
-  }, [network, implementationAddress, chains, setMainChainId, setImplementationAddress]);
+  }, [network, implementationAddress, chains, setTargetNetwork, setImplementationAddress]);
 
   const handleUserProvidedAbi = () => {
     try {
@@ -163,7 +146,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                   <h2 className="text-2xl pt-2 flex items-end">{error?.message}</h2>
                   <p className="break-all">
                     There was an error loading the contract <strong>{contractAddress}</strong> on{" "}
-                    <strong>{getNetworkName(chainId)}</strong>.
+                    <strong>{getNetworkName(chains, chainId)}</strong>.
                   </p>
                   <p className="pb-2">
                     Make sure the data is correct and you are connected to the right network. Or add the chain/ABI

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { useQueryClient } from "@tanstack/react-query";
 import { Address } from "viem";
 import { useBalance, useBlockNumber } from "wagmi";
@@ -8,8 +7,10 @@ import { useGlobalState } from "~~/services/store/store";
 export function useAccountBalance(address?: Address) {
   const [isEthBalance, setIsEthBalance] = useState(true);
   const [balance, setBalance] = useState<number | null>(null);
-  const price = useGlobalState(state => state.nativeCurrencyPrice);
-  const { targetNetwork } = useTargetNetwork();
+  const { price, targetNetwork } = useGlobalState(state => ({
+    price: state.nativeCurrencyPrice,
+    targetNetwork: state.targetNetwork,
+  }));
   const queryClient = useQueryClient();
   const { data: blockNumber } = useBlockNumber({ watch: true, chainId: targetNetwork.id });
 
