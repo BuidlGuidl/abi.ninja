@@ -1,8 +1,8 @@
 import { wagmiConnectors } from "../web3/wagmiConnectors";
 import { Abi, Address, Chain } from "viem";
+import { mainnet } from "viem/chains";
 import { Config, createConfig } from "wagmi";
 import create from "zustand";
-import scaffoldConfig from "~~/scaffold.config";
 import { baseWagmiConfig, createWagmiClient, enabledChains } from "~~/services/web3/baseWagmiConfig";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
@@ -16,11 +16,6 @@ type GlobalState = {
   chains: Chain[];
   addChain: (newChain: Chain) => void;
   removeChain: (chainId: number) => void;
-};
-
-type AbiNinjaState = {
-  mainChainId: number;
-  setMainChainId: (newMainChainId: number) => void;
   contractAbi: Abi;
   setContractAbi: (newAbi: Abi) => void;
   abiContractAddress: Address | "";
@@ -32,7 +27,7 @@ type AbiNinjaState = {
 export const useGlobalState = create<GlobalState>(set => ({
   nativeCurrencyPrice: 0,
   setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
-  targetNetwork: scaffoldConfig.targetNetworks[1],
+  targetNetwork: mainnet,
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
   wagmiConfig: baseWagmiConfig,
   setWagmiConfig: (newConfig: Config): void => set(() => ({ wagmiConfig: newConfig })),
@@ -62,11 +57,6 @@ export const useGlobalState = create<GlobalState>(set => ({
       });
       return { chains: updatedChains, wagmiConfig: updatedWagmiConfig };
     }),
-}));
-
-export const useAbiNinjaState = create<AbiNinjaState>(set => ({
-  mainChainId: scaffoldConfig.targetNetworks[0].id,
-  setMainChainId: (newValue: number): void => set(() => ({ mainChainId: newValue })),
   contractAbi: [],
   setContractAbi: (newAbi: Abi): void => set({ contractAbi: newAbi }),
   abiContractAddress: "",

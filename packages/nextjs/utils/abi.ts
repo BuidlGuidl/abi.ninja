@@ -1,5 +1,5 @@
 import { isZeroAddress } from "./scaffold-eth/common";
-import { Address } from "viem";
+import { Address, Chain } from "viem";
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
   const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY;
@@ -56,3 +56,8 @@ export function parseAndCorrectJSON(input: string): any {
     throw new Error("Failed to parse JSON");
   }
 }
+
+export const getNetworkName = (chains: Chain[], chainId: number) => {
+  const chain = chains.find(chain => chain.id === chainId);
+  return chain ? chain.name : "Unknown Network";
+};

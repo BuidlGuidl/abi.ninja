@@ -24,10 +24,12 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
   const [groupedOptionsState, setGroupedOptionsState] = useState(initialGroupedOptions);
   const [selectedOption, setSelectedOption] = useState<SingleValue<Options>>(initialGroupedOptions.mainnet.options[0]);
 
-  const { addCustomChain, removeChain, resetTargetNetwork } = useGlobalState(state => ({
+  const { addCustomChain, removeChain, resetTargetNetwork, setTargetNetwork, chains } = useGlobalState(state => ({
     addCustomChain: state.addChain,
     removeChain: state.removeChain,
     resetTargetNetwork: () => state.setTargetNetwork(mainnet),
+    setTargetNetwork: state.setTargetNetwork,
+    chains: state.chains,
   }));
 
   const seeOtherChainsModalRef = useRef<HTMLDialogElement>(null);
@@ -82,6 +84,10 @@ export const NetworksDropdown = ({ onChange }: { onChange: (options: any) => any
       }
     } else {
       setSelectedOption(selected);
+      if (selected) {
+        const chain = Object.values(chains).find(chain => chain.id === selected.value);
+        setTargetNetwork(chain as Chain);
+      }
       onChange(selected);
     }
   };

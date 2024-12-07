@@ -7,7 +7,7 @@ import { usePublicClient } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { Address } from "~~/components/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useGlobalState } from "~~/services/store/store";
 import { decodeTransactionData, getFunctionDetails } from "~~/utils/scaffold-eth";
 import { replacer } from "~~/utils/scaffold-eth/common";
 
@@ -20,7 +20,7 @@ const TransactionPage: NextPage = () => {
   const [receipt, setReceipt] = useState<TransactionReceipt>();
   const [functionCalled, setFunctionCalled] = useState<string>();
 
-  const { targetNetwork } = useTargetNetwork();
+  const targetNetwork = useGlobalState(state => state.targetNetwork);
 
   useEffect(() => {
     if (txHash && client) {

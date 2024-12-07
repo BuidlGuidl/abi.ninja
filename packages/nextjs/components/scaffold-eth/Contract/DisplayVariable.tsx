@@ -6,7 +6,7 @@ import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { displayTxResult } from "~~/components/scaffold-eth";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
-import { useAbiNinjaState } from "~~/services/store/store";
+import { useGlobalState } from "~~/services/store/store";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type DisplayVariableProps = {
@@ -24,7 +24,7 @@ export const DisplayVariable = ({
   abi,
   inheritedFrom,
 }: DisplayVariableProps) => {
-  const mainChainId = useAbiNinjaState(state => state.mainChainId);
+  const mainChainId = useGlobalState(state => state.targetNetwork.id);
   const {
     data: result,
     isFetching,

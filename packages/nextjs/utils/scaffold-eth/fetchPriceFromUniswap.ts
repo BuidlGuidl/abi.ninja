@@ -16,6 +16,9 @@ const ABI = parseAbi([
 ]);
 
 export const fetchPriceFromUniswap = async (targetNetwork: ChainWithAttributes): Promise<number> => {
+  if (!targetNetwork?.nativeCurrency) {
+    return 0;
+  }
   if (
     targetNetwork.nativeCurrency.symbol !== "ETH" &&
     targetNetwork.nativeCurrency.symbol !== "SEP" &&

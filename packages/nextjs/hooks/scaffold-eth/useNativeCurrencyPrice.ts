@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { useInterval } from "usehooks-ts";
 import scaffoldConfig from "~~/scaffold.config";
+import { useGlobalState } from "~~/services/store/store";
 import { fetchPriceFromUniswap } from "~~/utils/scaffold-eth";
 
 const enablePolling = false;
@@ -11,7 +11,7 @@ const enablePolling = false;
  * @returns nativeCurrencyPrice: number
  */
 export const useNativeCurrencyPrice = () => {
-  const { targetNetwork } = useTargetNetwork();
+  const targetNetwork = useGlobalState(state => state.targetNetwork);
   const [nativeCurrencyPrice, setNativeCurrencyPrice] = useState(0);
 
   // Get the price of ETH from Uniswap on mount
