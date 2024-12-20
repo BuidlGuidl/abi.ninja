@@ -246,7 +246,14 @@ const Home: NextPage = () => {
                         onClick={fetchAbiFromHeimdall}
                         disabled={network === "31337" || isHeimdallFetching}
                       >
-                        {isHeimdallFetching ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
+                        {isHeimdallFetching ? (
+                          <div className="flex items-center gap-2">
+                            <span className="loading loading-spinner loading-xs"></span>
+                            <span>Decompiling contract...</span>
+                          </div>
+                        ) : (
+                          "Decompile (beta)"
+                        )}
                       </button>
                     </div>
                     <div className="w-full flex flex-col items-center gap-2">
