@@ -19,6 +19,11 @@ export const useHeimdall = ({ contractAddress, rpcUrl, disabled = false }: UseHe
 
     const rpcUrlWithoutHttps = rpcUrl.substring(8);
     const response = await fetch(`${HEIMDALL_API_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const abi = await response.json();
 
     if (!Array.isArray(abi) || abi.length === 0) {
