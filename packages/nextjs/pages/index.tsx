@@ -135,19 +135,6 @@ const Home: NextPage = () => {
     }
   };
 
-  const fetchAbiFromHeimdall = async () => {
-    try {
-      if (heimdallAbi) {
-        setContractAbi(heimdallAbi);
-        setAbiContractAddress(localAbiContractAddress as Address);
-        router.push(`/${localAbiContractAddress}/${network}`);
-      }
-    } catch (error) {
-      console.error("Error fetching ABI from Heimdall: ", error);
-      notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-    }
-  };
-
   return (
     <>
       <MetaHeader />
@@ -243,7 +230,13 @@ const Home: NextPage = () => {
                       </h4>
                       <button
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={fetchAbiFromHeimdall}
+                        onClick={async () => {
+                          if (heimdallAbi) {
+                            setContractAbi(heimdallAbi);
+                            setAbiContractAddress(localAbiContractAddress as Address);
+                            router.push(`/${localAbiContractAddress}/${network}`);
+                          }
+                        }}
                         disabled={network === "31337" || isHeimdallFetching}
                       >
                         {isHeimdallFetching ? (
