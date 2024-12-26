@@ -13,9 +13,9 @@ import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdow
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
+import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
-import { HEIMDALL_API_URL } from "~~/utils/constants";
 import { notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -32,6 +32,8 @@ const Home: NextPage = () => {
   const [localAbiContractAddress, setLocalAbiContractAddress] = useState("");
   const [localContractAbi, setLocalContractAbi] = useState("");
 
+  const router = useRouter();
+
   const publicClient = usePublicClient({
     chainId: parseInt(network),
   });
@@ -42,14 +44,18 @@ const Home: NextPage = () => {
     setImplementationAddress: state.setImplementationAddress,
   }));
 
-  const router = useRouter();
-
   const {
     contractData,
     error,
     isLoading: isFetchingAbi,
     implementationAddress,
   } = useFetchContractAbi({ contractAddress: verifiedContractAddress, chainId: parseInt(network) });
+
+  const { abi: heimdallAbi, isLoading: isHeimdallFetching } = useHeimdall({
+    contractAddress: localAbiContractAddress as Address,
+    rpcUrl: publicClient?.chain.rpcUrls.default.http[0],
+    disabled: network === "31337" || !localAbiContractAddress,
+  });
 
   const isAbiAvailable = contractData?.abi && contractData.abi.length > 0;
 
@@ -126,24 +132,6 @@ const Home: NextPage = () => {
       notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
-    }
-  };
-
-  const fetchAbiFromHeimdall = async (contractAddress: Address) => {
-    try {
-      const rpcUrlWithoutHttps = publicClient?.chain.rpcUrls.default.http[0].substring(8);
-      const response = await fetch(`${HEIMDALL_API_URL}/${contractAddress}?rpc_url=${rpcUrlWithoutHttps}`);
-      const abi = await response.json();
-      if (abi.length === 0) {
-        notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
-        return;
-      }
-      setContractAbi(abi);
-      setAbiContractAddress(contractAddress);
-      router.push(`/${contractAddress}/${network}`);
-    } catch (error) {
-      console.error("Error fetching ABI from Heimdall: ", error);
-      notification.error("Failed to fetch ABI from Heimdall. Please try again or enter ABI manually.");
     }
   };
 
@@ -242,10 +230,23 @@ const Home: NextPage = () => {
                       </h4>
                       <button
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={() => fetchAbiFromHeimdall(localAbiContractAddress as Address)}
-                        disabled={network === "31337"}
+                        onClick={async () => {
+                          if (heimdallAbi) {
+                            setContractAbi(heimdallAbi);
+                            setAbiContractAddress(localAbiContractAddress as Address);
+                            router.push(`/${localAbiContractAddress}/${network}`);
+                          }
+                        }}
+                        disabled={network === "31337" || isHeimdallFetching}
                       >
-                        {isFetchingAbi ? <span className="loading loading-spinner"></span> : "Decompile (beta)"}
+                        {isHeimdallFetching ? (
+                          <div className="flex items-center gap-2">
+                            <span className="loading loading-spinner loading-xs"></span>
+                            <span>Decompiling contract...</span>
+                          </div>
+                        ) : (
+                          "Decompile (beta)"
+                        )}
                       </button>
                     </div>
                     <div className="w-full flex flex-col items-center gap-2">
