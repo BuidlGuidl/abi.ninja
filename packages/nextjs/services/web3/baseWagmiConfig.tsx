@@ -14,7 +14,7 @@ export const enabledChains = targetNetworks.find((network: Chain) => network.id 
 
 export const createWagmiClient = ({ chain }: { chain: Chain }) => {
   const alchemyHttpUrl = getAlchemyHttpUrl(chain.id);
-  const rpcFallbacks = alchemyHttpUrl ? [http(), http(alchemyHttpUrl)] : [http()];
+  const rpcFallbacks = alchemyHttpUrl ? [http(alchemyHttpUrl), http()] : [http()];
 
   return createClient({
     chain: {
