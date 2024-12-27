@@ -11,9 +11,7 @@
     "format": "prettier --write . '!(node_modules|.next|contracts)/**/*'",
     "check-types": "tsc --noEmit --incremental",
     "vercel": "vercel",
-    "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run --browser chrome"
+    "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.11",
@@ -50,7 +48,6 @@
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "abitype": "1.0.2",
     "autoprefixer": "^10.4.12",
-    "cypress": "^13.13.1",
     "eslint": "^8.15.0",
     "eslint-config-next": "^13.1.6",
     "eslint-config-prettier": "^8.5.0",
