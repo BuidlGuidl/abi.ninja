@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Address as AddressType, isAddress } from "viem";
 import { hardhat } from "viem/chains";
-import { normalize } from "viem/ens";
-import { useEnsAvatar, useEnsName } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
+import { useEnsData } from "~~/hooks/useEnsData";
 import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
@@ -30,36 +29,9 @@ const blockieSizeMap = {
  * Displays an address (or ENS) with a Blockie image and option to copy address.
  */
 export const Address = ({ address, disableAddressLink, format, size = "base" }: AddressProps) => {
-  const [ens, setEns] = useState<string | null>();
-  const [ensAvatar, setEnsAvatar] = useState<string | null>();
   const [addressCopied, setAddressCopied] = useState(false);
-
   const targetNetwork = useGlobalState(state => state.targetNetwork);
-
-  const { data: fetchedEns } = useEnsName({
-    address: address,
-    chainId: 1,
-    query: {
-      enabled: isAddress(address ?? ""),
-    },
-  });
-  const { data: fetchedEnsAvatar } = useEnsAvatar({
-    name: fetchedEns ? normalize(fetchedEns) : undefined,
-    chainId: 1,
-    query: {
-      enabled: Boolean(fetchedEns),
-      gcTime: 30_000,
-    },
-  });
-
-  // We need to apply this pattern to avoid Hydration errors.
-  useEffect(() => {
-    setEns(fetchedEns);
-  }, [fetchedEns]);
-
-  useEffect(() => {
-    setEnsAvatar(fetchedEnsAvatar);
-  }, [fetchedEnsAvatar]);
+  const { ens, avatar_url } = useEnsData(address ?? "");
 
   // Skeleton UI
   if (!address) {
@@ -91,7 +63,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
       <div className="flex-shrink-0">
         <BlockieAvatar
           address={address}
-          ensImage={ensAvatar}
+          ensImage={avatar_url}
           size={(blockieSizeMap[size] * 24) / blockieSizeMap["base"]}
         />
       </div>
