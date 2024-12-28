@@ -2,64 +2,37 @@ import { useCallback, useEffect, useState } from "react";
 import { blo } from "blo";
 import { useDebounce } from "usehooks-ts";
 import { Address, isAddress } from "viem";
-import { normalize } from "viem/ens";
-import { useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
-import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
+import { CommonInputProps, InputBase } from "~~/components/scaffold-eth";
+import { useEnsData } from "~~/hooks/useEnsData";
 
 /**
  * Address input with ENS name resolution
  */
 export const AddressInput = ({ value, name, placeholder, onChange, disabled }: CommonInputProps<Address | string>) => {
+  const [displayValue, setDisplayValue] = useState<string>(value as string);
+
   // Debounce the input to keep clean RPC calls when resolving ENS names
   // If the input is an address, we don't need to debounce it
-  const _debouncedValue = useDebounce(value, 500);
-  const debouncedValue = isAddress(value) ? value : _debouncedValue;
-  const isDebouncedValueLive = debouncedValue === value;
+  const _debouncedValue = useDebounce(displayValue, 500);
+  const debouncedValue = isAddress(displayValue) ? displayValue : _debouncedValue;
+  const isDebouncedValueLive = debouncedValue === displayValue;
 
   // If the user changes the input after an ENS name is already resolved, we want to remove the stale result
   const settledValue = isDebouncedValueLive ? debouncedValue : undefined;
 
-  const { data: ensAddress, isLoading: isEnsAddressLoading } = useEnsAddress({
-    name: settledValue,
-    chainId: 1,
-    query: {
-      gcTime: 30_000,
-      enabled: isDebouncedValueLive && isENS(debouncedValue),
-    },
-  });
+  const { ens: ensName, avatar_url: ensAvatar, address: ensAddress } = useEnsData(settledValue as string);
 
-  const [enteredEnsName, setEnteredEnsName] = useState<string>();
-  const { data: ensName, isLoading: isEnsNameLoading } = useEnsName({
-    address: settledValue as Address,
-    chainId: 1,
-    query: {
-      enabled: isAddress(debouncedValue),
-      gcTime: 30_000,
-    },
-  });
-
-  const { data: ensAvatar } = useEnsAvatar({
-    name: ensName ? normalize(ensName) : undefined,
-    chainId: 1,
-    query: {
-      enabled: Boolean(ensName),
-      gcTime: 30_000,
-    },
-  });
-
-  // ens => address
   useEffect(() => {
-    if (!ensAddress) return;
+    if (ensName && ensAddress) {
+      setDisplayValue(ensAddress);
+      onChange(ensAddress as Address);
+    }
+  }, [ensName, onChange, settledValue, ensAddress]);
 
-    // ENS resolved successfully
-    setEnteredEnsName(debouncedValue);
-    onChange(ensAddress);
-  }, [ensAddress, onChange, debouncedValue]);
-
-  const handleChange = useCallback(
-    (newValue: Address) => {
-      setEnteredEnsName(undefined);
-      onChange(newValue);
+  const handleInputChange = useCallback(
+    (newValue: string) => {
+      setDisplayValue(newValue);
+      onChange(newValue as Address);
     },
     [onChange],
   );
@@ -68,10 +41,10 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     <InputBase<Address>
       name={name}
       placeholder={placeholder}
-      error={ensAddress === null}
-      value={value as Address}
-      onChange={handleChange}
-      disabled={isEnsAddressLoading || isEnsNameLoading || disabled}
+      error={ensName === null}
+      value={displayValue as Address}
+      onChange={handleInputChange}
+      disabled={disabled}
       prefix={
         ensName && (
           <div className="flex bg-base-100 rounded-l-lg items-center">
@@ -79,18 +52,21 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
               <span className="w-[35px]">
                 {
                   // eslint-disable-next-line
-                  <img className="w-full rounded-lg" src={ensAvatar} alt={`${ensAddress} avatar`} />
+                  <img className="w-full rounded-lg" src={ensAvatar} alt={`${ensName} avatar`} />
                 }
               </span>
             ) : null}
-            <span className="text-accent px-2">{enteredEnsName ?? ensName}</span>
+            <span className="text-accent px-2">{ensName}</span>
           </div>
         )
       }
       suffix={
-        // Don't want to use nextJS Image here (and adding remote patterns for the URL)
-        // eslint-disable-next-line @next/next/no-img-element
-        value && <img alt="" className="!rounded-lg" src={blo(value as `0x${string}`)} width="35" height="35" />
+        isAddress(displayValue) &&
+        !ensAvatar && (
+          // Don't want to use nextJS Image here (and adding remote patterns for the URL)
+          // eslint-disable-next-line @next/next/no-img-element
+          <img alt="" className="!rounded-lg" src={blo(displayValue as `0x${string}`)} width="35" height="35" />
+        )
       }
     />
   );
