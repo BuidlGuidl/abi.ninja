@@ -14,10 +14,9 @@
     "next:check-types": "yarn workspace @se-2/nextjs check-types",
     "postinstall": "husky install",
     "precommit": "lint-staged",
+    "test": "yarn workspace @se-2/nextjs test",
     "vercel": "yarn workspace @se-2/nextjs vercel",
-    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "cypress:open": "yarn workspace @se-2/nextjs cypress:open",
-    "cypress:run": "yarn workspace @se-2/nextjs cypress:run"
+    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
