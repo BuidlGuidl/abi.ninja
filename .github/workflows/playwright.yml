@@ -25,8 +25,20 @@ jobs:
       - name: Start Next.js app and run tests
         run: |
           yarn start & # Start in background
-          sleep 10 # Wait for server to start
-          yarn playwright test
+          echo "Waiting for Next.js to be ready..."
+          # Wait up to 2 minutes for the server to be ready
+          timeout=120
+          while ! curl -s http://localhost:3000 > /dev/null; do
+            if [ $timeout -le 0 ]; then
+              echo "Timeout waiting for Next.js to start"
+              exit 1
+            fi
+            echo "Waiting for server... ($timeout seconds left)"
+            timeout=$((timeout-5))
+            sleep 5
+          done
+          echo "Server is ready!"
+          yarn playwright test --debug
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
