@@ -10,7 +10,6 @@ import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { getStoredChainsFromLocalStorage } from "~~/components/NetworksDropdown/utils";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
-import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import "~~/styles/globals.css";
 
@@ -23,10 +22,8 @@ export const queryClient = new QueryClient({
 });
 
 const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
-  const price = useNativeCurrencyPrice();
-  const { addChain, setNativeCurrencyPrice } = useGlobalState(state => ({
+  const { addChain } = useGlobalState(state => ({
     addChain: state.addChain,
-    setNativeCurrencyPrice: state.setNativeCurrencyPrice,
   }));
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";
@@ -43,12 +40,6 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (price > 0) {
-      setNativeCurrencyPrice(price);
-    }
-  }, [setNativeCurrencyPrice, price]);
 
   return (
     <RainbowKitProvider

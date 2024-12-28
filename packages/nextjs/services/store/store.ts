@@ -8,7 +8,6 @@ import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
 type GlobalState = {
   nativeCurrencyPrice: number;
-  setNativeCurrencyPrice: (newNativeCurrencyPriceState: number) => void;
   targetNetwork: ChainWithAttributes;
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
   wagmiConfig: Config;
@@ -26,7 +25,6 @@ type GlobalState = {
 
 export const useGlobalState = create<GlobalState>(set => ({
   nativeCurrencyPrice: 0,
-  setNativeCurrencyPrice: (newValue: number): void => set(() => ({ nativeCurrencyPrice: newValue })),
   targetNetwork: mainnet,
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
   wagmiConfig: baseWagmiConfig,
