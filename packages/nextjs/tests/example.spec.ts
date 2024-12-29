@@ -47,6 +47,13 @@ test.describe("ABI Ninja", () => {
     test("should load an unverified contract on Sepolia and decompile successfully using heimdall backend", async ({
       page,
     }) => {
+      // Wake up the Heimdall API before decompilation test
+      try {
+        await fetch("https://heimdall-api.fly.dev/");
+      } catch (error) {
+        console.warn("Failed to wake up Heimdall API:", error);
+      }
+
       // Switch to Sepolia network
       await page
         .locator("div")
