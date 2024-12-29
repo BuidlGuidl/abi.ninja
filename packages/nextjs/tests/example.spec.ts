@@ -58,7 +58,7 @@ test.describe("ABI Ninja", () => {
 
       // Handle decompilation process
       const decompileButton = page.getByRole("button", { name: "Decompile (beta)" }).last();
-      await decompileButton.waitFor();
+      await decompileButton.waitFor({ timeout: 30000 }); // 30 second timeout
       await page.getByText("Decompiling contract...").last().waitFor();
       await page.getByText("Decompiling contract...").last().waitFor({ state: "hidden" });
 
