@@ -12,4 +12,5 @@ export * from "./useScaffoldWatchContractEvent";
 export * from "./useScaffoldWriteContract";
 export * from "./useTransactor";
 export * from "./useWatchBalance";
+export * from "./useNativeCurrencyPrice";
 export * from "./useAccountBalance";
