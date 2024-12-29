@@ -20,16 +20,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          cache: "yarn"
       - name: Install dependencies
-        run: npm install -g yarn && yarn
+        run: yarn
       - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
-      - name: Build Next.js app
-        run: yarn build
+        run: yarn playwright install chromium
       - name: Start Next.js app and run tests
         run: |
-          yarn start & # Start in background
-          sleep 10 # Wait for server to start
+          yarn start & 
+          while ! nc -z localhost 3000; do
+            echo "Waiting for Next.js to start..."
+            sleep 1
+          done
           yarn playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
