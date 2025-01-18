@@ -85,22 +85,26 @@ const Home: NextPage = () => {
 
     if (contractData?.abi) {
       setContractAbi(contractData.abi);
+      saveAbiToLocalStorage(verifiedContractAddress, contractData.abi);
     }
 
-    if (network === "31337" && isAddress(verifiedContractAddress)) {
+    if (isAddress(verifiedContractAddress)) {
       try {
         const savedAbi = getAbiFromLocalStorage(verifiedContractAddress);
         if (savedAbi) {
           setContractAbi(savedAbi);
           setAbiContractAddress(verifiedContractAddress);
           router.push(`/${verifiedContractAddress}/${network}`);
-          notification.success("Using previously saved ABI from local storage.");
+          return;
         }
+      } catch (error) {
+        console.error("Error getting ABI from local storage:", error);
+      }
+
+      if (network === "31337") {
         setActiveTab(TabName.addressAbi);
         setLocalAbiContractAddress(verifiedContractAddress);
         return;
-      } catch (error) {
-        console.error("Error getting ABI from local storage:", error);
       }
     }
 
