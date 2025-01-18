@@ -51,7 +51,7 @@ export const MiniHeader = () => {
             <div className="flex justify-between items-center p-4 border-b border-base-300">
               <h3 className="font-bold text-xl">Configuration</h3>
               <form method="dialog">
-                <button className="btn btn-ghost btn-sm hover:bg-error/20 hover:text-error rounded-lg">
+                <button className="mr-1 hover:transition-all hover:scale-110 hover:text-error">
                   <XMarkIcon className="h-6 w-6" />
                 </button>
               </form>
