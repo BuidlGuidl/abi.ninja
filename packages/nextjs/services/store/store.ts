@@ -22,6 +22,8 @@ type GlobalState = {
   setAbiContractAddress: (newAbiContractAddress: Address | "") => void;
   implementationAddress: Address | "";
   setImplementationAddress: (newImplementationAddress: Address | "") => void;
+  savedAbiData: Abi | null;
+  setSavedAbiData: (newAbiData: Abi | null) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -63,4 +65,6 @@ export const useGlobalState = create<GlobalState>(set => ({
   setAbiContractAddress: (newAddress: Address | ""): void => set({ abiContractAddress: newAddress }),
   implementationAddress: "",
   setImplementationAddress: (newAddress: Address | ""): void => set({ implementationAddress: newAddress }),
+  savedAbiData: null,
+  setSavedAbiData: (newAbiData: Abi | null): void => set({ savedAbiData: newAbiData }),
 }));

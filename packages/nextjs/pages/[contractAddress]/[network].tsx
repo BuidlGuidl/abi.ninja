@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, Address, isAddress } from "viem";
-import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { formDataToChain, storeChainInLocalStorage } from "~~/components/NetworksDropdown/utils";
@@ -12,13 +12,7 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useGlobalState } from "~~/services/store/store";
-import {
-  getAbiFromLocalStorage,
-  getNetworkName,
-  parseAndCorrectJSON,
-  removeAbiFromLocalStorage,
-  saveAbiToLocalStorage,
-} from "~~/utils/abi";
+import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON, saveAbiToLocalStorage } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -58,18 +52,26 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
   const [isLoadingLocalStorage, setIsLoadingLocalStorage] = useState(true);
-  const [savedAbiData, setSavedAbiData] = useState<Abi | null>(null);
 
-  const { chainId, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } = useGlobalState(
-    state => ({
-      chains: state.chains,
-      addChain: state.addChain,
-      chainId: state.targetNetwork.id,
-      setTargetNetwork: state.setTargetNetwork,
-      setImplementationAddress: state.setImplementationAddress,
-      contractAbi: state.contractAbi,
-    }),
-  );
+  const {
+    chainId,
+    setImplementationAddress,
+    contractAbi,
+    chains,
+    addChain,
+    setTargetNetwork,
+    savedAbiData,
+    setSavedAbiData,
+  } = useGlobalState(state => ({
+    chains: state.chains,
+    addChain: state.addChain,
+    chainId: state.targetNetwork.id,
+    setTargetNetwork: state.setTargetNetwork,
+    setImplementationAddress: state.setImplementationAddress,
+    contractAbi: state.contractAbi,
+    savedAbiData: state.savedAbiData,
+    setSavedAbiData: state.setSavedAbiData,
+  }));
 
   useEffect(() => {
     const savedAbi = getAbiFromLocalStorage(contractAddress);
@@ -164,17 +166,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     notification.success("Custom chain successfully loaded.");
   };
 
-  const isUsingLocalStorage = Boolean(savedAbiData) && (!contractAbi.length || contractAbi === savedAbiData);
-
-  const handleRemoveSavedAbi = () => {
-    removeAbiFromLocalStorage(contractAddress);
-    setSavedAbiData(null);
-    if (contractAbi.length > 0) {
-      router.reload();
-    }
-    notification.success("Saved ABI removed successfully.");
-  };
-
   return (
     <>
       <MetaHeader address={addressFromUrl} network={chainIdFromUrl} />
@@ -186,21 +177,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
           ) : effectiveContractData && effectiveContractData?.abi?.length > 0 ? (
-            <>
-              {isUsingLocalStorage && (
-                <div className="absolute top-20 right-6 z-20">
-                  <button
-                    onClick={handleRemoveSavedAbi}
-                    className="btn btn-xs btn-ghost gap-1 text-error hover:bg-error hover:text-white"
-                    title="Remove saved ABI"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                    Remove saved ABI
-                  </button>
-                </div>
-              )}
-              <ContractUI key={contractAddress} initialContractData={effectiveContractData} />
-            </>
+            <ContractUI key={contractAddress} initialContractData={effectiveContractData} />
           ) : (
             <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
               <div className="flex items-center">
