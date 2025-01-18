@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, Address, isAddress } from "viem";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
 import { formDataToChain, storeChainInLocalStorage } from "~~/components/NetworksDropdown/utils";
@@ -12,7 +12,13 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useGlobalState } from "~~/services/store/store";
-import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON, saveAbiToLocalStorage } from "~~/utils/abi";
+import {
+  getAbiFromLocalStorage,
+  getNetworkName,
+  parseAndCorrectJSON,
+  removeAbiFromLocalStorage,
+  saveAbiToLocalStorage,
+} from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -69,7 +75,12 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     const savedAbi = getAbiFromLocalStorage(contractAddress);
     setSavedAbiData(savedAbi);
     setIsLoadingLocalStorage(false);
-  }, [contractAddress]);
+
+    if (contractAbi.length > 0) {
+      saveAbiToLocalStorage(contractAddress, contractAbi);
+      setSavedAbiData(contractAbi);
+    }
+  }, [contractAddress, contractAbi]);
 
   const shouldFetchFromEtherscan = !savedAbiData && contractAbi.length === 0;
 
@@ -125,6 +136,8 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       if (parsedAbi) {
+        saveAbiToLocalStorage(contractAddress, parsedAbi);
+        setSavedAbiData(parsedAbi);
         setIsUseLocalAbi(true);
         setLocalContractData({ abi: parsedAbi, address: contractAddress });
         notification.success("ABI successfully loaded.");
@@ -151,6 +164,17 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     notification.success("Custom chain successfully loaded.");
   };
 
+  const isUsingLocalStorage = Boolean(savedAbiData) && (!contractAbi.length || contractAbi === savedAbiData);
+
+  const handleRemoveSavedAbi = () => {
+    removeAbiFromLocalStorage(contractAddress);
+    setSavedAbiData(null);
+    if (contractAbi.length > 0) {
+      router.reload();
+    }
+    notification.success("Saved ABI removed successfully.");
+  };
+
   return (
     <>
       <MetaHeader address={addressFromUrl} network={chainIdFromUrl} />
@@ -162,7 +186,21 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
           ) : effectiveContractData && effectiveContractData?.abi?.length > 0 ? (
-            <ContractUI key={contractAddress} initialContractData={effectiveContractData} />
+            <>
+              {isUsingLocalStorage && (
+                <div className="absolute top-20 right-6 z-20">
+                  <button
+                    onClick={handleRemoveSavedAbi}
+                    className="btn btn-xs btn-ghost gap-1 text-error hover:bg-error hover:text-white"
+                    title="Remove saved ABI"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                    Remove saved ABI
+                  </button>
+                </div>
+              )}
+              <ContractUI key={contractAddress} initialContractData={effectiveContractData} />
+            </>
           ) : (
             <div className="bg-base-200 flex flex-col border shadow-xl rounded-2xl px-6 lg:px-8 m-4 overflow-auto">
               <div className="flex items-center">

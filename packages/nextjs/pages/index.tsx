@@ -96,14 +96,12 @@ const Home: NextPage = () => {
           router.push(`/${verifiedContractAddress}/${network}`);
           notification.success("Using previously saved ABI from local storage.");
         }
+        setActiveTab(TabName.addressAbi);
         setLocalAbiContractAddress(verifiedContractAddress);
         return;
       } catch (error) {
         console.error("Error getting ABI from local storage:", error);
       }
-      setActiveTab(TabName.addressAbi);
-      setLocalAbiContractAddress(verifiedContractAddress);
-      return;
     }
 
     if (error && isAddress(verifiedContractAddress)) {
