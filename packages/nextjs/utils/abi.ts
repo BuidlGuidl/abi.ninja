@@ -83,3 +83,12 @@ export const getNetworkName = (chains: Chain[], chainId: number) => {
   const chain = chains.find(chain => chain.id === chainId);
   return chain ? chain.name : "Unknown Network";
 };
+
+export const removeAbiFromLocalStorage = (contractAddress: string) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
+  } catch (error) {
+    console.error("Failed to remove ABI from localStorage:", error);
+  }
+};
