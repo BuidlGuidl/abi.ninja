@@ -1,5 +1,27 @@
 import { isZeroAddress } from "./scaffold-eth/common";
-import { Address, Chain } from "viem";
+import { Abi, Address, Chain } from "viem";
+
+const ABI_STORAGE_PREFIX = "abi_ninja_saved_abi_";
+
+export const saveAbiToLocalStorage = (contractAddress: string, abi: Abi) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`, JSON.stringify(abi));
+  } catch (error) {
+    console.error("Failed to save ABI to localStorage:", error);
+  }
+};
+
+export const getAbiFromLocalStorage = (contractAddress: string): Abi | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const savedAbi = localStorage.getItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
+    return savedAbi ? JSON.parse(savedAbi) : null;
+  } catch (error) {
+    console.error("Failed to get ABI from localStorage:", error);
+    return null;
+  }
+};
 
 export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
   const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY;
