@@ -3,10 +3,10 @@ import { Abi, Address, Chain } from "viem";
 
 const ABI_STORAGE_KEY = "abi_ninja_storage";
 
-interface AbiStorage {
+type AbiStorage = {
   version: string;
   abis: Record<string, Abi>;
-}
+};
 
 const getAbiStorage = (): AbiStorage => {
   if (typeof window === "undefined") return { version: "1.0", abis: {} };
