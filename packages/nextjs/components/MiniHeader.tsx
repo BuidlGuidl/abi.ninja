@@ -60,14 +60,13 @@ export const MiniHeader = () => {
             <div className="p-6 space-y-6">
               <div className="space-y-4">
                 <h2 className="text-lg font-semibold">Local Storage</h2>
-                <div className="space-y-3 text-base-content/80">
+                <div className="space-y-3">
                   <p>
                     🥷abi.ninja saves the ABI to the browser&apos;s local storage when you search for a contract for the
                     first time. If you have an abi saved for the current contract, you will be able to remove it by
                     clicking the button below.
                   </p>
-                  <p>If you&apos;re interacting with a verified contract. This setting does not matter.</p>
-                  <p>If you&apos;re not sure what this is, you can safely ignore this.</p>
+                  <p>You can safely ignore this if you&apos;re interacting with a verified contract.</p>
                 </div>
               </div>
 
