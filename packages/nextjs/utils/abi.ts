@@ -1,13 +1,38 @@
 import { isZeroAddress } from "./scaffold-eth/common";
 import { Abi, Address, Chain } from "viem";
 
-const ABI_STORAGE_PREFIX = "abi_ninja_saved_abi_";
+const ABI_STORAGE_KEY = "abi_ninja_storage";
+
+interface AbiStorage {
+  version: string;
+  abis: Record<string, Abi>;
+}
+
+const getAbiStorage = (): AbiStorage => {
+  if (typeof window === "undefined") return { version: "1.0", abis: {} };
+  try {
+    const storage = localStorage.getItem(ABI_STORAGE_KEY);
+    return storage ? JSON.parse(storage) : { version: "1.0", abis: {} };
+  } catch (error) {
+    console.error("Failed to get ABI storage:", error);
+    return { version: "1.0", abis: {} };
+  }
+};
+
+const saveAbiStorage = (storage: AbiStorage) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(ABI_STORAGE_KEY, JSON.stringify(storage));
+  } catch (error) {
+    console.error("Failed to save ABI storage:", error);
+  }
+};
 
 export const getAbiFromLocalStorage = (contractAddress: string): Abi | null => {
   if (typeof window === "undefined") return null;
   try {
-    const savedAbi = localStorage.getItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
-    return savedAbi ? JSON.parse(savedAbi) : null;
+    const storage = getAbiStorage();
+    return storage.abis[contractAddress.toLowerCase()] || null;
   } catch (error) {
     console.error("Failed to get ABI from localStorage:", error);
     return null;
@@ -17,7 +42,9 @@ export const getAbiFromLocalStorage = (contractAddress: string): Abi | null => {
 export const saveAbiToLocalStorage = (contractAddress: string, abi: Abi) => {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`, JSON.stringify(abi));
+    const storage = getAbiStorage();
+    storage.abis[contractAddress.toLowerCase()] = abi;
+    saveAbiStorage(storage);
   } catch (error) {
     console.error("Failed to save ABI to localStorage:", error);
   }
@@ -26,7 +53,9 @@ export const saveAbiToLocalStorage = (contractAddress: string, abi: Abi) => {
 export const removeAbiFromLocalStorage = (contractAddress: string) => {
   if (typeof window === "undefined") return;
   try {
-    localStorage.removeItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
+    const storage = getAbiStorage();
+    delete storage.abis[contractAddress.toLowerCase()];
+    saveAbiStorage(storage);
   } catch (error) {
     console.error("Failed to remove ABI from localStorage:", error);
   }
