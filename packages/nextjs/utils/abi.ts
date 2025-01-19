@@ -3,6 +3,17 @@ import { Abi, Address, Chain } from "viem";
 
 const ABI_STORAGE_PREFIX = "abi_ninja_saved_abi_";
 
+export const getAbiFromLocalStorage = (contractAddress: string): Abi | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const savedAbi = localStorage.getItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
+    return savedAbi ? JSON.parse(savedAbi) : null;
+  } catch (error) {
+    console.error("Failed to get ABI from localStorage:", error);
+    return null;
+  }
+};
+
 export const saveAbiToLocalStorage = (contractAddress: string, abi: Abi) => {
   if (typeof window === "undefined") return;
   try {
@@ -12,14 +23,12 @@ export const saveAbiToLocalStorage = (contractAddress: string, abi: Abi) => {
   }
 };
 
-export const getAbiFromLocalStorage = (contractAddress: string): Abi | null => {
-  if (typeof window === "undefined") return null;
+export const removeAbiFromLocalStorage = (contractAddress: string) => {
+  if (typeof window === "undefined") return;
   try {
-    const savedAbi = localStorage.getItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
-    return savedAbi ? JSON.parse(savedAbi) : null;
+    localStorage.removeItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
   } catch (error) {
-    console.error("Failed to get ABI from localStorage:", error);
-    return null;
+    console.error("Failed to remove ABI from localStorage:", error);
   }
 };
 
@@ -82,13 +91,4 @@ export function parseAndCorrectJSON(input: string): any {
 export const getNetworkName = (chains: Chain[], chainId: number) => {
   const chain = chains.find(chain => chain.id === chainId);
   return chain ? chain.name : "Unknown Network";
-};
-
-export const removeAbiFromLocalStorage = (contractAddress: string) => {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.removeItem(`${ABI_STORAGE_PREFIX}${contractAddress.toLowerCase()}`);
-  } catch (error) {
-    console.error("Failed to remove ABI from localStorage:", error);
-  }
 };
