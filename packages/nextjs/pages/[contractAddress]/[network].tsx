@@ -82,7 +82,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       saveAbiToLocalStorage(contractAddress, contractAbi);
       setSavedAbiData(contractAbi);
     }
-  }, [contractAddress, contractAbi]);
+  }, [contractAddress, contractAbi, setSavedAbiData]);
 
   const shouldFetchFromEtherscan = !savedAbiData && contractAbi.length === 0;
 
