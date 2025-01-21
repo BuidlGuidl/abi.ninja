@@ -85,27 +85,19 @@ const Home: NextPage = () => {
 
     if (contractData?.abi) {
       setContractAbi(contractData.abi);
-      saveAbiToLocalStorage(verifiedContractAddress, contractData.abi);
     }
 
-    if (isAddress(verifiedContractAddress)) {
-      try {
-        const savedAbi = getAbiFromLocalStorage(verifiedContractAddress);
-        if (savedAbi) {
-          setContractAbi(savedAbi);
-          setAbiContractAddress(verifiedContractAddress);
-          router.push(`/${verifiedContractAddress}/${network}`);
-          return;
-        }
-      } catch (error) {
-        console.error("Error getting ABI from local storage:", error);
-      }
-
-      if (network === "31337") {
-        setActiveTab(TabName.addressAbi);
-        setLocalAbiContractAddress(verifiedContractAddress);
+    if (network === "31337" && isAddress(verifiedContractAddress)) {
+      const savedAbi = getAbiFromLocalStorage(verifiedContractAddress);
+      if (savedAbi) {
+        setContractAbi(savedAbi);
+        setAbiContractAddress(verifiedContractAddress);
+        router.push(`/${verifiedContractAddress}/${network}`);
         return;
       }
+      setActiveTab(TabName.addressAbi);
+      setLocalAbiContractAddress(verifiedContractAddress);
+      return;
     }
 
     if (error && isAddress(verifiedContractAddress)) {
@@ -145,7 +137,9 @@ const Home: NextPage = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
-      saveAbiToLocalStorage(localAbiContractAddress, parsedAbi);
+      if (network === "31337") {
+        saveAbiToLocalStorage(localAbiContractAddress, parsedAbi);
+      }
       router.push(`/${localAbiContractAddress}/${network}`);
       notification.success("ABI successfully loaded.");
     } catch (error) {

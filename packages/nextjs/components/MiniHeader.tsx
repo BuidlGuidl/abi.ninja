@@ -1,24 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bars3Icon, Cog6ToothIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { removeAbiFromLocalStorage } from "~~/utils/abi";
+import { getAbiFromLocalStorage, removeAbiFromLocalStorage, saveAbiToLocalStorage } from "~~/utils/abi";
+import { parseAndCorrectJSON } from "~~/utils/abi";
+import { notification } from "~~/utils/scaffold-eth";
 
 export const MiniHeader = () => {
   const [showSuccess, setShowSuccess] = useState(false);
-  const { savedAbiData, setSavedAbiData, contractAddress } = useGlobalState(state => ({
-    savedAbiData: state.savedAbiData,
-    setSavedAbiData: state.setSavedAbiData,
+  const [editedAbi, setEditedAbi] = useState("");
+  const { contractAddress } = useGlobalState(state => ({
     contractAddress: state.abiContractAddress,
   }));
 
+  const savedAbi = getAbiFromLocalStorage(contractAddress);
+  const formattedAbi = savedAbi ? JSON.stringify(savedAbi, null, 2) : "";
+
+  useEffect(() => {
+    setEditedAbi(formattedAbi);
+  }, [formattedAbi]);
+
   const handleRemoveSavedAbi = () => {
     removeAbiFromLocalStorage(contractAddress);
-    setSavedAbiData(null);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handleSaveEdit = () => {
+    try {
+      const parsedAbi = parseAndCorrectJSON(editedAbi);
+      if (parsedAbi) {
+        saveAbiToLocalStorage(contractAddress, parsedAbi);
+        notification.success("ABI updated successfully!");
+      }
+    } catch (error) {
+      notification.error("Invalid ABI format. Please ensure it is valid JSON.");
+    }
+  };
+
+  const handleResetAbi = () => {
+    setEditedAbi(formattedAbi);
   };
 
   return (
@@ -62,30 +85,48 @@ export const MiniHeader = () => {
                 <h2 className="text-lg font-semibold">Local Storage</h2>
                 <div className="space-y-3">
                   <p>
-                    🥷abi.ninja saves the ABI to the browser&apos;s local storage when you search for a contract for the
-                    first time. If you have an abi saved for the current contract, you will be able to remove it by
-                    clicking the button below.
+                    🥷abi.ninja automatically saves the contract ABI to your browser&apos;s local storage when you first
+                    interact with a contract on local networks (like Anvil or Hardhat). This speeds up future
+                    interactions with the same contract. You can modify or remove the saved ABI below.
                   </p>
-                  <p>You can safely ignore this if you&apos;re interacting with a verified contract.</p>
                 </div>
               </div>
+
+              {savedAbi && (
+                <div className="space-y-4">
+                  <h3 className="text-md font-semibold">Saved ABI for {contractAddress}</h3>
+                  <div className="space-y-4">
+                    <textarea
+                      className="textarea textarea-bordered bg-base-300 w-full h-96 font-mono text-sm"
+                      value={editedAbi}
+                      onChange={e => setEditedAbi(e.target.value)}
+                      spellCheck="false"
+                    />
+                    <div className="flex justify-between items-center">
+                      <button className="btn btn-sm btn-ghost gap-2" onClick={handleResetAbi}>
+                        Reset Changes
+                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-sm btn-error gap-2"
+                          onClick={handleRemoveSavedAbi}
+                          title="Remove saved ABI"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                          Remove ABI
+                        </button>
+                        <button className="btn btn-sm btn-primary" onClick={handleSaveEdit}>
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {showSuccess && (
                 <div className="alert alert-success">
                   <span>ABI removed successfully! Please reload the page to see the changes.</span>
-                </div>
-              )}
-
-              {savedAbiData && (
-                <div className="flex justify-end mt-6">
-                  <button
-                    onClick={handleRemoveSavedAbi}
-                    className="btn btn-error gap-2 hover:btn-error/80"
-                    title="Remove saved ABI"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                    Remove saved ABI
-                  </button>
                 </div>
               )}
             </div>

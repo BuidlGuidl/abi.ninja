@@ -12,7 +12,7 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useGlobalState } from "~~/services/store/store";
-import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON, saveAbiToLocalStorage } from "~~/utils/abi";
+import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -53,61 +53,50 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
   const [isLoadingLocalStorage, setIsLoadingLocalStorage] = useState(true);
 
-  const {
-    chainId,
-    setImplementationAddress,
-    contractAbi,
-    chains,
-    addChain,
-    setTargetNetwork,
-    savedAbiData,
-    setSavedAbiData,
-  } = useGlobalState(state => ({
-    chains: state.chains,
-    addChain: state.addChain,
-    chainId: state.targetNetwork.id,
-    setTargetNetwork: state.setTargetNetwork,
-    setImplementationAddress: state.setImplementationAddress,
-    contractAbi: state.contractAbi,
-    savedAbiData: state.savedAbiData,
-    setSavedAbiData: state.setSavedAbiData,
-  }));
-
-  useEffect(() => {
-    const savedAbi = getAbiFromLocalStorage(contractAddress);
-    setSavedAbiData(savedAbi);
-    setIsLoadingLocalStorage(false);
-
-    if (contractAbi.length > 0) {
-      saveAbiToLocalStorage(contractAddress, contractAbi);
-      setSavedAbiData(contractAbi);
-    }
-  }, [contractAddress, contractAbi, setSavedAbiData]);
-
-  const shouldFetchFromEtherscan = !savedAbiData && contractAbi.length === 0;
+  const { chainId, setAbiContractAddress, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } =
+    useGlobalState(state => ({
+      chains: state.chains,
+      addChain: state.addChain,
+      chainId: state.targetNetwork.id,
+      setAbiContractAddress: state.setAbiContractAddress,
+      setTargetNetwork: state.setTargetNetwork,
+      setImplementationAddress: state.setImplementationAddress,
+      contractAbi: state.contractAbi,
+    }));
 
   const {
     contractData: fetchedContractData,
     error: fetchError,
-    isLoading: isLoadingEtherscan,
+    isLoading,
     implementationAddress,
   } = useFetchContractAbi({
     contractAddress,
     chainId: parseInt(network),
-    disabled: !shouldFetchFromEtherscan,
+    disabled: contractAbi.length > 0,
   });
+
+  useEffect(() => {
+    const savedAbi = getAbiFromLocalStorage(contractAddress);
+    if (savedAbi) {
+      setLocalContractData({ abi: savedAbi, address: contractAddress });
+      setAbiContractAddress(contractAddress);
+      setIsUseLocalAbi(true);
+    }
+    setIsLoadingLocalStorage(false);
+
+    if (!isLoadingLocalStorage) {
+      notification.success("Loaded ABI from local storage. Click the gear icon to manage ABIs.");
+    }
+  }, [contractAddress, isLoadingLocalStorage]);
 
   const effectiveContractData =
     contractAbi.length > 0
       ? { abi: contractAbi, address: contractAddress }
-      : savedAbiData
-      ? { abi: savedAbiData, address: contractAddress }
       : isUseLocalAbi && localContractData
       ? localContractData
       : fetchedContractData;
 
-  const error = !effectiveContractData || !effectiveContractData.abi ? fetchError : null;
-  const isLoading = isLoadingLocalStorage || (isLoadingEtherscan && !savedAbiData && !contractAbi.length);
+  const error = isUseLocalAbi || isLoadingLocalStorage ? null : fetchError;
 
   useEffect(() => {
     if (network) {
@@ -120,26 +109,12 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     if (implementationAddress) {
       setImplementationAddress(implementationAddress);
     }
-
-    if (fetchedContractData?.abi) {
-      saveAbiToLocalStorage(contractAddress, fetchedContractData.abi);
-    }
-  }, [
-    network,
-    implementationAddress,
-    chains,
-    setTargetNetwork,
-    setImplementationAddress,
-    fetchedContractData,
-    contractAddress,
-  ]);
+  }, [network, implementationAddress, chains, setTargetNetwork, setImplementationAddress]);
 
   const handleUserProvidedAbi = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       if (parsedAbi) {
-        saveAbiToLocalStorage(contractAddress, parsedAbi);
-        setSavedAbiData(parsedAbi);
         setIsUseLocalAbi(true);
         setLocalContractData({ abi: parsedAbi, address: contractAddress });
         notification.success("ABI successfully loaded.");
@@ -172,7 +147,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
-          {isLoading ? (
+          {isLoading || isLoadingLocalStorage ? (
             <div className="flex justify-center h-full mt-14">
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
