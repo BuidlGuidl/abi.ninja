@@ -12,7 +12,7 @@ import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useGlobalState } from "~~/services/store/store";
-import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
+import { getAbiFromLocalStorage, getNetworkName, parseAndCorrectJSON, saveAbiToLocalStorage } from "~~/utils/abi";
 import { notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -53,16 +53,25 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
   const [isLoadingLocalStorage, setIsLoadingLocalStorage] = useState(true);
 
-  const { chainId, setAbiContractAddress, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } =
-    useGlobalState(state => ({
-      chains: state.chains,
-      addChain: state.addChain,
-      chainId: state.targetNetwork.id,
-      setAbiContractAddress: state.setAbiContractAddress,
-      setTargetNetwork: state.setTargetNetwork,
-      setImplementationAddress: state.setImplementationAddress,
-      contractAbi: state.contractAbi,
-    }));
+  const {
+    chainId,
+    setAbiContractAddress,
+    setImplementationAddress,
+    contractAbi,
+    chains,
+    addChain,
+    setTargetNetwork,
+    setContractAbi,
+  } = useGlobalState(state => ({
+    chains: state.chains,
+    addChain: state.addChain,
+    chainId: state.targetNetwork.id,
+    setAbiContractAddress: state.setAbiContractAddress,
+    setTargetNetwork: state.setTargetNetwork,
+    setImplementationAddress: state.setImplementationAddress,
+    contractAbi: state.contractAbi,
+    setContractAbi: state.setContractAbi,
+  }));
 
   const {
     contractData: fetchedContractData,
@@ -84,10 +93,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     }
     setIsLoadingLocalStorage(false);
 
-    if (!isLoadingLocalStorage) {
+    if (!isLoadingLocalStorage && savedAbi) {
       notification.success("Loaded ABI from local storage. Click the gear icon to manage ABIs.");
     }
-  }, [contractAddress, isLoadingLocalStorage]);
+  }, [contractAddress, isLoadingLocalStorage, setAbiContractAddress]);
 
   const effectiveContractData =
     contractAbi.length > 0
@@ -116,8 +125,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       if (parsedAbi) {
         setIsUseLocalAbi(true);
+        saveAbiToLocalStorage(contractAddress, parsedAbi);
         setLocalContractData({ abi: parsedAbi, address: contractAddress });
-        notification.success("ABI successfully loaded.");
+        setAbiContractAddress(contractAddress);
+        setContractAbi(parsedAbi);
       } else {
         throw new Error("Parsed ABI is null or undefined");
       }

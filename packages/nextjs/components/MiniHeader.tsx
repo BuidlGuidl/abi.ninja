@@ -11,8 +11,9 @@ import { notification } from "~~/utils/scaffold-eth";
 export const MiniHeader = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [editedAbi, setEditedAbi] = useState("");
-  const { contractAddress } = useGlobalState(state => ({
+  const { contractAddress, setContractAbi } = useGlobalState(state => ({
     contractAddress: state.abiContractAddress,
+    setContractAbi: state.setContractAbi,
   }));
 
   const savedAbi = getAbiFromLocalStorage(contractAddress);
@@ -20,12 +21,12 @@ export const MiniHeader = () => {
 
   useEffect(() => {
     setEditedAbi(formattedAbi);
-  }, [formattedAbi]);
+  }, [formattedAbi, contractAddress]);
 
   const handleRemoveSavedAbi = () => {
     removeAbiFromLocalStorage(contractAddress);
+    setContractAbi([]);
     setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const handleSaveEdit = () => {
@@ -33,6 +34,7 @@ export const MiniHeader = () => {
       const parsedAbi = parseAndCorrectJSON(editedAbi);
       if (parsedAbi) {
         saveAbiToLocalStorage(contractAddress, parsedAbi);
+        setContractAbi(parsedAbi);
         notification.success("ABI updated successfully!");
       }
     } catch (error) {
