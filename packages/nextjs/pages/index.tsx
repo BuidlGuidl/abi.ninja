@@ -141,7 +141,9 @@ const Home: NextPage = () => {
         saveAbiToLocalStorage(localAbiContractAddress, parsedAbi);
       }
       router.push(`/${localAbiContractAddress}/${network}`);
-      notification.success("ABI successfully loaded.");
+      if (network !== "31337") {
+        notification.success("ABI successfully loaded.");
+      }
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
     }
