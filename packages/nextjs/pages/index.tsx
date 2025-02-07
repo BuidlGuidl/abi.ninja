@@ -15,7 +15,7 @@ import { AddressInput } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
-import { parseAndCorrectJSON } from "~~/utils/abi";
+import { getAbiFromLocalStorage, parseAndCorrectJSON, saveAbiToLocalStorage } from "~~/utils/abi";
 import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -90,6 +90,13 @@ const Home: NextPage = () => {
     }
 
     if (network === "31337" && isAddress(verifiedContractAddress)) {
+      const savedAbi = getAbiFromLocalStorage(verifiedContractAddress);
+      if (savedAbi) {
+        setContractAbi(savedAbi);
+        setAbiContractAddress(verifiedContractAddress);
+        router.push(`/${verifiedContractAddress}/${network}`);
+        return;
+      }
       setActiveTab(TabName.addressAbi);
       setLocalAbiContractAddress(verifiedContractAddress);
       return;
@@ -107,6 +114,8 @@ const Home: NextPage = () => {
     handleFetchError,
     setContractAbi,
     setImplementationAddress,
+    router,
+    setAbiContractAddress,
   ]);
 
   useEffect(() => {
@@ -130,8 +139,13 @@ const Home: NextPage = () => {
     try {
       const parsedAbi = parseAndCorrectJSON(localContractAbi);
       setContractAbi(parsedAbi);
+      if (network === "31337") {
+        notification.success("Saving ABI to local storage...");
+        saveAbiToLocalStorage(localAbiContractAddress, parsedAbi);
+      } else {
+        notification.success("ABI successfully loaded.");
+      }
       router.push(`/${localAbiContractAddress}/${network}`);
-      notification.success("ABI successfully loaded.");
     } catch (error) {
       notification.error("Invalid ABI format. Please ensure it is a valid JSON.");
     }
