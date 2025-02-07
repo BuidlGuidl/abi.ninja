@@ -38,8 +38,8 @@
     "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
-    "viem": "2.x",
-    "wagmi": "^2.14.8",
+    "viem": "2.21.32",
+    "wagmi": "2.12.23",
     "zustand": "^4.1.2"
   },
   "devDependencies": {
