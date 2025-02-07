@@ -16,7 +16,7 @@ import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
-import { notification } from "~~/utils/scaffold-eth";
+import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
   verifiedContract,
@@ -53,7 +53,9 @@ const Home: NextPage = () => {
 
   const { abi: heimdallAbi, isLoading: isHeimdallFetching } = useHeimdall({
     contractAddress: localAbiContractAddress as Address,
-    rpcUrl: publicClient?.chain.rpcUrls.default.http[0],
+    rpcUrl: getAlchemyHttpUrl(parseInt(network))
+      ? getAlchemyHttpUrl(parseInt(network))
+      : publicClient?.chain.rpcUrls.default.http[0],
     disabled: network === "31337" || !localAbiContractAddress,
   });
 
