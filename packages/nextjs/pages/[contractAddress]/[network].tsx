@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Abi, Address, isAddress } from "viem";
+import { usePublicClient } from "wagmi";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { MiniHeader } from "~~/components/MiniHeader";
@@ -11,9 +12,10 @@ import { formDataToChain, storeChainInLocalStorage } from "~~/components/Network
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
+import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
 import { getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
-import { notification } from "~~/utils/scaffold-eth";
+import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
   contractAddress: Address;
@@ -51,6 +53,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
   const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
+  const [decompiledAbi, setDecompiledAbi] = useState<Abi | null>(null);
 
   const { chainId, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } = useGlobalState(
     state => ({
@@ -63,6 +66,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     }),
   );
 
+  const publicClient = usePublicClient({
+    chainId: parseInt(network),
+  });
+
   const {
     contractData: fetchedContractData,
     error: fetchError,
@@ -74,11 +81,21 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     disabled: contractAbi.length > 0,
   });
 
+  const { abi: heimdallAbi, isLoading: isHeimdallFetching } = useHeimdall({
+    contractAddress: contractAddress as Address,
+    rpcUrl: getAlchemyHttpUrl(parseInt(network))
+      ? getAlchemyHttpUrl(parseInt(network))
+      : publicClient?.chain.rpcUrls.default.http[0],
+    disabled: network === "31337" || !contractAddress,
+  });
+
   const effectiveContractData =
     contractAbi.length > 0
       ? { abi: contractAbi, address: contractAddress }
       : isUseLocalAbi && localContractData
       ? localContractData
+      : heimdallAbi
+      ? { abi: decompiledAbi, address: contractAddress }
       : fetchedContractData;
 
   const error = isUseLocalAbi ? null : fetchError;
@@ -126,6 +143,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     notification.success("Custom chain successfully loaded.");
   };
 
+  const handleDecompile = () => {
+    setDecompiledAbi(heimdallAbi as Abi);
+  };
+
   return (
     <>
       <MetaHeader address={addressFromUrl} network={chainIdFromUrl} />
@@ -156,7 +177,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
               </div>
               <div className="flex justify-center gap-12">
                 {chains.some(chain => chain.id === chainId) ? (
-                  <div className="w-1/2">
+                  <div className="w-1/2 flex flex-col gap-4">
                     <form
                       className="bg-base-200"
                       onSubmit={e => {
@@ -176,12 +197,22 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                           onChange={e => setLocalContractAbi(e.target.value)}
                         ></textarea>
                       </div>
-                      <div className="modal-action mt-6">
-                        <button type="submit" className="btn btn-primary">
+                      <div className="modal-action mt-2">
+                        <button type="submit" className="btn btn-primary w-28">
                           Submit ABI
                         </button>
                       </div>
                     </form>
+                    <div className="flex flex-row items-center justify-between mt-4">
+                      <p>You can also decompile the contract. Please note that this is a beta feature.</p>
+                      {isHeimdallFetching ? (
+                        <span className="loading loading-spinner text-primary h-14 w-14"></span>
+                      ) : (
+                        <button className="btn btn-primary w-28" onClick={handleDecompile}>
+                          Decompile
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="w-1/2">
