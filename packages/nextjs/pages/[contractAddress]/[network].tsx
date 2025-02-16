@@ -143,10 +143,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     notification.success("Custom chain successfully loaded.");
   };
 
-  const handleDecompile = () => {
-    setDecompiledAbi(heimdallAbi as Abi);
-  };
-
   return (
     <>
       <MetaHeader address={addressFromUrl} network={chainIdFromUrl} />
@@ -208,7 +204,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                       {isHeimdallFetching ? (
                         <span className="loading loading-spinner text-primary h-14 w-14"></span>
                       ) : (
-                        <button className="btn btn-primary w-28" onClick={handleDecompile}>
+                        <button className="btn btn-primary w-28" onClick={() => setDecompiledAbi(heimdallAbi as Abi)}>
                           Decompile
                         </button>
                       )}
