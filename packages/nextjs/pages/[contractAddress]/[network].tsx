@@ -94,9 +94,11 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       ? { abi: contractAbi, address: contractAddress }
       : isUseLocalAbi && localContractData
       ? localContractData
-      : heimdallAbi
+      : fetchedContractData
+      ? { abi: fetchedContractData.abi, address: contractAddress }
+      : decompiledAbi
       ? { abi: decompiledAbi, address: contractAddress }
-      : fetchedContractData;
+      : null;
 
   const error = isUseLocalAbi ? null : fetchError;
 
