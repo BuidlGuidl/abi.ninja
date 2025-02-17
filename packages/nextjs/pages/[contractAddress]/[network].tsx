@@ -168,8 +168,8 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                     <strong>{getNetworkName(chains, chainId)}</strong>.
                   </p>
                   <p className="pb-2">
-                    Make sure the data is correct and you are connected to the right network. Or add the chain/ABI
-                    below.
+                    Make sure the data is correct and you are connected to the right network. You can also import the
+                    ABI manually, or decompile the contract (beta).
                   </p>
                 </div>
               </div>
@@ -196,20 +196,23 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                         ></textarea>
                       </div>
                       <div className="modal-action mt-2">
-                        <button type="submit" className="btn btn-primary w-28">
+                        <button type="submit" className="btn btn-primary w-32">
                           Submit ABI
                         </button>
                       </div>
                     </form>
-                    <div className="flex flex-row items-center justify-between mt-4">
-                      <p>You can also decompile the contract. Please note that this is a beta feature.</p>
-                      {isHeimdallFetching ? (
-                        <span className="loading loading-spinner text-primary h-14 w-14"></span>
-                      ) : (
-                        <button className="btn btn-primary w-28" onClick={() => setDecompiledAbi(heimdallAbi as Abi)}>
-                          Decompile
-                        </button>
-                      )}
+                    <div className="flex flex-col justify-between mt-4">
+                      <h3 className="font-bold text-xl">Decompile Contract (beta)</h3>
+                      <button className="btn btn-primary w-32" onClick={() => setDecompiledAbi(heimdallAbi as Abi)}>
+                        {isHeimdallFetching ? (
+                          <div className="flex items-center gap-2">
+                            <span className="loading loading-spinner loading-xs"></span>
+                            <span>Decompiling...</span>
+                          </div>
+                        ) : (
+                          "Decompile"
+                        )}
+                      </button>
                     </div>
                   </div>
                 ) : (
