@@ -203,7 +203,10 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                     </form>
                     <div className="flex flex-col justify-between mt-4">
                       <h3 className="font-bold text-xl">Decompile Contract (beta)</h3>
-                      <button className="btn btn-primary w-32" onClick={() => setDecompiledAbi(heimdallAbi as Abi)}>
+                      <button
+                        className="btn btn-primary mt-2 w-32"
+                        onClick={() => setDecompiledAbi(heimdallAbi as Abi)}
+                      >
                         {isHeimdallFetching ? (
                           <div className="flex items-center gap-2">
                             <span className="loading loading-spinner loading-xs"></span>
