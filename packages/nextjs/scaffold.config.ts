@@ -1,3 +1,4 @@
+import { monadTestnet } from "./utils/otherNetworks";
 import * as chains from "viem/chains";
 
 export type ScaffoldConfig = {
@@ -21,7 +22,7 @@ const scaffoldConfig = {
     chains.polygonMumbai,
     chains.arbitrum,
     chains.gnosis,
-    chains.zkSync,
+    monadTestnet,
     chains.scroll,
     chains.scrollSepolia,
     chains.hardhat,
