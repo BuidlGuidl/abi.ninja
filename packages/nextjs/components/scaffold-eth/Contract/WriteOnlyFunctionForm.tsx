@@ -3,7 +3,7 @@ import { InheritanceTooltip } from "./InheritanceTooltip";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
   ContractInput,
   IntegerInput,
@@ -15,6 +15,7 @@ import {
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
+import { simulateContractWriteAndNotifyError } from "~~/utils/scaffold-eth/contract";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
@@ -42,18 +43,21 @@ export const WriteOnlyFunctionForm = ({
 
   const { data: result, isPending, writeContractAsync } = useWriteContract();
 
+  const wagmiConfig = useConfig();
+
   const handleWrite = async () => {
     if (writeContractAsync) {
       try {
-        const makeWriteWithParams = () =>
-          writeContractAsync({
-            address: contractAddress,
-            functionName: abiFunction.name,
-            abi: abi,
-            chainId: mainChainId,
-            args: getParsedContractFunctionArgs(form),
-            value: BigInt(txValue),
-          });
+        const writeContractObj = {
+          address: contractAddress,
+          functionName: abiFunction.name,
+          abi: abi,
+          args: getParsedContractFunctionArgs(form),
+          value: BigInt(txValue),
+        };
+        await simulateContractWriteAndNotifyError({ wagmiConfig, writeContractParams: writeContractObj });
+
+        const makeWriteWithParams = () => writeContractAsync(writeContractObj);
         await writeTxn(makeWriteWithParams);
         onChange();
       } catch (e: any) {
