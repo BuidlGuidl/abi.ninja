@@ -2,7 +2,7 @@
 
 Interact with smart contracts on any EVM chain. ABI Ninja provides an intuitive frontend for contracts from most popular EVM networks, currently supporting:
 
-- **Verified contracts**. Pulls the code from [AnyABI](https://anyabi.xyz/) and [Etherscan API](https://docs.etherscan.io/) as a fallback option.
+- **Verified contracts**. Fetch contract ABIs and source code directly using [Etherscan's API v2 endpoints](https://docs.etherscan.io/etherscan-v2/getting-started/v2-quickstart).
 - **Unverified contracts**. Two different options are available:
   - Decompile using [`heimdall-rs`](https://github.com/Jon-Becker/heimdall-rs) (experimental).
   - Provide the ABI and the contract address.
@@ -14,9 +14,18 @@ ABI Ninja (v2) is built with 🏗 [Scaffold-ETH 2](https://github.com/scaffold-e
 | :---------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------: |
 | ![ABINinja - Index](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/3b7e0f12-1423-4835-bda3-2e12d65b4f15) | ![ABINinja - Unverified Contract](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/d30d76a3-35d0-4b3f-8633-c8e531999be6) |
 
-Friendly UI even for the most complex data structures:
+### Features included:
 
-![ABINinja - Contract UI](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/7b3ec72b-c70b-4357-9f76-d10cb673530c)
+- **Customize your chains.** We provide a default list of chains (Mainnets + Testnets), but you can add or remove networks from a large selection using the "Other Chains" option in the network dropdown.
+- **Add custom chains.** If you can't find a network using the "Other Chains" option, you can manually add custom chains by entering the network details.
+- **Use it on localhost!** Run ABI Ninja on chain ID 31337 (localhost) to debug your local contracts.
+- **ENS resolution on address inputs.** Automatically resolves ENS names (Mainnet).
+- **Shareable URLs with dynamic unfurling.** Share an ABI Ninja contract URL, and it will unfurl with the contract name, network icon and address.
+- **Transaction results display.** View detailed transaction results directly in the interface after executing contract calls, making debugging and monitoring easier.
+
+- **Friendly UI even for the most complex data structures:**
+
+  ![ABINinja - Contract UI](https://github.com/BuidlGuidl/abi.ninja/assets/55535804/7b3ec72b-c70b-4357-9f76-d10cb673530c)
 
 # 🏄‍♂️ Development Quick Start
 
