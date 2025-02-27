@@ -2,7 +2,7 @@
 
 Interact with smart contracts on any EVM chain. ABI Ninja provides an intuitive frontend for contracts from most popular EVM networks, currently supporting:
 
-- **Verified contracts**. Fetch contract ABIs and source code directly using [Etherscan's API v2 endpoints](https://docs.etherscan.io/etherscan-v2/getting-started/v2-quickstart).
+- **Verified contracts**. Fetches contract ABIs and source code directly using [Etherscan's API v2 endpoints](https://docs.etherscan.io/etherscan-v2/getting-started/v2-quickstart).
 - **Unverified contracts**. Two different options are available:
   - Decompile using [`heimdall-rs`](https://github.com/Jon-Becker/heimdall-rs) (experimental).
   - Provide the ABI and the contract address.
