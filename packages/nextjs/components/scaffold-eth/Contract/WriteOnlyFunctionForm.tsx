@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi, AbiFunction } from "abitype";
-import { Address, TransactionReceipt } from "viem";
+import { Address, TransactionReceipt, encodeFunctionData } from "viem";
 import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import {
   ContractInput,
   IntegerInput,
@@ -15,6 +16,7 @@ import {
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
+import { notification } from "~~/utils/scaffold-eth";
 import { simulateContractWriteAndNotifyError } from "~~/utils/scaffold-eth/contract";
 
 type WriteOnlyFunctionFormProps = {
@@ -93,6 +95,21 @@ export const WriteOnlyFunctionForm = ({
   });
   const zeroInputs = inputs.length === 0 && abiFunction.stateMutability !== "payable";
 
+  const handleCopyCalldata = async () => {
+    try {
+      const calldata = encodeFunctionData({
+        abi: abi,
+        functionName: abiFunction.name,
+        args: getParsedContractFunctionArgs(form),
+      });
+      await navigator.clipboard.writeText(calldata);
+      notification.success("Calldata copied to clipboard!");
+    } catch (e) {
+      console.error("Error copying calldata:", e);
+      notification.error("Failed to copy calldata");
+    }
+  };
+
   return (
     <div className="py-5 space-y-3 first:pt-0 last:pb-1">
       <div className={`flex gap-3 ${zeroInputs ? "flex-row justify-between" : "flex-col"}`}>
@@ -123,24 +140,31 @@ export const WriteOnlyFunctionForm = ({
               {displayedTxResult ? <TxReceipt txResult={displayedTxResult} /> : null}
             </div>
           )}
-          {connectedAddress ? (
-            <div
-              className={`flex ${
-                wrongNetwork &&
-                "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
-              }`}
-              data-tip={`${wrongNetwork && "Wrong network"}`}
-            >
-              <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isPending} onClick={handleWrite}>
-                {isPending && <span className="loading loading-spinner loading-xs"></span>}
-                Send 💸
+          <div className="flex gap-2">
+            {connectedAddress ? (
+              <div
+                className={`flex ${
+                  wrongNetwork &&
+                  "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
+                }`}
+                data-tip={`${wrongNetwork && "Wrong network"}`}
+              >
+                <button className="btn btn-secondary btn-sm" disabled={wrongNetwork || isPending} onClick={handleWrite}>
+                  {isPending && <span className="loading loading-spinner loading-xs"></span>}
+                  Send 💸
+                </button>
+              </div>
+            ) : (
+              <button className="btn btn-secondary btn-sm" onClick={openConnectModal}>
+                Connect Wallet
+              </button>
+            )}
+            <div className="tooltip tooltip-left" data-tip="Copy Calldata">
+              <button className="btn btn-ghost btn-sm" onClick={handleCopyCalldata}>
+                <DocumentDuplicateIcon className="h-5 w-5" />
               </button>
             </div>
-          ) : (
-            <button className="btn btn-secondary btn-sm" onClick={openConnectModal}>
-              Connect Wallet
-            </button>
-          )}
+          </div>
         </div>
       </div>
       {zeroInputs && txResult ? (
