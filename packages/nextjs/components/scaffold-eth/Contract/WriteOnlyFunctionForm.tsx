@@ -141,6 +141,11 @@ export const WriteOnlyFunctionForm = ({
             </div>
           )}
           <div className="flex gap-2">
+            <div className="tooltip tooltip-left" data-tip="Copy Calldata">
+              <button className="btn btn-ghost btn-sm" onClick={handleCopyCalldata}>
+                <DocumentDuplicateIcon className="h-5 w-5" />
+              </button>
+            </div>
             {connectedAddress ? (
               <div
                 className={`flex ${
@@ -159,11 +164,6 @@ export const WriteOnlyFunctionForm = ({
                 Connect Wallet
               </button>
             )}
-            <div className="tooltip tooltip-left" data-tip="Copy Calldata">
-              <button className="btn btn-ghost btn-sm" onClick={handleCopyCalldata}>
-                <DocumentDuplicateIcon className="h-5 w-5" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
