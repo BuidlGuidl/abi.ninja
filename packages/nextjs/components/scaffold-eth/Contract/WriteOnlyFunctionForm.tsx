@@ -4,7 +4,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt, encodeFunctionData } from "viem";
 import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import {
   ContractInput,
   IntegerInput,
@@ -16,7 +16,7 @@ import {
 } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
-import { notification } from "~~/utils/scaffold-eth";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
 import { simulateContractWriteAndNotifyError } from "~~/utils/scaffold-eth/contract";
 
 type WriteOnlyFunctionFormProps = {
@@ -46,6 +46,8 @@ export const WriteOnlyFunctionForm = ({
   const { data: result, isPending, writeContractAsync } = useWriteContract();
 
   const wagmiConfig = useConfig();
+
+  const [calldataCopied, setCalldataCopied] = useState(false);
 
   const handleWrite = async () => {
     if (writeContractAsync) {
@@ -103,10 +105,14 @@ export const WriteOnlyFunctionForm = ({
         args: getParsedContractFunctionArgs(form),
       });
       await navigator.clipboard.writeText(calldata);
-      notification.success("Calldata copied to clipboard!");
+      setCalldataCopied(true);
+      setTimeout(() => {
+        setCalldataCopied(false);
+      }, 800);
     } catch (e) {
+      const errorMessage = getParsedError(e);
       console.error("Error copying calldata:", e);
-      notification.error("Failed to copy calldata");
+      notification.error(errorMessage);
     }
   };
 
@@ -143,7 +149,14 @@ export const WriteOnlyFunctionForm = ({
           <div className="flex gap-2">
             <div className="tooltip tooltip-left" data-tip="Copy Calldata">
               <button className="btn btn-ghost btn-sm" onClick={handleCopyCalldata}>
-                <DocumentDuplicateIcon className="h-5 w-5" />
+                {calldataCopied ? (
+                  <CheckCircleIcon
+                    className="h-5 w-5 text-xl font-normal text-secondary-content cursor-pointer"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <DocumentDuplicateIcon className="h-5 w-5 text-xl font-normal text-secondary-content cursor-pointer" />
+                )}
               </button>
             </div>
             {connectedAddress ? (
