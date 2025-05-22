@@ -6,6 +6,7 @@ import { ContractWriteMethods } from "./ContractWriteMethods";
 import { AbiFunction } from "abitype";
 import { Abi, Address as AddressType } from "viem";
 import { useContractRead } from "wagmi";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
@@ -253,17 +254,18 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                   </p>
                 )}
                 {contractCreation && (
-                  <p className="my-0 text-sm">
-                    <span className="font-bold">Contract Creation</span>:{" "}
+                  <div className="my-0 text-sm flex items-center gap-2">
+                    <span className="font-bold">Created at:</span>
+                    <span>Block {contractCreation.blockNumber}</span>
                     <a
                       href={getBlockExplorerTxLink(chainId, contractCreation.txHash)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="link no-underline"
                     >
-                      Block {contractCreation.blockNumber} ({contractCreation.timestamp})
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                     </a>
-                  </p>
+                  </div>
                 )}
               </div>
               <div className="bg-base-200 shadow-xl rounded-2xl px-6 py-4">
