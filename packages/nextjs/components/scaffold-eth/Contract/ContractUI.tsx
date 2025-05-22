@@ -10,6 +10,7 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
+import useFetchContractCreationInfo from "~~/hooks/useFetchContractCreationInfo";
 import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerTxLink, getTargetNetworks } from "~~/utils/scaffold-eth";
 
@@ -57,18 +58,11 @@ const augmentMethodsWithUid = (methods: AbiFunction[]): AugmentedAbiFunction[] =
 
 const mainNetworks = getTargetNetworks();
 
-type ContractCreationInfo = {
-  blockNumber: string;
-  timestamp: string;
-  txHash: string;
-};
-
 /**
  * UI component to interface with deployed contracts.
  **/
 export const ContractUI = ({ className = "", initialContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const [contractCreation, setContractCreation] = useState<ContractCreationInfo | null>(null);
   const { implementationAddress, chainId } = useGlobalState(state => ({
     chainId: state.targetNetwork.id,
     implementationAddress: state.implementationAddress,
@@ -77,6 +71,11 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   const networkColor = useNetworkColor(mainNetwork);
   const router = useRouter();
   const { network } = router.query as { network?: string };
+
+  const { contractCreationInfo, isLoading: isContractCreationLoading } = useFetchContractCreationInfo({
+    contractAddress: initialContractData.address,
+    chainId,
+  });
 
   const updateUrlWithSelectedMethods = (selectedMethods: string[]) => {
     const currentQuery = new URLSearchParams(window.location.search);
@@ -146,31 +145,6 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     // Default to "Contract" for errors or any other cases
     return "Contract";
   }, [isContractNameLoading, contractNameData]);
-
-  useEffect(() => {
-    const fetchContractCreation = async () => {
-      try {
-        const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY;
-        const response = await fetch(
-          `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=getcontractcreation&contractaddresses=${initialContractData.address}&apikey=${apiKey}`,
-        );
-        const data = await response.json();
-
-        if (data.status === "1" && data.result && data.result.length > 0) {
-          const creationInfo = data.result[0];
-          setContractCreation({
-            blockNumber: creationInfo.blockNumber,
-            timestamp: new Date(Number(creationInfo.timestamp) * 1000).toLocaleString(),
-            txHash: creationInfo.txHash,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching contract creation data:", error);
-      }
-    };
-
-    fetchContractCreation();
-  }, [chainId, initialContractData.address]);
 
   return (
     <div className="drawer sm:drawer-open h-full">
@@ -253,20 +227,26 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                     </span>
                   </p>
                 )}
-                {contractCreation && (
-                  <div className="my-0 text-sm flex items-center gap-2">
-                    <span className="font-bold">Created at:</span>
-                    <span>Block {contractCreation.blockNumber}</span>
-                    <a
-                      href={getBlockExplorerTxLink(chainId, contractCreation.txHash)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="link no-underline"
-                    >
-                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                    </a>
-                  </div>
-                )}
+                <div className="my-0 text-sm flex items-center gap-2">
+                  <span className="font-bold">Created at:</span>
+                  {isContractCreationLoading ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    contractCreationInfo && (
+                      <>
+                        <span>Block {contractCreationInfo.blockNumber}</span>
+                        <a
+                          href={getBlockExplorerTxLink(chainId, contractCreationInfo.txHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link no-underline"
+                        >
+                          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                        </a>
+                      </>
+                    )
+                  )}
+                </div>
               </div>
               <div className="bg-base-200 shadow-xl rounded-2xl px-6 py-4">
                 <span className="block font-bold pb-3">Contract Data</span>
