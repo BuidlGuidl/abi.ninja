@@ -227,26 +227,28 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                     </span>
                   </p>
                 )}
-                <div className="my-0 text-sm flex items-center gap-2">
-                  <span className="font-bold">Created at:</span>
-                  {isContractCreationLoading ? (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  ) : (
-                    contractCreationInfo && (
-                      <>
-                        <span>Block {contractCreationInfo.blockNumber}</span>
-                        <a
-                          href={getBlockExplorerTxLink(chainId, contractCreationInfo.txHash)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="link no-underline"
-                        >
-                          <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                        </a>
-                      </>
-                    )
-                  )}
-                </div>
+                {!isContractCreationLoading && contractCreationInfo && (
+                  <div className="my-0 text-sm flex items-center gap-2">
+                    <span className="font-bold">Created at:</span>
+                    {isContractCreationLoading ? (
+                      <span className="loading loading-spinner loading-xs"></span>
+                    ) : (
+                      contractCreationInfo && (
+                        <>
+                          <span>Block {contractCreationInfo.blockNumber}</span>
+                          <a
+                            href={getBlockExplorerTxLink(chainId, contractCreationInfo.txHash)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link no-underline"
+                          >
+                            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                          </a>
+                        </>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
               <div className="bg-base-200 shadow-xl rounded-2xl px-6 py-4">
                 <span className="block font-bold pb-3">Contract Data</span>
