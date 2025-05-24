@@ -102,7 +102,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     );
   }, [initialContractData.abi]);
 
-  // local abi state for for dispalying selected methods
+  // local abi state for for displaying selected methods
   const [abi, setAbi] = useState<AugmentedAbiFunction[]>([]);
 
   const handleMethodSelect = (uid: string) => {
