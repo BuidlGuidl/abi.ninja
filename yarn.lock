@@ -1989,17 +1989,17 @@ __metadata:
     eslint-config-prettier: "npm:^8.5.0"
     eslint-plugin-prettier: "npm:^4.2.1"
     next: "npm:15.5.0"
+    next-nprogress-bar: "npm:^2.4.7"
     next-plausible: "npm:^3.12.0"
     next-themes: "npm:^0.3.0"
-    nextjs-progressbar: "npm:^0.0.16"
     postcss: "npm:^8.4.16"
     prettier: "npm:^2.8.4"
-    qrcode.react: "npm:^3.1.0"
+    qrcode.react: "npm:^4.2.0"
     react: "npm:19.1.1"
     react-copy-to-clipboard: "npm:^5.1.0"
     react-dom: "npm:19.1.1"
     react-hot-toast: "npm:^2.4.0"
-    react-select: "npm:^5.8.0"
+    react-select: "npm:^5.10.2"
     tailwindcss: "npm:^3.3.3"
     type-fest: "npm:^4.6.0"
     typescript: "npm:5.1.6"
@@ -2345,13 +2345,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10/641dc5fa408f1cec66cfa5eef015baf3051a5509ad7ab4b843023ca8b41530d3ef2e798479020d6da20cbe36b3cf150051af2f1786b40bcd2e8dfed1b2fdab9e
-  languageName: node
-  linkType: hard
-
-"@types/nprogress@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@types/nprogress@npm:0.2.0"
-  checksum: 10/031a685af2d7c7f43f34f124e32954efbfbb1773ebcf5af70b43dc01631f949b4288bbdccdc0d1e33abcb982fa9155538c5ccf0ceced45beef023a74478657f0
   languageName: node
   linkType: hard
 
@@ -9160,6 +9153,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-nprogress-bar@npm:^2.4.7":
+  version: 2.4.7
+  resolution: "next-nprogress-bar@npm:2.4.7"
+  dependencies:
+    nprogress-v2: "npm:^1.0.4"
+  checksum: 10/f15a2b17b575e9aad2ddc62bcbc7fa7af18500973fa3b0e5129f7e3be6581ed99cb36098f722bb6df2119509b150e279056731e1ea17387af03260bebe208615
+  languageName: node
+  linkType: hard
+
 "next-plausible@npm:^3.12.0":
   version: 3.12.0
   resolution: "next-plausible@npm:3.12.0"
@@ -9237,20 +9239,6 @@ __metadata:
   bin:
     next: dist/bin/next
   checksum: 10/407b418a7e5826ccff5419b2ccaf15c5011e1c16e1de7d0723eaac9c9a2126391ebcc1ea6b052e00f42adf62ccf5b59c0be3e59f2db56ef7b900f635b30a2069
-  languageName: node
-  linkType: hard
-
-"nextjs-progressbar@npm:^0.0.16":
-  version: 0.0.16
-  resolution: "nextjs-progressbar@npm:0.0.16"
-  dependencies:
-    "@types/nprogress": "npm:^0.2.0"
-    nprogress: "npm:^0.2.0"
-    prop-types: "npm:^15.8.1"
-  peerDependencies:
-    next: ">= 6.0.0"
-    react: ">= 16.0.0"
-  checksum: 10/8aeaf13e43ffa69c0cb238a981da9838c88ee83acd563a8e182e95a17fc594fcdd0564b4cb801b9b5278bbf23fd7237526fac90ac025c5a0e1c79f341ae70a7f
   languageName: node
   linkType: hard
 
@@ -9444,10 +9432,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nprogress@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "nprogress@npm:0.2.0"
-  checksum: 10/1870a74c054c01899f89e85122d7548832d083b5fa5d3cc6aafc2d4f92901e15face402ef557be5b103aed7b6e1406c656b842dec32b553b4b052031ea1b0935
+"nprogress-v2@npm:^1.0.4":
+  version: 1.1.10
+  resolution: "nprogress-v2@npm:1.1.10"
+  checksum: 10/ed2560a890c6c0214f6bd79359f9700160d0c38d636ed7c227bc04a37c6743e59cdd5a4cdacc58893af145d21eaeb3b6967926ffa969488f7bf53d472219eb17
   languageName: node
   linkType: hard
 
@@ -10259,12 +10247,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qrcode.react@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "qrcode.react@npm:3.1.0"
+"qrcode.react@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "qrcode.react@npm:4.2.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/71953241f151ca5ad4013c034cb13033e1ebad56a1db77297a7ddd7fd4d5f137f37f3be51133aeef0b54dc52d6c76630429d2269bd72e6858c3209fe42310498
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/665036d88b160e6d5de4e24d101bc63bd2b76712802e874bbffe56c6b6e5fe50c63f02c3cba2975b2e2b555c1f1e112cbb42987f8cb3a626ce2d17023cfde6ac
   languageName: node
   linkType: hard
 
@@ -10456,9 +10444,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.8.0":
-  version: 5.8.0
-  resolution: "react-select@npm:5.8.0"
+"react-select@npm:^5.10.2":
+  version: 5.10.2
+  resolution: "react-select@npm:5.10.2"
   dependencies:
     "@babel/runtime": "npm:^7.12.0"
     "@emotion/cache": "npm:^11.4.0"
@@ -10468,11 +10456,11 @@ __metadata:
     memoize-one: "npm:^6.0.0"
     prop-types: "npm:^15.6.0"
     react-transition-group: "npm:^4.3.0"
-    use-isomorphic-layout-effect: "npm:^1.1.2"
+    use-isomorphic-layout-effect: "npm:^1.2.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/04d3639ea1872a9e4d9080ece1947432fc595403c0a740f671a1b7f7dd2639288cb133ec7a2b1ac20fad69fd303d696c2f924763405e0e1d93b847e54df9e966
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/9c7f488a9774f566f60e882343dc26276eed866669304805638378b3bafb87fb1f6189d1aacde5eba4f637a7ff022f8e24caec541d12c254bafc2eb9658e14d2
   languageName: node
   linkType: hard
 
@@ -12586,15 +12574,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-isomorphic-layout-effect@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "use-isomorphic-layout-effect@npm:1.1.2"
+"use-isomorphic-layout-effect@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "use-isomorphic-layout-effect@npm:1.2.1"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/fd3787ed19f6cfbf70e2c5822d01bebbf96b00968195840d5ad61082b8e6ca7a8e2e46270c4096537d18a38ea57f4e4e9668cce5eec36fa4697ddba2ef1203fd
+  checksum: 10/a52155ffa7d67a5107ef2033ae2c63f5290c3e3b198de30d4d4f78cd7921e1ab1ea31eeec387defb67ef61adb672d3b8d25b54b7dcc089bacc4f885abde96e9d
   languageName: node
   linkType: hard
 

@@ -50,3 +50,4 @@ const useFetchContractAbi = ({ contractAddress, chainId, disabled = false }: Fet
 };
 
 export default useFetchContractAbi;
+// test comment

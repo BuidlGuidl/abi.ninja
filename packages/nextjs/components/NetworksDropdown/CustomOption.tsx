@@ -4,6 +4,7 @@ import { OptionProps, components } from "react-select";
 import { EyeIcon, PlusIcon, WrenchScrewdriverIcon } from "@heroicons/react/24/outline";
 
 const { Option } = components;
+const OptionComponent = Option as any;
 
 export const getIconComponent = (data: Options) => {
   switch (data.icon) {
@@ -28,7 +29,7 @@ export const CustomOption = (props: CustomOptionProps) => {
     props.onDelete(data);
   };
   return (
-    <Option {...props}>
+    <OptionComponent {...props}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {getIconComponent(data)}
@@ -44,6 +45,6 @@ export const CustomOption = (props: CustomOptionProps) => {
           </div>
         )}
       </div>
-    </Option>
+    </OptionComponent>
   );
 };

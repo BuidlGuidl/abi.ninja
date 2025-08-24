@@ -5,7 +5,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PlausibleProvider from "next-plausible";
 import { ThemeProvider, useTheme } from "next-themes";
-import NextNProgress from "nextjs-progressbar";
+import { PagesProgressBar as ProgressBar } from "next-nprogress-bar";
 import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
 import { getStoredChainsFromLocalStorage } from "~~/components/NetworksDropdown/utils";
@@ -73,7 +73,7 @@ const ScaffoldEthAppWithProviders = (props: AppProps) => {
       <ThemeProvider>
         <WagmiProvider config={wagmiConfig}>
           <QueryClientProvider client={queryClient}>
-            <NextNProgress />
+            <ProgressBar />
             <ScaffoldEthApp {...props} />
           </QueryClientProvider>
         </WagmiProvider>
