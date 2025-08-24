@@ -152,8 +152,8 @@ const Home: NextPage = () => {
                   activeTab === tabValue
                     ? "translate-x-0"
                     : activeTab < tabValue
-                    ? "translate-x-full"
-                    : "-translate-x-full"
+                      ? "translate-x-full"
+                      : "-translate-x-full"
                 }`}
               >
                 {tabValue === TabName.verifiedContract ? (

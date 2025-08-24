@@ -133,7 +133,7 @@ export const removeChainFromLocalStorage = (chainId: number) => {
 };
 
 export const formDataToChain = (formData: FormData): Chain => {
-  const blockExplorers: Chain["blockExplorers"] | undefined = Boolean(formData.get("blockExplorer"))
+  const blockExplorers: Chain["blockExplorers"] | undefined = formData.get("blockExplorer")
     ? {
         default: {
           name: "Block Explorer",

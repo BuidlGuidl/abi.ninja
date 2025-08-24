@@ -95,7 +95,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           size={(blockieSizeMap[size] * 24) / blockieSizeMap["base"]}
         />
       </div>
-      {disableAddressLink || targetNetwork.id === hardhat.id || !Boolean(blockExplorerAddressLink) ? (
+      {disableAddressLink || targetNetwork.id === hardhat.id || !blockExplorerAddressLink ? (
         <span className={`ml-1.5 text-${size} font-normal`}>{displayAddress}</span>
       ) : (
         <a
