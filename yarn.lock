@@ -749,12 +749,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@heroicons/react@npm:^2.0.11":
-  version: 2.0.11
-  resolution: "@heroicons/react@npm:2.0.11"
+"@heroicons/react@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@heroicons/react@npm:2.2.0"
   peerDependencies:
-    react: ">= 16"
-  checksum: 10/4f63403d6b791404ae2fef804272b5c70b3bf6ff5e89a7e0c1e2a359f6f82a1c4cd88a3b067673d5ea346efbe8415e2ffed12c6cd1b0346b06e815db490e38df
+    react: ">= 16 || ^19.0.0-rc"
+  checksum: 10/5bf8a3faa16f1566165bfaec2448ce3c2bd3e4f49e446ccf233f6aa63626155585eaf7e89f01fb4e8e92dfca3d7113b8c517c3b3c04036b9243c818595db3908
   languageName: node
   linkType: hard
 
@@ -1966,7 +1966,7 @@ __metadata:
   resolution: "@se-2/nextjs@workspace:packages/nextjs"
   dependencies:
     "@eslint/eslintrc": "npm:^3"
-    "@heroicons/react": "npm:^2.0.11"
+    "@heroicons/react": "npm:^2.2.0"
     "@rainbow-me/rainbowkit": "npm:2.2.4"
     "@tanstack/react-query": "npm:5.59.15"
     "@trivago/prettier-plugin-sort-imports": "npm:^4.1.1"
