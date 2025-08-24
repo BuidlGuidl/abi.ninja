@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-echo "Pre-commit hooks disabled"
+yarn lint-staged
