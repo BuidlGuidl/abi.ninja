@@ -14,7 +14,7 @@ const useFetchContractAbi = ({ contractAddress, chainId, disabled = false }: Fet
 
   const fetchAbi = async () => {
     if (!isAddress(contractAddress)) {
-      throw new Error("Invalid contract address");
+      throw new Error("Invalid contract address!!!");
     }
 
     const addressToUse: Address = contractAddress;

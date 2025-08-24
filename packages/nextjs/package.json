@@ -16,7 +16,7 @@
     "cypress:run": "cypress run --browser chrome"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.11",
+    "@heroicons/react": "^2.2.0",
     "@rainbow-me/rainbowkit": "2.2.4",
     "@tanstack/react-query": "5.59.15",
     "@uniswap/sdk-core": "^4.0.1",
