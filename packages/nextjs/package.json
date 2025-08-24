@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "start": "next dev",
     "build": "next build",
     "serve": "next start",
@@ -26,14 +26,14 @@
     "blo": "^1.0.1",
     "burner-connector": "0.0.9",
     "daisyui": "^4.4.19",
-    "next": "^14.2.11",
+    "next": "15.5.0",
     "next-plausible": "^3.12.0",
     "next-themes": "^0.3.0",
     "nextjs-progressbar": "^0.0.16",
     "qrcode.react": "^3.1.0",
-    "react": "^18.3.1",
+    "react": "19.1.1",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "19.1.1",
     "react-hot-toast": "^2.4.0",
     "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
@@ -45,14 +45,14 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^18.19.50",
-    "@types/react": "^18.3.5",
+    "@types/react": "19.1.11",
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "abitype": "1.0.6",
     "autoprefixer": "^10.4.12",
     "cypress": "^13.13.1",
     "eslint": "^8.15.0",
-    "eslint-config-next": "^13.1.6",
+    "eslint-config-next": "15.5.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "postcss": "^8.4.16",
@@ -61,5 +61,8 @@
     "type-fest": "^4.6.0",
     "typescript": "5.1.6",
     "vercel": "^28.15.1"
+  },
+  "resolutions": {
+    "@types/react": "19.1.11"
   }
 }
