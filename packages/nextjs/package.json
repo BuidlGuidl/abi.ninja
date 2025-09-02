@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.11",
-    "@rainbow-me/rainbowkit": "2.2.4",
-    "@tanstack/react-query": "5.59.15",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.85.6",
     "@uniswap/sdk-core": "^4.0.1",
     "@uniswap/v2-sdk": "^3.0.1",
     "@vercel/og": "^0.6.2",
@@ -38,8 +38,8 @@
     "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
-    "viem": "2.23.5",
-    "wagmi": "2.14.12",
+    "viem": "^2",
+    "wagmi": "^2.16.9",
     "zustand": "^4.1.2"
   },
   "devDependencies": {
@@ -48,7 +48,7 @@
     "@types/react": "^18.3.5",
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
-    "abitype": "1.0.6",
+    "abitype": "^1.0.9",
     "autoprefixer": "^10.4.12",
     "cypress": "^13.13.1",
     "eslint": "^8.15.0",
