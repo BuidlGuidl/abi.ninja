@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
-    "@types/node": "^18.19.50",
+    "@types/node": "^22.16.5",
     "@types/react": "^18.3.5",
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
