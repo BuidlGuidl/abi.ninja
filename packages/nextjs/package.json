@@ -38,7 +38,7 @@
     "react-select": "^5.8.0",
     "use-debounce": "^8.0.4",
     "usehooks-ts": "^2.7.2",
-    "viem": "^2",
+    "viem": "^2.37.3",
     "wagmi": "^2.16.9",
     "zustand": "^4.1.2"
   },
