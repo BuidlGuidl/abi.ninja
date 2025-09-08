@@ -1948,7 +1948,7 @@ __metadata:
     usehooks-ts: ^2.7.2
     vercel: ^28.15.1
     viem: 2.37.4
-    wagmi: ^2.16.9
+    wagmi: 2.16.9
     zustand: ^4.1.2
   languageName: unknown
   linkType: soft
@@ -11431,7 +11431,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^2.16.9":
+"wagmi@npm:2.16.9":
   version: 2.16.9
   resolution: "wagmi@npm:2.16.9"
   dependencies:
