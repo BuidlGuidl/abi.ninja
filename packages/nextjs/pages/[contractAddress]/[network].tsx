@@ -14,7 +14,7 @@ import { ContractUI } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
-import { getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
+import { enhanceAbiWith4Bytes, getNetworkName, parseAndCorrectJSON } from "~~/utils/abi";
 import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
 
 interface ParsedQueryContractDetailsPage extends ParsedUrlQuery {
@@ -203,9 +203,27 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                     </form>
                     <div className="flex flex-col justify-between mt-4">
                       <h3 className="font-bold text-xl">Decompile Contract (beta)</h3>
+                      <p className="text-sm text-gray-500 mt-1 mb-2">
+                        Uses Heimdall decompilation with Sourcify 4bytes directory enhancement
+                      </p>
                       <button
                         className="btn btn-primary mt-2 w-32"
-                        onClick={() => setDecompiledAbi(heimdallAbi as Abi)}
+                        onClick={async () => {
+                          if (heimdallAbi) {
+                            try {
+                              // Enhance the decompiled ABI with 4bytes directory data
+                              const enhancedAbi = await enhanceAbiWith4Bytes(heimdallAbi as Abi);
+                              setDecompiledAbi(enhancedAbi);
+                              notification.success("Contract decompiled and enhanced with 4bytes directory");
+                            } catch (error) {
+                              console.error("Error enhancing ABI with 4bytes:", error);
+                              // Fallback to original ABI if enhancement fails
+                              setDecompiledAbi(heimdallAbi as Abi);
+                              notification.warning("Decompiled contract (4bytes enhancement failed)");
+                            }
+                          }
+                        }}
+                        disabled={!heimdallAbi || isHeimdallFetching}
                       >
                         {isHeimdallFetching ? (
                           <div className="flex items-center gap-2">
