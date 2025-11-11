@@ -104,11 +104,23 @@ export const fetchContractABIFromSourcify = async (contractAddress: Address, cha
   }
 };
 
-export const fetchFunctionSignatureFrom4Bytes = async (hexSignature: string): Promise<string[]> => {
+export const fetchFunctionSignatureFrom4Bytes = async (
+  hexSignature: string | string[],
+): Promise<string[] | Record<string, string[]>> => {
   try {
-    // Use Sourcify's 4bytes API
+    const isBatch = Array.isArray(hexSignature);
+    const signatures = isBatch ? hexSignature : [hexSignature];
+
+    if (signatures.length === 0) {
+      return isBatch ? {} : [];
+    }
+
+    // Use Sourcify's 4bytes API with comma-delimited list for batch, single value for single
+    const commaDelimitedHashes = signatures.join(",");
     const response = await fetch(
-      `https://api.4byte.sourcify.dev/signature-database/v1/lookup?function=${hexSignature}&filter=true`,
+      `https://api.4byte.sourcify.dev/signature-database/v1/lookup?function=${encodeURIComponent(
+        commaDelimitedHashes,
+      )}&filter=true`,
     );
 
     if (!response.ok) {
@@ -119,26 +131,57 @@ export const fetchFunctionSignatureFrom4Bytes = async (hexSignature: string): Pr
 
     // Sourcify API returns {ok: true, result: {function: {[hash]: [...]}, event: {...}}}
     // Function results can be null (no matches) or an array of signatures
-    if (data?.ok && data.result?.function && data.result.function[hexSignature]) {
-      const signatures = data.result.function[hexSignature];
-      // Returns null for no matches (openchain.xyz compatible), or array of {name, filtered, hasVerifiedContract}
-      if (Array.isArray(signatures)) {
-        return signatures.map((sig: any) => sig.name);
+    if (isBatch) {
+      const results: Record<string, string[]> = {};
+      // Initialize all results to empty arrays
+      for (const hexSig of signatures) {
+        results[hexSig] = [];
       }
+      // Populate results from API response
+      if (data?.ok && data.result?.function) {
+        for (const hexSig of signatures) {
+          const sigs = data.result.function[hexSig];
+          // Returns null for no matches (openchain.xyz compatible), or array of {name, filtered, hasVerifiedContract}
+          if (Array.isArray(sigs)) {
+            results[hexSig] = sigs.map((sig: any) => sig.name);
+          }
+        }
+      }
+      return results;
+    } else {
+      // Single signature lookup
+      if (data?.ok && data.result?.function && data.result.function[hexSignature as string]) {
+        const sigs = data.result.function[hexSignature as string];
+        // Returns null for no matches (openchain.xyz compatible), or array of {name, filtered, hasVerifiedContract}
+        if (Array.isArray(sigs)) {
+          return sigs.map((sig: any) => sig.name);
+        }
+      }
+      return [];
     }
-
-    return [];
   } catch (error) {
     console.error("Error fetching function signature from 4bytes:", error);
-    return [];
+    return Array.isArray(hexSignature) ? {} : [];
   }
 };
 
-export const fetchEventSignatureFrom4Bytes = async (hexSignature: string): Promise<string[]> => {
+export const fetchEventSignatureFrom4Bytes = async (
+  hexSignature: string | string[],
+): Promise<string[] | Record<string, string[]>> => {
   try {
-    // Use Sourcify's 4bytes API
+    const isBatch = Array.isArray(hexSignature);
+    const signatures = isBatch ? hexSignature : [hexSignature];
+
+    if (signatures.length === 0) {
+      return isBatch ? {} : [];
+    }
+
+    // Use Sourcify's 4bytes API with comma-delimited list for batch, single value for single
+    const commaDelimitedHashes = signatures.join(",");
     const response = await fetch(
-      `https://api.4byte.sourcify.dev/signature-database/v1/lookup?event=${hexSignature}&filter=true`,
+      `https://api.4byte.sourcify.dev/signature-database/v1/lookup?event=${encodeURIComponent(
+        commaDelimitedHashes,
+      )}&filter=true`,
     );
 
     if (!response.ok) {
@@ -149,57 +192,178 @@ export const fetchEventSignatureFrom4Bytes = async (hexSignature: string): Promi
 
     // Sourcify API returns {ok: true, result: {function: {...}, event: {[hash]: [...]}}}
     // Event results are always arrays (empty array for no matches)
-    if (data?.ok && data.result?.event && data.result.event[hexSignature]) {
-      const signatures = data.result.event[hexSignature];
-      if (Array.isArray(signatures)) {
-        return signatures.map((sig: any) => sig.name);
+    if (isBatch) {
+      const results: Record<string, string[]> = {};
+      // Initialize all results to empty arrays
+      for (const hexSig of signatures) {
+        results[hexSig] = [];
       }
+      // Populate results from API response
+      if (data?.ok && data.result?.event) {
+        for (const hexSig of signatures) {
+          const sigs = data.result.event[hexSig];
+          if (Array.isArray(sigs)) {
+            results[hexSig] = sigs.map((sig: any) => sig.name);
+          }
+        }
+      }
+      return results;
+    } else {
+      // Single signature lookup
+      if (data?.ok && data.result?.event && data.result.event[hexSignature as string]) {
+        const sigs = data.result.event[hexSignature as string];
+        if (Array.isArray(sigs)) {
+          return sigs.map((sig: any) => sig.name);
+        }
+      }
+      return [];
     }
-
-    return [];
   } catch (error) {
     console.error("Error fetching event signature from 4bytes:", error);
-    return [];
+    return Array.isArray(hexSignature) ? {} : [];
   }
 };
 
 export const enhanceAbiWith4Bytes = async (abi: Abi): Promise<Abi> => {
   const enhancedAbi = [...abi];
 
-  // Process each function in the ABI
+  // Collect all function selectors and their indices for batch lookup
+  const functionSelectors: Array<{ index: number; selector: string; item: any }> = [];
+  const seenFunctionSelectors = new Set<string>();
+
+  // Collect all event hashes and their indices for batch lookup
+  const eventHashes: Array<{ index: number; hash: string; item: any }> = [];
+  const seenEventHashes = new Set<string>();
+
   for (let i = 0; i < enhancedAbi.length; i++) {
     const item = enhancedAbi[i];
 
-    if (item.type === "function" && item.name && item.inputs) {
+    if (item.type === "function") {
       try {
-        // Calculate the function selector from the current signature
-        const currentSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(",")})`;
-        const selector = toFunctionSelector(currentSignature);
+        let selector: string | null = null;
 
-        // Look up in 4bytes directory to get better function names
-        const signatures = await fetchFunctionSignatureFrom4Bytes(selector);
+        // Check if this is an "Unresolved_<selector>" function from Heimdall
+        // Format: "Unresolved_11cc9195" where "11cc9195" is the selector without 0x (8 hex chars = 4 bytes)
+        if (item.name && item.name.startsWith("Unresolved_")) {
+          const selectorMatch = item.name.match(/^Unresolved_([0-9a-fA-F]{8})$/);
+          if (selectorMatch && selectorMatch[1]) {
+            // Add 0x prefix to make it a valid hex selector
+            selector = `0x${selectorMatch[1]}`;
+          }
+        }
+
+        // If not an Unresolved function, calculate selector from signature
+        if (!selector && item.name && item.inputs) {
+          const currentSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(",")})`;
+          selector = toFunctionSelector(currentSignature);
+        }
+
+        if (selector) {
+          if (!seenFunctionSelectors.has(selector)) {
+            seenFunctionSelectors.add(selector);
+          }
+          functionSelectors.push({ index: i, selector, item });
+        }
+      } catch (error) {
+        // If selector calculation fails, skip this function
+      }
+    } else if (item.type === "event") {
+      try {
+        let hash: string | null = null;
+
+        // Check if this is an "Unresolved_<hash>" event from Heimdall
+        // Format: "Unresolved_<64-char-hex>" where the hash is the keccak256 hash without 0x (64 hex chars = 32 bytes)
+        if (item.name && item.name.startsWith("Unresolved_")) {
+          const hashMatch = item.name.match(/^Unresolved_([0-9a-fA-F]{64})$/);
+          if (hashMatch && hashMatch[1]) {
+            // Add 0x prefix to make it a valid hex hash
+            hash = `0x${hashMatch[1]}`;
+          }
+        }
+
+        // If not an Unresolved event, we could calculate hash from signature
+        // For now, only handle Unresolved events
+        if (hash) {
+          if (!seenEventHashes.has(hash)) {
+            seenEventHashes.add(hash);
+          }
+          eventHashes.push({ index: i, hash, item });
+        }
+      } catch (error) {
+        // If hash extraction fails, skip this event
+      }
+    }
+  }
+
+  // Batch lookup all function signatures in a single API call
+  if (functionSelectors.length > 0) {
+    try {
+      const selectors = Array.from(seenFunctionSelectors);
+      const batchResults = (await fetchFunctionSignatureFrom4Bytes(selectors)) as Record<string, string[]>;
+
+      // Process results and update ABI items
+      for (const { index, selector, item } of functionSelectors) {
+        const signatures = batchResults[selector] || [];
 
         if (signatures.length > 0) {
           // Use the first (most common) signature
           const matchedSignature = signatures[0];
           const match = matchedSignature.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
 
-          if (match && match[1] && match[1] !== item.name) {
-            // Only update if we found a better name
+          // Always update if:
+          // 1. We found a match AND it's different from current name, OR
+          // 2. Current name is an "Unresolved_*" function (from Heimdall decompilation)
+          const isUnresolved = item.name && item.name.startsWith("Unresolved_");
+          if (match && match[1] && (match[1] !== item.name || isUnresolved)) {
             // Parse the matched signature to potentially update inputs too
             const paramMatch = matchedSignature.match(/\(([^)]*)\)/);
             if (paramMatch) {
               // Update function name with better name from 4bytes
-              enhancedAbi[i] = {
+              enhancedAbi[index] = {
                 ...item,
                 name: match[1],
               };
             }
           }
         }
-      } catch (error) {
-        // If lookup fails, keep original ABI item
       }
+    } catch (error) {
+      // If batch lookup fails, keep original ABI items
+      console.error("Error in batch 4bytes function lookup:", error);
+    }
+  }
+
+  // Batch lookup all event signatures in a single API call
+  if (eventHashes.length > 0) {
+    try {
+      const hashes = Array.from(seenEventHashes);
+      const batchResults = (await fetchEventSignatureFrom4Bytes(hashes)) as Record<string, string[]>;
+
+      // Process results and update ABI items
+      for (const { index, hash, item } of eventHashes) {
+        const signatures = batchResults[hash] || [];
+
+        if (signatures.length > 0) {
+          // Use the first (most common) signature
+          const matchedSignature = signatures[0];
+          const match = matchedSignature.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
+
+          // Always update if:
+          // 1. We found a match AND it's different from current name, OR
+          // 2. Current name is an "Unresolved_*" event (from Heimdall decompilation)
+          const isUnresolved = item.name && item.name.startsWith("Unresolved_");
+          if (match && match[1] && (match[1] !== item.name || isUnresolved)) {
+            // Update event name with better name from 4bytes
+            enhancedAbi[index] = {
+              ...item,
+              name: match[1],
+            };
+          }
+        }
+      }
+    } catch (error) {
+      // If batch lookup fails, keep original ABI items
+      console.error("Error in batch 4bytes event lookup:", error);
     }
   }
 
