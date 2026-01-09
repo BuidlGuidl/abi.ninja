@@ -25,7 +25,7 @@
     "@vercel/og": "^0.6.2",
     "@web3icons/react": "^3.6.0",
     "blo": "^1.0.1",
-    "burner-connector": "0.0.9",
+    "burner-connector": "0.0.20",
     "daisyui": "^4.4.19",
     "next": "14.2.35",
     "next-plausible": "^3.12.0",
