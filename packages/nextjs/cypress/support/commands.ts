@@ -18,6 +18,7 @@ Cypress.Commands.add("wakeUpHeimdall", () => {
 Cypress.Commands.add("loadContract", (address: string) => {
   cy.get('input[placeholder="Contract address"]').type(address);
   cy.get("button").contains("Load contract").click();
+  cy.wait(2000); // Wait for API call to initiate
 });
 
 Cypress.Commands.add("selectNetwork", (networkName: string) => {
