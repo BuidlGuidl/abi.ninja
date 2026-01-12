@@ -2,6 +2,7 @@ describe("Contract Interaction", () => {
   it("should load DAI contract and interact with its balanceOf method", () => {
     cy.visit("http://localhost:3000");
     cy.loadContract("0x6B175474E89094C44Da98b954EedeAC495271d0F");
+    cy.get(".loading-spinner", { timeout: 10000 }).should("not.exist");
     cy.url().should("include", "/0x6B175474E89094C44Da98b954EedeAC495271d0F/1");
     cy.interactWithMethod("balanceOf", "0x6B175474E89094C44Da98b954EedeAC495271d0F");
   });
