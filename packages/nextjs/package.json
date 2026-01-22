@@ -12,8 +12,8 @@
     "check-types": "tsc --noEmit --incremental",
     "vercel": "vercel",
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run --browser chrome"
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.11",
@@ -44,6 +44,7 @@
     "zustand": "^4.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^18.19.50",
     "@types/react": "^18.3.5",
@@ -51,7 +52,6 @@
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "abitype": "1.0.6",
     "autoprefixer": "^10.4.12",
-    "cypress": "^13.13.1",
     "eslint": "^8.15.0",
     "eslint-config-next": "^13.1.6",
     "eslint-config-prettier": "^8.5.0",

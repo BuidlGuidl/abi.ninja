@@ -1,4 +1,4 @@
-name: E2E on Chrome
+name: E2E Tests
 
 on:
   push:
@@ -9,22 +9,39 @@ on:
       - main
 
 jobs:
-  cypress-run:
+  playwright:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create .env.local in nextjs
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Create .env.local
+        env:
+          HEIMDALL_URL: ${{ secrets.NEXT_PUBLIC_HEIMDALL_URL }}
+          ETHERSCAN_KEY: ${{ secrets.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY }}
         run: |
           touch packages/nextjs/.env.local
-          echo NEXT_PUBLIC_HEIMDALL_URL=${{ secrets.NEXT_PUBLIC_HEIMDALL_URL }} >> packages/nextjs/.env.local
-          echo NEXT_PUBLIC_ETHERSCAN_V2_API_KEY=${{ secrets.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY }} >> packages/nextjs/.env.local
+          echo "NEXT_PUBLIC_HEIMDALL_URL=${HEIMDALL_URL}" >> packages/nextjs/.env.local
+          echo "NEXT_PUBLIC_ETHERSCAN_V2_API_KEY=${ETHERSCAN_KEY}" >> packages/nextjs/.env.local
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+      - name: Install Playwright browsers
+        run: yarn workspace @se-2/nextjs exec playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: yarn test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
-          working-directory: packages/nextjs
-          browser: chrome
-          start: yarn dev
-          wait-on: "http://localhost:3000"
+          name: playwright-report
+          path: packages/nextjs/playwright-report/
+          retention-days: 30
