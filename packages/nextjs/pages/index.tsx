@@ -15,7 +15,7 @@ import { AddressInput } from "~~/components/scaffold-eth";
 import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
 import { useHeimdall } from "~~/hooks/useHeimdall";
 import { useGlobalState } from "~~/services/store/store";
-import { parseAndCorrectJSON } from "~~/utils/abi";
+import { enhanceAbiWith4Bytes, parseAndCorrectJSON } from "~~/utils/abi";
 import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
 
 enum TabName {
@@ -234,9 +234,21 @@ const Home: NextPage = () => {
                         className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
                         onClick={async () => {
                           if (heimdallAbi) {
-                            setContractAbi(heimdallAbi);
-                            setAbiContractAddress(localAbiContractAddress as Address);
-                            router.push(`/${localAbiContractAddress}/${network}`);
+                            try {
+                              // Enhance the decompiled ABI with 4bytes directory data
+                              const enhancedAbi = await enhanceAbiWith4Bytes(heimdallAbi);
+                              setContractAbi(enhancedAbi);
+                              setAbiContractAddress(localAbiContractAddress as Address);
+                              notification.success("Contract decompiled and enhanced with 4bytes directory");
+                              router.push(`/${localAbiContractAddress}/${network}`);
+                            } catch (error) {
+                              console.error("Error enhancing ABI with 4bytes:", error);
+                              // Fallback to original ABI if enhancement fails
+                              setContractAbi(heimdallAbi);
+                              setAbiContractAddress(localAbiContractAddress as Address);
+                              notification.warning("Decompiled contract (4bytes enhancement failed)");
+                              router.push(`/${localAbiContractAddress}/${network}`);
+                            }
                           }
                         }}
                         disabled={network === "31337" || isHeimdallFetching}
