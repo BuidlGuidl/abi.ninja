@@ -53,30 +53,34 @@ Visit your local instance of ABI Ninja at: `http://localhost:3000`.
 
 # 🧪 Testing
 
-ABI Ninja uses Cypress for end-to-end testing. Our test suite covers user flows and ensures the application works correctly across different networks and contract types. The test suite will automatically run on pull requests.
+ABI Ninja uses [Playwright](https://playwright.dev) for end-to-end testing. Our test suite covers user flows and ensures the application works correctly across different networks and contract types. The test suite will automatically run on pull requests.
 
 ## Running Tests
 
-To run the Cypress tests:
+The test runner spins up the dev server automatically – you only need a working install.
 
-1. Ensure your development server is running:
-
-```
-yarn start
-```
-
-2. In a new terminal window, run the Cypress tests:
+1. Install Playwright browsers (one-time setup):
 
 ```
-yarn cypress:open
+yarn workspace @se-2/nextjs exec playwright install --with-deps chromium
 ```
 
-This will open the Cypress Test Runner, where you can run individual tests or the entire suite.
-
-3. For headless testing, use:
+2. Run the headless test suite:
 
 ```
-yarn cypress:run
+yarn test
+```
+
+3. Open the interactive Playwright UI runner (recommended while writing tests):
+
+```
+yarn test:ui
+```
+
+4. After a failed run, inspect the HTML report:
+
+```
+yarn test:report
 ```
 
 ## Test Coverage
@@ -90,9 +94,9 @@ Our tests cover the following key areas:
 
 ## Writing New Tests
 
-When adding new features or modifying existing ones, please update or add corresponding tests. Test files are located in the `cypress/e2e` directory.
+When adding new features or modifying existing ones, please update or add corresponding tests. Test files live under `packages/nextjs/tests/` and shared selectors / actions live in `packages/nextjs/tests/helpers.ts`.
 
-For more information on writing Cypress tests, refer to the Cypress Documentation.
+For more information on writing Playwright tests, refer to the [Playwright documentation](https://playwright.dev/docs/intro).
 
 ## Contributing to ABI Ninja
 
