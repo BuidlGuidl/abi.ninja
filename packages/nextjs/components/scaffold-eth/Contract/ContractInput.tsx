@@ -12,6 +12,45 @@ import {
 } from "~~/components/scaffold-eth";
 import { AbiParameterTuple } from "~~/utils/scaffold-eth/contract";
 
+const getPlaceholderExample = (type: string): string => {
+  if (type.includes("[")) {
+    const baseType = type.replace(/\[\d*\]$/, "");
+    const baseExample = getPlaceholderExample(baseType);
+    return `[${baseExample}, ...]`;
+  }
+
+  switch (type) {
+    case "address":
+      return "vitalik.eth or 0xd8dA...6045";
+    case "bool":
+      return "true";
+    case "string":
+      return "Hello World";
+    case "bytes":
+      return "0x00";
+    case "bytes32":
+      return "0x0000...0000";
+  }
+
+  if (type.startsWith("uint")) {
+    const bits = parseInt(type.slice(4)) || 256;
+    if (bits <= 8) return "42";
+    return "1000";
+  }
+
+  if (type.startsWith("int")) {
+    const bits = parseInt(type.slice(3)) || 256;
+    if (bits <= 8) return "-42";
+    return "-1000";
+  }
+
+  if (type.startsWith("bytes")) {
+    return "0x00...00";
+  }
+
+  return type;
+};
+
 type ContractInputProps = {
   setForm: Dispatch<SetStateAction<Record<string, any>>>;
   form: Record<string, any> | undefined;
@@ -26,7 +65,7 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
   const inputProps = {
     name: stateObjectKey,
     value: form?.[stateObjectKey],
-    placeholder: paramType.type,
+    placeholder: getPlaceholderExample(paramType.type),
     onChange: (value: any) => {
       setForm(form => ({ ...form, [stateObjectKey]: value }));
     },
