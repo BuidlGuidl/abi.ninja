@@ -13,6 +13,12 @@ import { ABI_NINJA_API_URL } from "~~/utils/constants";
  */
 const ninja = new AbiNinja({ baseUrl: ABI_NINJA_API_URL });
 
+// Chains the engine resolves with its own reliable, server-side RPC (SPEC §6). For
+// these, do NOT forward the browser's RPC URL — frontend keys (Alchemy, etc.) are
+// commonly origin/IP-restricted and fail from the engine's server IP. Only pass an
+// rpcUrl for chains the engine has no default for (e.g. user-added custom chains).
+const ENGINE_NATIVE_CHAINS = new Set([1, 8453, 10, 42161, 137]);
+
 type UseResolveAbiParams = {
   contractAddress: string;
   chainId: number;
@@ -26,7 +32,8 @@ export const useResolveAbi = ({ contractAddress, chainId, rpcUrl, disabled = fal
     queryKey: ["resolveAbi", { contractAddress, chainId }],
     queryFn: async () => {
       if (!isAddress(contractAddress)) throw new Error("Invalid contract address");
-      return ninja.resolveAbi(chainId, contractAddress as Address, rpcUrl ? { rpcUrl } : undefined);
+      const opts = rpcUrl && !ENGINE_NATIVE_CHAINS.has(chainId) ? { rpcUrl } : undefined;
+      return ninja.resolveAbi(chainId, contractAddress as Address, opts);
     },
     // Local chains (31337) still use the manual paste-ABI flow, matching prior behaviour.
     enabled: !disabled && isAddress(contractAddress) && chainId !== 31337,
