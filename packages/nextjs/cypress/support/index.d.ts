@@ -3,6 +3,13 @@
 declare namespace Cypress {
   interface Chainable {
     /**
+     * Custom command to wake up the abi.ninja resolution engine (avoids cold-start
+     * delays that leave the "Load contract" button disabled).
+     * @example cy.wakeUpEngine()
+     */
+    wakeUpEngine(): Chainable<void>;
+
+    /**
      * Custom command to wake up the heimdall-rs backend.
      * @example cy.wakeUpHeimdall()
      */

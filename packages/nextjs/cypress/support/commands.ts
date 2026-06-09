@@ -1,5 +1,19 @@
 /// <reference types="cypress" />
-import { HEIMDALL_API_URL } from "~~/utils/constants";
+import { ABI_NINJA_API_URL, HEIMDALL_API_URL } from "~~/utils/constants";
+
+// Warm the resolution engine before a test. It auto-stops when idle (Fly), and a
+// cold first request can exceed the "Load contract" button's enable window. Pinging
+// /health wakes the machine so resolution returns promptly during the test.
+Cypress.Commands.add("wakeUpEngine", () => {
+  cy.request({
+    method: "GET",
+    url: `${ABI_NINJA_API_URL}/health`,
+    failOnStatusCode: false,
+    timeout: 30000,
+  }).then(response => {
+    cy.log(`Engine wake-up call completed with status: ${response.status}`);
+  });
+});
 
 Cypress.Commands.add("wakeUpHeimdall", () => {
   const contractAddress = "0x759c0e9d7858566df8ab751026bedce462ff42df";
@@ -17,8 +31,11 @@ Cypress.Commands.add("wakeUpHeimdall", () => {
 
 Cypress.Commands.add("loadContract", (address: string) => {
   cy.get('input[placeholder="Contract address"]').type(address);
-  cy.get("button").contains("Load contract").click();
-  cy.wait(2000); // Wait for API call to initiate
+  // Resolution is now a network hop to the engine, so the "Load contract" button
+  // stays disabled until the ABI resolves. Wait for it to enable (up to 30s) rather
+  // than clicking a disabled button.
+  cy.contains("button", "Load contract", { timeout: 30000 }).should("not.be.disabled").click();
+  cy.wait(2000);
 });
 
 Cypress.Commands.add("selectNetwork", (networkName: string) => {

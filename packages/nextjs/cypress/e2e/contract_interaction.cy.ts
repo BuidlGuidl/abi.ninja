@@ -1,4 +1,10 @@
 describe("Contract Interaction", () => {
+  // Resolution now goes through the engine, which auto-stops when idle. Warm it
+  // before each test so the cold first request doesn't leave the button disabled.
+  beforeEach(() => {
+    cy.wakeUpEngine();
+  });
+
   it("should load DAI contract and interact with its balanceOf method", () => {
     cy.visit("http://localhost:3000");
     cy.loadContract("0x6B175474E89094C44Da98b954EedeAC495271d0F");
