@@ -63,9 +63,10 @@ const mainNetworks = getTargetNetworks();
  **/
 export const ContractUI = ({ className = "", initialContractData }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { implementationAddress, chainId } = useGlobalState(state => ({
+  const { implementationAddress, chainId, abiProvenance } = useGlobalState(state => ({
     chainId: state.targetNetwork.id,
     implementationAddress: state.implementationAddress,
+    abiProvenance: state.abiProvenance,
   }));
   const mainNetwork = mainNetworks.find(network => network.id === chainId);
   const networkColor = useNetworkColor(mainNetwork);
@@ -207,6 +208,28 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                       <span className="font-medium text-base mr-4"> {displayContractName} </span>
                       <Address address={initialContractData.address} />
                     </div>
+                    {abiProvenance && (
+                      <div className="flex items-center gap-1 pb-1">
+                        <span
+                          className={`badge badge-sm ${
+                            abiProvenance.confidence === "verified"
+                              ? "badge-success"
+                              : abiProvenance.confidence === "decompiled"
+                              ? "badge-warning"
+                              : "badge-ghost"
+                          }`}
+                          title={abiProvenance.notes ?? `ABI source: ${abiProvenance.source}`}
+                        >
+                          {abiProvenance.confidence === "verified"
+                            ? "Verified ABI"
+                            : abiProvenance.confidence === "decompiled"
+                            ? "Decompiled — names inferred"
+                            : abiProvenance.confidence === "partial"
+                            ? "Partial match"
+                            : "Selector-only"}
+                        </span>
+                      </div>
+                    )}
                     {implementationAddress && (
                       <div className="flex items-center gap-1">
                         <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>

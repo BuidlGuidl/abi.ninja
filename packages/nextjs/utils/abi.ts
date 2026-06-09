@@ -1,46 +1,8 @@
-import { isZeroAddress } from "./scaffold-eth/common";
-import { Address, Chain } from "viem";
+import { Chain } from "viem";
 
-export const fetchContractABIFromEtherscan = async (verifiedContractAddress: Address, chainId: number) => {
-  const apiKey = process.env.NEXT_PUBLIC_ETHERSCAN_V2_API_KEY;
-
-  // First call to get source code and check for implementation
-  const sourceCodeUrl = `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=getsourcecode&address=${verifiedContractAddress}&apikey=${apiKey}`;
-
-  const sourceCodeResponse = await fetch(sourceCodeUrl);
-  const sourceCodeData = await sourceCodeResponse.json();
-
-  if (sourceCodeData.status !== "1" || !sourceCodeData.result || sourceCodeData.result.length === 0) {
-    console.error("Error fetching source code from Etherscan:", sourceCodeData);
-    throw new Error("Failed to fetch source code from Etherscan");
-  }
-
-  const contractData = sourceCodeData.result[0];
-  const implementation = contractData.Implementation || null;
-
-  // If there's an implementation address, make a second call to get its ABI
-  if (implementation && !isZeroAddress(implementation)) {
-    const abiUrl = `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=getabi&address=${implementation}&apikey=${apiKey}`;
-    const abiResponse = await fetch(abiUrl);
-    const abiData = await abiResponse.json();
-
-    if (abiData.status === "1" && abiData.result) {
-      return {
-        abi: JSON.parse(abiData.result),
-        implementation,
-      };
-    } else {
-      console.error("Error fetching ABI for implementation from Etherscan:", abiData);
-      throw new Error("Failed to fetch ABI for implementation from Etherscan");
-    }
-  }
-
-  // If no implementation or failed to get implementation ABI, return original contract ABI
-  return {
-    abi: JSON.parse(contractData.ABI),
-    implementation,
-  };
-};
+// NOTE: ABI resolution (Etherscan/Sourcify/proxy/heimdall/4byte) now lives in the
+// abi.ninja engine and is consumed via `useResolveAbi` (@portdeveloper/abi-ninja-sdk). The old
+// client-side `fetchContractABIFromEtherscan` was removed in that refactor.
 
 export function parseAndCorrectJSON(input: string): any {
   // Add double quotes around keys

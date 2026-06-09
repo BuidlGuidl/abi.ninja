@@ -12,8 +12,7 @@ import { MiniFooter } from "~~/components/MiniFooter";
 import { NetworksDropdown } from "~~/components/NetworksDropdown/NetworksDropdown";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { AddressInput } from "~~/components/scaffold-eth";
-import useFetchContractAbi from "~~/hooks/useFetchContractAbi";
-import { useHeimdall } from "~~/hooks/useHeimdall";
+import useResolveAbi from "~~/hooks/useResolveAbi";
 import { useGlobalState } from "~~/services/store/store";
 import { parseAndCorrectJSON } from "~~/utils/abi";
 import { getAlchemyHttpUrl, notification } from "~~/utils/scaffold-eth";
@@ -38,25 +37,26 @@ const Home: NextPage = () => {
     chainId: parseInt(network),
   });
 
-  const { setContractAbi, setAbiContractAddress, setImplementationAddress } = useGlobalState(state => ({
+  const { setContractAbi, setImplementationAddress, setAbiProvenance } = useGlobalState(state => ({
     setContractAbi: state.setContractAbi,
-    setAbiContractAddress: state.setAbiContractAddress,
     setImplementationAddress: state.setImplementationAddress,
+    setAbiProvenance: state.setAbiProvenance,
   }));
+
+  // One engine call runs the full ladder; unverified contracts resolve automatically
+  // (heimdall decompile rung), so there's no separate manual-decompile step anymore.
+  const resolveRpcUrl = getAlchemyHttpUrl(parseInt(network)) || publicClient?.chain.rpcUrls.default.http[0];
 
   const {
     contractData,
+    provenance,
     error,
     isLoading: isFetchingAbi,
     implementationAddress,
-  } = useFetchContractAbi({ contractAddress: verifiedContractAddress, chainId: parseInt(network) });
-
-  const { abi: heimdallAbi, isLoading: isHeimdallFetching } = useHeimdall({
-    contractAddress: localAbiContractAddress as Address,
-    rpcUrl: getAlchemyHttpUrl(parseInt(network))
-      ? getAlchemyHttpUrl(parseInt(network))
-      : publicClient?.chain.rpcUrls.default.http[0],
-    disabled: network === "31337" || !localAbiContractAddress,
+  } = useResolveAbi({
+    contractAddress: verifiedContractAddress,
+    chainId: parseInt(network),
+    rpcUrl: resolveRpcUrl,
   });
 
   const isAbiAvailable = contractData?.abi && contractData.abi.length > 0;
@@ -89,6 +89,8 @@ const Home: NextPage = () => {
       setContractAbi(contractData.abi);
     }
 
+    setAbiProvenance(provenance ?? null);
+
     if (network === "31337" && isAddress(verifiedContractAddress)) {
       setActiveTab(TabName.addressAbi);
       setLocalAbiContractAddress(verifiedContractAddress);
@@ -102,19 +104,22 @@ const Home: NextPage = () => {
     contractData,
     error,
     implementationAddress,
+    provenance,
     network,
     verifiedContractAddress,
     handleFetchError,
     setContractAbi,
     setImplementationAddress,
+    setAbiProvenance,
   ]);
 
   useEffect(() => {
     if (router.pathname === "/") {
       setContractAbi([]);
       setImplementationAddress("");
+      setAbiProvenance(null);
     }
-  }, [router.pathname, setContractAbi, setImplementationAddress]);
+  }, [router.pathname, setContractAbi, setImplementationAddress, setAbiProvenance]);
 
   const handleLoadContract = () => {
     if (isAbiAvailable) {
@@ -224,32 +229,10 @@ const Home: NextPage = () => {
                     <div className="flex flex-col items-center w-4/5 border-b-2 pb-8">
                       <div className="flex justify-center items-center gap-1">
                         <MagnifyingGlassIcon className="h-5 w-5" />
-                        <h1 className="font-semibold text-lg mb-0">Contract not verified</h1>
+                        <h1 className="font-semibold text-lg mb-0">Couldn&apos;t resolve ABI automatically</h1>
                       </div>
                       <p className="bg-neutral px-2 rounded-md  text-sm shadow-sm">{localAbiContractAddress}</p>
-                      <h4 className="text-center mb-6 font-semibold leading-tight">
-                        You can decompile the contract (beta) or import the ABI manually below.
-                      </h4>
-                      <button
-                        className="btn btn-primary min-h-fit h-10 px-4 text-base font-semibold border-2 hover:bg-neutral hover:text-primary"
-                        onClick={async () => {
-                          if (heimdallAbi) {
-                            setContractAbi(heimdallAbi);
-                            setAbiContractAddress(localAbiContractAddress as Address);
-                            router.push(`/${localAbiContractAddress}/${network}`);
-                          }
-                        }}
-                        disabled={network === "31337" || isHeimdallFetching}
-                      >
-                        {isHeimdallFetching ? (
-                          <div className="flex items-center gap-2">
-                            <span className="loading loading-spinner loading-xs"></span>
-                            <span>Decompiling contract...</span>
-                          </div>
-                        ) : (
-                          "Decompile (beta)"
-                        )}
-                      </button>
+                      <h4 className="text-center mb-6 font-semibold leading-tight">Import the ABI manually below.</h4>
                     </div>
                     <div className="w-full flex flex-col items-center gap-2">
                       <h1 className="mt-2 font-semibold text-lg">Manually import ABI</h1>

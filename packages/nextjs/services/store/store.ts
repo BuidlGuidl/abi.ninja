@@ -1,4 +1,5 @@
 import { wagmiConnectors } from "../web3/wagmiConnectors";
+import type { Provenance } from "@portdeveloper/abi-ninja-sdk";
 import { Abi, Address, Chain } from "viem";
 import { mainnet } from "viem/chains";
 import { Config, createConfig } from "wagmi";
@@ -22,6 +23,8 @@ type GlobalState = {
   setAbiContractAddress: (newAbiContractAddress: Address | "") => void;
   implementationAddress: Address | "";
   setImplementationAddress: (newImplementationAddress: Address | "") => void;
+  abiProvenance: Provenance | null;
+  setAbiProvenance: (newProvenance: Provenance | null) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -63,4 +66,6 @@ export const useGlobalState = create<GlobalState>(set => ({
   setAbiContractAddress: (newAddress: Address | ""): void => set({ abiContractAddress: newAddress }),
   implementationAddress: "",
   setImplementationAddress: (newAddress: Address | ""): void => set({ implementationAddress: newAddress }),
+  abiProvenance: null,
+  setAbiProvenance: (newProvenance: Provenance | null): void => set({ abiProvenance: newProvenance }),
 }));

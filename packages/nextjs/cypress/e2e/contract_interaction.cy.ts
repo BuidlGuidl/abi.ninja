@@ -16,14 +16,16 @@ describe("Contract Interaction", () => {
     cy.interactWithMethod("balanceOf", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
   });
 
-  it("should load unverified contract on Sepolia and ADD changeOwner write method to the UI", () => {
+  it("should auto-resolve (decompile) an unverified contract on Sepolia and ADD changeOwner write method to the UI", () => {
+    // The engine ladder now decompiles unverified contracts automatically — no manual
+    // "Decompile" button. Loading the address just works and the ABI is flagged decompiled.
     cy.wakeUpHeimdall();
     cy.visit("http://localhost:3000");
     cy.selectNetwork("Sepolia");
-    cy.get('input[placeholder="Contract address"]').type("0x759c0e9d7858566df8ab751026bedce462ff42df");
-    cy.get("button:visible").contains("Decompile (beta)", { timeout: 10000 }).click({ force: true });
-    cy.wait(2000);
-    cy.url().should("include", "/0x759c0e9d7858566df8ab751026bedce462ff42df/11155111");
+    cy.loadContract("0x759c0e9d7858566df8ab751026bedce462ff42df");
+    cy.url({ timeout: 30000 }).should("include", "/0x759c0e9d7858566df8ab751026bedce462ff42df/11155111");
+    cy.get(".loading-spinner", { timeout: 30000 }).should("not.exist");
+    cy.contains("Decompiled").should("be.visible");
     cy.contains("changeOwner").click();
   });
 
