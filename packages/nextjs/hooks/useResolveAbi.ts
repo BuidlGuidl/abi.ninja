@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { AbiNinja, type Provenance } from "@portdeveloper/abi-ninja-sdk";
 import { useQuery } from "@tanstack/react-query";
 import { Abi, Address, isAddress } from "viem";
@@ -40,8 +41,17 @@ export const useResolveAbi = ({ contractAddress, chainId, rpcUrl, disabled = fal
     retry: false,
   });
 
+  // Memoize derived values so their references are stable across renders. The old
+  // useFetchContractAbi returned react-query's `data` directly (stable); returning a
+  // fresh `{ abi, address }` object each render makes every effect that depends on
+  // `contractData` re-run, which caused a "Maximum update depth exceeded" loop.
+  const contractData = useMemo(
+    () => (data ? { abi: data.abi as Abi, address: contractAddress as Address } : undefined),
+    [data, contractAddress],
+  );
+
   return {
-    contractData: data ? { abi: data.abi as Abi, address: contractAddress as Address } : undefined,
+    contractData,
     provenance: data?.provenance as Provenance | undefined,
     implementationAddress: (data?.proxy?.resolved_implementation ?? null) as Address | null,
     isLoading,
