@@ -41,7 +41,8 @@ export const useHeimdall = ({ contractAddress, rpcUrl, disabled = false }: UseHe
     queryKey: ["heimdallAbi", { contractAddress, rpcUrl }],
     queryFn: fetchFromHeimdall,
     enabled: !disabled && Boolean(contractAddress) && Boolean(rpcUrl) && isAddress(contractAddress as Address),
-    retry: false,
+    // Heimdall 500s intermittently on cold decompiles; one retry keeps a flake from surfacing as an error.
+    retry: 1,
   });
 
   return {

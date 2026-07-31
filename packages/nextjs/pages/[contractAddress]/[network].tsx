@@ -98,6 +98,8 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       ? { abi: fetchedContractData.abi, address: contractAddress }
       : decompiledAbi
       ? { abi: decompiledAbi, address: contractAddress }
+      : heimdallAbi
+      ? { abi: heimdallAbi as Abi, address: contractAddress }
       : null;
 
   const error = isUseLocalAbi ? null : fetchError;
@@ -151,7 +153,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
-          {isLoading && !isUseLocalAbi ? (
+          {(isLoading || (error && isHeimdallFetching)) && !isUseLocalAbi ? (
             <div className="flex justify-center h-full mt-14">
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
