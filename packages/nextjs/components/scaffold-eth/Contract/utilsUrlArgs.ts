@@ -8,6 +8,20 @@ export type ContractFormSnapshot = {
 
 export type ContractFormSnapshotRegistry = Record<string, ContractFormSnapshot>;
 
+// plain module-level registry: snapshots are only read on share-button click,
+// so they don't need store reactivity (a store write per keystroke re-renders subscribers)
+const formSnapshots: ContractFormSnapshotRegistry = {};
+
+export const setFormSnapshot = (uid: string, snapshot: ContractFormSnapshot): void => {
+  formSnapshots[uid] = snapshot;
+};
+
+export const removeFormSnapshot = (uid: string): void => {
+  delete formSnapshots[uid];
+};
+
+export const getFormSnapshots = (): ContractFormSnapshotRegistry => formSnapshots;
+
 export type ParsedUrlArgs = {
   argValues: Record<string, Record<number, string>>;
   txValues: Record<string, string>;
@@ -50,7 +64,7 @@ export const parseUrlArgs = (search: string, methods: AugmentedAbiFunction[]): P
     impliedUids.add(uid);
 
     if (suffix === "value") {
-      if (method.stateMutability !== "payable" || !/^\d+$/.test(value)) {
+      if (method.stateMutability !== "payable" || !/^(\d+|0x[0-9a-fA-F]+)$/.test(value)) {
         unmatched.push(paramName);
         return;
       }
@@ -76,6 +90,25 @@ export const parseUrlArgs = (search: string, methods: AugmentedAbiFunction[]): P
   return { argValues, txValues, impliedUids: [...impliedUids], unmatched };
 };
 
+// true for "", and for JSON structures whose leaves are all empty strings
+// (untouched tuples serialize to e.g. {"a":""}, which would pollute share links)
+const isEmptyValue = (value: string): boolean => {
+  if (value === "") return true;
+  if (!value.startsWith("{") && !value.startsWith("[")) return false;
+
+  try {
+    const isEmptyDeep = (node: unknown): boolean => {
+      if (node === "" || node === null) return true;
+      if (typeof node === "string") return isEmptyValue(node);
+      if (typeof node === "object") return Object.values(node).every(isEmptyDeep);
+      return false;
+    };
+    return isEmptyDeep(JSON.parse(value));
+  } catch {
+    return false;
+  }
+};
+
 export const buildShareQuery = (
   selectedMethods: AugmentedAbiFunction[],
   snapshot: ContractFormSnapshotRegistry,
@@ -90,7 +123,7 @@ export const buildShareQuery = (
     method.inputs.forEach((input, inputIndex) => {
       const key = getFunctionInputKey(method.name, input, inputIndex);
       const value = methodSnapshot.form[key];
-      if (value === undefined || value === "") return;
+      if (value === undefined || isEmptyValue(String(value))) return;
       searchParams.set(`args.${method.uid}.${inputIndex}`, String(value));
     });
 

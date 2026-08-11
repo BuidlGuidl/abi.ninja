@@ -24,7 +24,7 @@ export const TupleArray = ({
       form: getInitalTupleArrayFormState(abiTupleParameter),
       rows: [abiTupleParameter.components],
     };
-    if (initialValue === undefined) return defaultState;
+    if (!initialValue) return defaultState;
 
     try {
       const parsedValue = JSON.parse(initialValue);
@@ -46,11 +46,9 @@ export const TupleArray = ({
             component,
             componentIndex,
           );
-          // match by name when the row is a keyed object; stringify nested structures for child components
-          const value =
-            depth <= 1 && component.name && rowValue && component.name in rowValue
-              ? rowValue[component.name]
-              : values[componentIndex];
+          // named components match by key only (a partial object must not shift later values);
+          // positional lookup covers unnamed components and depth>1 virtual wrappers
+          const value = depth <= 1 && component.name && rowValue ? rowValue[component.name] : values[componentIndex];
           form[key] = value === undefined ? "" : typeof value === "string" ? value : JSON.stringify(value);
         });
       });

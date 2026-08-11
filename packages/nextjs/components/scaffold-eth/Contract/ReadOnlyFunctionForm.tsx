@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
+import { removeFormSnapshot, setFormSnapshot } from "./utilsUrlArgs";
 import { Abi } from "abitype";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
@@ -33,8 +34,6 @@ export const ReadOnlyFunctionForm = ({
   initialArgs,
 }: ReadOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const setFormSnapshot = useGlobalState(state => state.setFormSnapshot);
-  const removeFormSnapshot = useGlobalState(state => state.removeFormSnapshot);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [result, setResult] = useState<unknown>();
 
@@ -59,11 +58,11 @@ export const ReadOnlyFunctionForm = ({
 
   useEffect(() => {
     setFormSnapshot(abiFunction.uid, { form });
-  }, [abiFunction.uid, form, setFormSnapshot]);
+  }, [abiFunction.uid, form]);
 
   useEffect(() => {
     return () => removeFormSnapshot(abiFunction.uid);
-  }, [abiFunction.uid, removeFormSnapshot]);
+  }, [abiFunction.uid]);
 
   const transformedFunction = transformAbiFunction(abiFunction);
   const inputElements = transformedFunction.inputs.map((input, inputIndex) => {

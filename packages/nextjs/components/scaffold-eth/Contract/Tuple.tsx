@@ -15,7 +15,7 @@ type TupleProps = {
 export const Tuple = ({ abiTupleParameter, setParentForm, parentStateObjectKey, initialValue }: TupleProps) => {
   const [form, setForm] = useState<Record<string, any>>(() => {
     const initialForm = getInitalTupleFormState(abiTupleParameter);
-    if (initialValue === undefined) return initialForm;
+    if (!initialValue) return initialForm;
 
     try {
       const parsedValue = JSON.parse(initialValue);
@@ -26,9 +26,9 @@ export const Tuple = ({ abiTupleParameter, setParentForm, parentStateObjectKey, 
       const values = Object.values(parsedValue);
       abiTupleParameter.components.forEach((component, componentIndex) => {
         const key = getFunctionInputKey(abiTupleParameter.name || "tuple", component, componentIndex);
-        // match by component name so reordered/partial JSON objects land in the right fields
-        const value =
-          component.name && component.name in parsedValue ? parsedValue[component.name] : values[componentIndex];
+        // named components match by key only (a partial object must not shift later values);
+        // positional lookup is just for unnamed components
+        const value = component.name ? parsedValue[component.name] : values[componentIndex];
         // nested tuples arrive as plain objects in hand-written JSON; children expect serialized strings
         initialForm[key] = value === undefined ? "" : typeof value === "string" ? value : JSON.stringify(value);
       });

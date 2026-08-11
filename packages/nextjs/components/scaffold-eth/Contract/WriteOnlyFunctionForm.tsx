@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
+import { removeFormSnapshot, setFormSnapshot } from "./utilsUrlArgs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Abi } from "abitype";
 import { Address, TransactionReceipt, encodeFunctionData } from "viem";
@@ -40,8 +41,6 @@ export const WriteOnlyFunctionForm = ({
   initialTxValue,
 }: WriteOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const setFormSnapshot = useGlobalState(state => state.setFormSnapshot);
-  const removeFormSnapshot = useGlobalState(state => state.removeFormSnapshot);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [txValue, setTxValue] = useState<string>(() => initialTxValue ?? "");
   const { chain } = useAccount();
@@ -87,11 +86,11 @@ export const WriteOnlyFunctionForm = ({
 
   useEffect(() => {
     setFormSnapshot(abiFunction.uid, { form, txValue });
-  }, [abiFunction.uid, form, txValue, setFormSnapshot]);
+  }, [abiFunction.uid, form, txValue]);
 
   useEffect(() => {
     return () => removeFormSnapshot(abiFunction.uid);
-  }, [abiFunction.uid, removeFormSnapshot]);
+  }, [abiFunction.uid]);
 
   // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
   const transformedFunction = transformAbiFunction(abiFunction);

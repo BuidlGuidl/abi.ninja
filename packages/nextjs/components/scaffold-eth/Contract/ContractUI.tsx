@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
-import { ParsedUrlArgs, buildShareQuery, parseUrlArgs } from "./utilsUrlArgs";
+import { ParsedUrlArgs, buildShareQuery, getFormSnapshots, parseUrlArgs } from "./utilsUrlArgs";
 import { AbiFunction } from "abitype";
 import { Abi, Address as AddressType } from "viem";
 import { useContractRead } from "wagmi";
@@ -119,7 +119,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
   const handleCopyLink = async () => {
     try {
-      const query = buildShareQuery(abi, useGlobalState.getState().formSnapshots);
+      const query = buildShareQuery(abi, getFormSnapshots());
       const url = `${window.location.origin}/${initialContractData.address}/${network}?${query}`;
       await navigator.clipboard.writeText(url);
       notification.success("Link copied");
