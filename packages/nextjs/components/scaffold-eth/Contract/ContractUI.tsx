@@ -301,7 +301,10 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
       </div>
       {/* floating share button, stacked above the theme switch */}
       {abi.length > 0 && (
-        <div className="tooltip tooltip-left fixed bottom-14 right-6 z-50" data-tip="Copy link with values">
+        <div
+          className="tooltip tooltip-left tooltip-primary fixed bottom-14 right-6 z-50"
+          data-tip="Copy link with values"
+        >
           <button
             className="btn btn-primary btn-sm shadow-lg"
             onClick={handleCopyLink}
