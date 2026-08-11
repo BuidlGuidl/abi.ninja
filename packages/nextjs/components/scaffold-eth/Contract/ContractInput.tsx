@@ -56,12 +56,13 @@ type ContractInputProps = {
   form: Record<string, any> | undefined;
   stateObjectKey: string;
   paramType: AbiParameter;
+  initialValue?: string;
 };
 
 /**
  * Generic Input component to handle input's based on their function param type
  */
-export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: ContractInputProps) => {
+export const ContractInput = ({ setForm, form, stateObjectKey, paramType, initialValue }: ContractInputProps) => {
   const inputProps = {
     name: stateObjectKey,
     value: form?.[stateObjectKey],
@@ -88,6 +89,7 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
             parentForm={form}
             abiTupleParameter={paramType as AbiParameterTuple}
             parentStateObjectKey={stateObjectKey}
+            initialValue={initialValue}
           />
         );
       default:
@@ -101,6 +103,7 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
               parentForm={form}
               abiTupleParameter={paramType as AbiParameterTuple}
               parentStateObjectKey={stateObjectKey}
+              initialValue={initialValue}
             />
           );
         } else {

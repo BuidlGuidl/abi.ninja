@@ -81,8 +81,7 @@ const getInitialFormState = (abiFunction: AbiFunction, initialArgs?: Record<numb
   if (!abiFunction.inputs) return initialForm;
   abiFunction.inputs.forEach((input, inputIndex) => {
     const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
-    const isTuple = input.type === "tuple" || input.type.startsWith("tuple[");
-    initialForm[key] = isTuple ? "" : initialArgs?.[inputIndex] ?? "";
+    initialForm[key] = initialArgs?.[inputIndex] ?? "";
   });
   return initialForm;
 };

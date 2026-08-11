@@ -62,13 +62,20 @@ export const ReadOnlyFunctionForm = ({
 
   const hasCompleteInitialArgs =
     Object.keys(initialArgs ?? {}).length === abiFunction.inputs.length &&
-    abiFunction.inputs.every(
-      (input, inputIndex) =>
-        input.type !== "tuple" &&
-        !input.type.startsWith("tuple[") &&
-        initialArgs?.[inputIndex] !== undefined &&
-        initialArgs[inputIndex] !== "",
-    );
+    abiFunction.inputs.every((input, inputIndex) => {
+      const initialValue = initialArgs?.[inputIndex];
+      if (initialValue === undefined || initialValue === "") return false;
+      if (input.type !== "tuple" && !input.type.startsWith("tuple[")) return true;
+
+      try {
+        const parsedValue = JSON.parse(initialValue);
+        return input.type === "tuple"
+          ? !Array.isArray(parsedValue) && parsedValue !== null
+          : Array.isArray(parsedValue);
+      } catch {
+        return false;
+      }
+    });
 
   useEffect(() => {
     if (autoReadTriggeredRef.current || !hasCompleteInitialArgs) return;
@@ -90,6 +97,7 @@ export const ReadOnlyFunctionForm = ({
         form={form}
         stateObjectKey={key}
         paramType={input}
+        initialValue={initialArgs?.[inputIndex]}
       />
     );
   });
