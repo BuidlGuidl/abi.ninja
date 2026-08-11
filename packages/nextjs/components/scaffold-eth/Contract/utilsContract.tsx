@@ -76,12 +76,13 @@ const getParsedContractFunctionArgs = (form: Record<string, any>) => {
   });
 };
 
-const getInitialFormState = (abiFunction: AbiFunction) => {
+const getInitialFormState = (abiFunction: AbiFunction, initialArgs?: Record<number, string>) => {
   const initialForm: Record<string, any> = {};
   if (!abiFunction.inputs) return initialForm;
   abiFunction.inputs.forEach((input, inputIndex) => {
     const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
-    initialForm[key] = "";
+    const isTuple = input.type === "tuple" || input.type.startsWith("tuple[");
+    initialForm[key] = isTuple ? "" : initialArgs?.[inputIndex] ?? "";
   });
   return initialForm;
 };

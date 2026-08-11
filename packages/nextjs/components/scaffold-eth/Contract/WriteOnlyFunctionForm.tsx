@@ -25,6 +25,8 @@ type WriteOnlyFunctionFormProps = {
   onChange: () => void;
   contractAddress: Address;
   inheritedFrom?: string;
+  initialArgs?: Record<number, string>;
+  initialTxValue?: string;
 };
 
 export const WriteOnlyFunctionForm = ({
@@ -33,10 +35,12 @@ export const WriteOnlyFunctionForm = ({
   onChange,
   contractAddress,
   inheritedFrom,
+  initialArgs,
+  initialTxValue,
 }: WriteOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
-  const [txValue, setTxValue] = useState<string>("");
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
+  const [txValue, setTxValue] = useState<string>(() => initialTxValue ?? "");
   const { chain } = useAccount();
   const writeTxn = useTransactor();
   const { address: connectedAddress } = useAccount();
@@ -57,7 +61,7 @@ export const WriteOnlyFunctionForm = ({
           functionName: abiFunction.name,
           abi: abi,
           args: getParsedContractFunctionArgs(form),
-          value: BigInt(txValue),
+          ...(abiFunction.stateMutability === "payable" ? { value: BigInt(txValue || "0") } : {}),
         };
         await simulateContractWriteAndNotifyError({ wagmiConfig, writeContractParams: writeContractObj });
 

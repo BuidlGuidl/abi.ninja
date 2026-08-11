@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
@@ -21,6 +21,7 @@ type ReadOnlyFunctionFormProps = {
   abiFunction: AbiFunction;
   inheritedFrom?: string;
   abi: Abi;
+  initialArgs?: Record<number, string>;
 };
 
 export const ReadOnlyFunctionForm = ({
@@ -28,10 +29,12 @@ export const ReadOnlyFunctionForm = ({
   abiFunction,
   inheritedFrom,
   abi,
+  initialArgs,
 }: ReadOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [result, setResult] = useState<unknown>();
+  const autoReadTriggeredRef = useRef(false);
 
   const { isFetching, refetch, error } = useReadContract({
     address: contractAddress,
@@ -51,6 +54,28 @@ export const ReadOnlyFunctionForm = ({
       notification.error(parsedError);
     }
   }, [error]);
+
+  const handleRead = useCallback(async () => {
+    const { data } = await refetch();
+    setResult(data);
+  }, [refetch]);
+
+  const hasCompleteInitialArgs =
+    Object.keys(initialArgs ?? {}).length === abiFunction.inputs.length &&
+    abiFunction.inputs.every(
+      (input, inputIndex) =>
+        input.type !== "tuple" &&
+        !input.type.startsWith("tuple[") &&
+        initialArgs?.[inputIndex] !== undefined &&
+        initialArgs[inputIndex] !== "",
+    );
+
+  useEffect(() => {
+    if (autoReadTriggeredRef.current || !hasCompleteInitialArgs) return;
+
+    autoReadTriggeredRef.current = true;
+    void handleRead();
+  }, [handleRead, hasCompleteInitialArgs]);
 
   const transformedFunction = transformAbiFunction(abiFunction);
   const inputElements = transformedFunction.inputs.map((input, inputIndex) => {
@@ -85,14 +110,7 @@ export const ReadOnlyFunctionForm = ({
             </div>
           )}
         </div>
-        <button
-          className="btn btn-secondary btn-sm self-end md:self-start"
-          onClick={async () => {
-            const { data } = await refetch();
-            setResult(data);
-          }}
-          disabled={isFetching}
-        >
+        <button className="btn btn-secondary btn-sm self-end md:self-start" onClick={handleRead} disabled={isFetching}>
           {isFetching && <span className="loading loading-spinner loading-xs"></span>}
           Read 📡
         </button>

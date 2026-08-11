@@ -1,5 +1,6 @@
 import { AugmentedAbiFunction } from "./ContractUI";
 import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
+import { ParsedUrlArgs } from "./utilsUrlArgs";
 import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
@@ -8,10 +9,12 @@ export const ContractWriteMethods = ({
   onChange,
   deployedContractData,
   removeMethod,
+  urlArgs,
 }: {
   onChange: () => void;
   deployedContractData: Contract<ContractName>;
   removeMethod: (methodName: string) => void;
+  urlArgs?: ParsedUrlArgs;
 }) => {
   if (!deployedContractData) {
     return null;
@@ -45,14 +48,16 @@ export const ContractWriteMethods = ({
 
   return (
     <>
-      {functionsToDisplay.map(({ fn, inheritedFrom }, idx) => (
-        <div key={`${fn.name}-${idx}`} className="relative mb-4 pt-5">
+      {functionsToDisplay.map(({ fn, inheritedFrom }) => (
+        <div key={fn.uid} className="relative mb-4 pt-5">
           <WriteOnlyFunctionForm
             abi={deployedContractData.abi as Abi}
             abiFunction={fn}
             onChange={onChange}
             contractAddress={deployedContractData.address}
             inheritedFrom={inheritedFrom}
+            initialArgs={urlArgs?.argValues[fn.uid]}
+            initialTxValue={urlArgs?.txValues[fn.uid]}
           />
           <button
             onClick={() => removeMethod(fn.uid)}
