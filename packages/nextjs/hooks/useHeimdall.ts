@@ -37,16 +37,20 @@ export const useHeimdall = ({ contractAddress, rpcUrl, disabled = false }: UseHe
     data: abi,
     error,
     isLoading,
+    refetch,
   } = useQuery({
     queryKey: ["heimdallAbi", { contractAddress, rpcUrl }],
     queryFn: fetchFromHeimdall,
     enabled: !disabled && Boolean(contractAddress) && Boolean(rpcUrl) && isAddress(contractAddress as Address),
-    retry: false,
+    // Heimdall 500s intermittently on cold decompiles; retry those once, but don't
+    // double the wait on deterministic failures (4xx, empty-ABI result).
+    retry: (failureCount, error) => failureCount < 1 && /status: 5\d\d/.test(error.message),
   });
 
   return {
     abi,
     error,
     isLoading,
+    refetch,
   };
 };
