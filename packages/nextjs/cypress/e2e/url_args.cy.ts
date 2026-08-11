@@ -3,10 +3,11 @@ const WXDAI_ADDRESS = "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d";
 const ACCOUNT_ADDRESS = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
 describe("URL arguments", () => {
-  it("seeds a read method and runs it", () => {
+  it("seeds a read method that runs on click", () => {
     cy.visit(`http://localhost:3000/${WXDAI_ADDRESS}/100?methods=balanceOf&args.balanceOf.0=${ACCOUNT_ADDRESS}`);
 
     cy.get('input[name^="balanceOf_"]', { timeout: 20000 }).should("have.value", ACCOUNT_ADDRESS);
+    cy.contains("Read 📡").click();
     cy.contains("Result:", { timeout: 30000 }).should("be.visible");
   });
 

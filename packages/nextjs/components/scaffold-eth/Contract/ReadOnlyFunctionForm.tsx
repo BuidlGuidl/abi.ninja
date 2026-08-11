@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi } from "abitype";
@@ -37,7 +37,6 @@ export const ReadOnlyFunctionForm = ({
   const removeFormSnapshot = useGlobalState(state => state.removeFormSnapshot);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [result, setResult] = useState<unknown>();
-  const autoReadTriggeredRef = useRef(false);
 
   const { isFetching, refetch, error } = useReadContract({
     address: contractAddress,
@@ -65,35 +64,6 @@ export const ReadOnlyFunctionForm = ({
   useEffect(() => {
     return () => removeFormSnapshot(abiFunction.uid);
   }, [abiFunction.uid, removeFormSnapshot]);
-
-  const handleRead = useCallback(async () => {
-    const { data } = await refetch();
-    setResult(data);
-  }, [refetch]);
-
-  const hasCompleteInitialArgs =
-    Object.keys(initialArgs ?? {}).length === abiFunction.inputs.length &&
-    abiFunction.inputs.every((input, inputIndex) => {
-      const initialValue = initialArgs?.[inputIndex];
-      if (initialValue === undefined || initialValue === "") return false;
-      if (input.type !== "tuple" && !input.type.startsWith("tuple[")) return true;
-
-      try {
-        const parsedValue = JSON.parse(initialValue);
-        return input.type === "tuple"
-          ? !Array.isArray(parsedValue) && parsedValue !== null
-          : Array.isArray(parsedValue);
-      } catch {
-        return false;
-      }
-    });
-
-  useEffect(() => {
-    if (autoReadTriggeredRef.current || !hasCompleteInitialArgs) return;
-
-    autoReadTriggeredRef.current = true;
-    void handleRead();
-  }, [handleRead, hasCompleteInitialArgs]);
 
   const transformedFunction = transformAbiFunction(abiFunction);
   const inputElements = transformedFunction.inputs.map((input, inputIndex) => {
@@ -129,7 +99,14 @@ export const ReadOnlyFunctionForm = ({
             </div>
           )}
         </div>
-        <button className="btn btn-secondary btn-sm self-end md:self-start" onClick={handleRead} disabled={isFetching}>
+        <button
+          className="btn btn-secondary btn-sm self-end md:self-start"
+          onClick={async () => {
+            const { data } = await refetch();
+            setResult(data);
+          }}
+          disabled={isFetching}
+        >
           {isFetching && <span className="loading loading-spinner loading-xs"></span>}
           Read 📡
         </button>
