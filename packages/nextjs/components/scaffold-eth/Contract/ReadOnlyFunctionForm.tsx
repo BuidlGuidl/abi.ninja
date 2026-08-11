@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
-import { Abi, AbiFunction } from "abitype";
+import { removeFormSnapshot, setFormSnapshot } from "./utilsUrlArgs";
+import { Abi } from "abitype";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
 import {
@@ -18,9 +20,10 @@ import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type ReadOnlyFunctionFormProps = {
   contractAddress: Address;
-  abiFunction: AbiFunction;
+  abiFunction: AugmentedAbiFunction;
   inheritedFrom?: string;
   abi: Abi;
+  initialArgs?: Record<number, string>;
 };
 
 export const ReadOnlyFunctionForm = ({
@@ -28,9 +31,10 @@ export const ReadOnlyFunctionForm = ({
   abiFunction,
   inheritedFrom,
   abi,
+  initialArgs,
 }: ReadOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [result, setResult] = useState<unknown>();
 
   const { isFetching, refetch, error } = useReadContract({
@@ -52,6 +56,14 @@ export const ReadOnlyFunctionForm = ({
     }
   }, [error]);
 
+  useEffect(() => {
+    setFormSnapshot(abiFunction.uid, { form });
+  }, [abiFunction.uid, form]);
+
+  useEffect(() => {
+    return () => removeFormSnapshot(abiFunction.uid);
+  }, [abiFunction.uid]);
+
   const transformedFunction = transformAbiFunction(abiFunction);
   const inputElements = transformedFunction.inputs.map((input, inputIndex) => {
     const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
@@ -65,6 +77,7 @@ export const ReadOnlyFunctionForm = ({
         form={form}
         stateObjectKey={key}
         paramType={input}
+        initialValue={initialArgs?.[inputIndex]}
       />
     );
   });

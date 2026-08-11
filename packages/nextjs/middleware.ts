@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
   // Check if there is exactly one path segment and if it matches the address regex.
   if (pathSegments.length === 1 && addressRegex.test(pathSegments[0])) {
     const newURL = new URL(`/${pathSegments[0]}/1`, request.url);
+    newURL.search = request.nextUrl.search;
     return NextResponse.redirect(newURL);
   }
 

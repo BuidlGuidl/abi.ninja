@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
+import { removeFormSnapshot, setFormSnapshot } from "./utilsUrlArgs";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Abi, AbiFunction } from "abitype";
+import { Abi } from "abitype";
 import { Address, TransactionReceipt, encodeFunctionData } from "viem";
 import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
@@ -21,10 +23,12 @@ import { simulateContractWriteAndNotifyError } from "~~/utils/scaffold-eth/contr
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
-  abiFunction: AbiFunction;
+  abiFunction: AugmentedAbiFunction;
   onChange: () => void;
   contractAddress: Address;
   inheritedFrom?: string;
+  initialArgs?: Record<number, string>;
+  initialTxValue?: string;
 };
 
 export const WriteOnlyFunctionForm = ({
@@ -33,10 +37,12 @@ export const WriteOnlyFunctionForm = ({
   onChange,
   contractAddress,
   inheritedFrom,
+  initialArgs,
+  initialTxValue,
 }: WriteOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
-  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
-  const [txValue, setTxValue] = useState<string>("");
+  const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
+  const [txValue, setTxValue] = useState<string>(() => initialTxValue ?? "");
   const { chain } = useAccount();
   const writeTxn = useTransactor();
   const { address: connectedAddress } = useAccount();
@@ -57,7 +63,7 @@ export const WriteOnlyFunctionForm = ({
           functionName: abiFunction.name,
           abi: abi,
           args: getParsedContractFunctionArgs(form),
-          value: BigInt(txValue),
+          ...(abiFunction.stateMutability === "payable" ? { value: BigInt(txValue || "0") } : {}),
         };
         await simulateContractWriteAndNotifyError({ wagmiConfig, writeContractParams: writeContractObj });
 
@@ -78,6 +84,14 @@ export const WriteOnlyFunctionForm = ({
     setDisplayedTxResult(txResult);
   }, [txResult]);
 
+  useEffect(() => {
+    setFormSnapshot(abiFunction.uid, { form, txValue });
+  }, [abiFunction.uid, form, txValue]);
+
+  useEffect(() => {
+    return () => removeFormSnapshot(abiFunction.uid);
+  }, [abiFunction.uid]);
+
   // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
   const transformedFunction = transformAbiFunction(abiFunction);
   const inputs = transformedFunction.inputs.map((input, inputIndex) => {
@@ -92,6 +106,7 @@ export const WriteOnlyFunctionForm = ({
         form={form}
         stateObjectKey={key}
         paramType={input}
+        initialValue={initialArgs?.[inputIndex]}
       />
     );
   });

@@ -1,18 +1,19 @@
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
+import { ParsedUrlArgs, buildShareQuery, getFormSnapshots, parseUrlArgs } from "./utilsUrlArgs";
 import { AbiFunction } from "abitype";
 import { Abi, Address as AddressType } from "viem";
 import { useContractRead } from "wagmi";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
 import useFetchContractCreationInfo from "~~/hooks/useFetchContractCreationInfo";
 import { useGlobalState } from "~~/services/store/store";
-import { getBlockExplorerTxLink, getTargetNetworks } from "~~/utils/scaffold-eth";
+import { getBlockExplorerTxLink, getTargetNetworks, notification } from "~~/utils/scaffold-eth";
 
 type ContractUIProps = {
   className?: string;
@@ -84,6 +85,10 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     } else {
       currentQuery.delete("methods");
     }
+    // args params imply selection, so drop them for deselected methods or they re-add the method
+    [...currentQuery.keys()]
+      .filter(key => key.startsWith("args.") && !selectedMethods.some(uid => key.startsWith(`args.${uid}.`)))
+      .forEach(key => currentQuery.delete(key));
     const newPath = `/${initialContractData.address}/${network}`;
 
     router.push({ pathname: newPath, query: currentQuery.toString() }, undefined, { shallow: true });
@@ -104,6 +109,25 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
   // local abi state for for dispalying selected methods
   const [abi, setAbi] = useState<AugmentedAbiFunction[]>([]);
+  const [urlArgs, setUrlArgs] = useState<ParsedUrlArgs>({
+    argValues: {},
+    txValues: {},
+    impliedUids: [],
+    unmatched: [],
+  });
+  const unmatchedArgsNotifiedRef = useRef(false);
+
+  const handleCopyLink = async () => {
+    try {
+      const query = buildShareQuery(abi, getFormSnapshots());
+      const url = `${window.location.origin}/${initialContractData.address}/${network}?${query}`;
+      await navigator.clipboard.writeText(url);
+      notification.success("Link copied");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      notification.error("Failed to copy link");
+    }
+  };
 
   const handleMethodSelect = (uid: string) => {
     const methodToAdd = readMethodsWithInputsAndWriteMethods.find(method => method.uid === uid);
@@ -123,12 +147,26 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
   };
 
   useEffect(() => {
-    const selectedMethodNames = (router.query.methods as string)?.split(",") || [];
-    const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(method =>
-      selectedMethodNames.includes(method.uid),
-    );
-    setAbi(selectedMethods as AugmentedAbiFunction[]);
-  }, [router.query.methods, readMethodsWithInputsAndWriteMethods]);
+    const methodsQuery = router.query.methods;
+    const methodsParam = Array.isArray(methodsQuery) ? methodsQuery.join(",") : methodsQuery;
+    const selectedMethodNames = methodsParam?.split(",") || [];
+    const parsedUrlArgs = parseUrlArgs(window.location.search, readMethodsWithInputsAndWriteMethods);
+    const selectedUids = new Set([...selectedMethodNames, ...parsedUrlArgs.impliedUids]);
+    const selectedMethods = readMethodsWithInputsAndWriteMethods.filter(method => selectedUids.has(method.uid));
+    setUrlArgs(parsedUrlArgs);
+    setAbi(selectedMethods);
+
+    if (parsedUrlArgs.unmatched.length > 0 && !unmatchedArgsNotifiedRef.current) {
+      unmatchedArgsNotifiedRef.current = true;
+      const count = parsedUrlArgs.unmatched.length;
+      notification.warning(
+        `${count} argument${
+          count === 1 ? " in this link doesn't" : "s in this link don't"
+        } match this contract's functions`,
+      );
+      console.warn("Unmatched URL argument parameters:", parsedUrlArgs.unmatched);
+    }
+  }, [router.asPath, router.query.methods, readMethodsWithInputsAndWriteMethods]);
 
   const { data: contractNameData, isLoading: isContractNameLoading } = useContractRead({
     address: initialContractData.address,
@@ -176,6 +214,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                     <ContractReadMethods
                       deployedContractData={{ address: initialContractData.address, abi }}
                       removeMethod={removeMethod}
+                      urlArgs={urlArgs}
                     />
                   </div>
                 </div>
@@ -192,6 +231,7 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
                       deployedContractData={{ address: initialContractData.address, abi }}
                       onChange={triggerRefreshDisplayVariables}
                       removeMethod={removeMethod}
+                      urlArgs={urlArgs}
                     />
                   </div>
                 </div>
@@ -200,23 +240,21 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
             <div className="laptop:col-span-5 flex flex-col mt-10">
               <div className="bg-base-200 shadow-xl rounded-2xl px-6 mb-6 space-y-1 py-4">
-                <div className="flex">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-bold pb-2">Contract Overview</span>
-                    <div className="flex pb-1">
-                      <span className="font-medium text-base mr-4"> {displayContractName} </span>
-                      <Address address={initialContractData.address} />
-                    </div>
-                    {implementationAddress && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
-                        <Address address={implementationAddress} />
-                      </div>
-                    )}
+                <div className="flex flex-col gap-1">
+                  <span className="font-bold pb-2">Contract Overview</span>
+                  <div className="flex pb-1">
+                    <span className="font-medium text-base mr-4"> {displayContractName} </span>
+                    <Address address={initialContractData.address} />
+                  </div>
+                  {implementationAddress && (
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold">Balance:</span>
-                      <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
+                      <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
+                      <Address address={implementationAddress} />
                     </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold">Balance:</span>
+                    <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
                   </div>
                 </div>
                 {mainNetwork && (
@@ -261,6 +299,21 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
           </div>
         </div>
       </div>
+      {/* floating share button, stacked above the theme switch */}
+      {abi.length > 0 && (
+        <div
+          className="tooltip tooltip-left tooltip-primary fixed bottom-14 right-6 z-50"
+          data-tip="Copy link with values"
+        >
+          <button
+            className="btn btn-primary btn-sm shadow-lg"
+            onClick={handleCopyLink}
+            aria-label="Copy link with values"
+          >
+            <ShareIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

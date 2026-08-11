@@ -1,5 +1,6 @@
 import { AugmentedAbiFunction } from "./ContractUI";
 import { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
+import { ParsedUrlArgs } from "./utilsUrlArgs";
 import { Abi } from "abitype";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
@@ -7,9 +8,11 @@ import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/
 export const ContractReadMethods = ({
   deployedContractData,
   removeMethod,
+  urlArgs,
 }: {
   deployedContractData: Contract<ContractName>;
   removeMethod: (methodName: string) => void;
+  urlArgs?: ParsedUrlArgs;
 }) => {
   if (!deployedContractData) {
     return null;
@@ -51,6 +54,7 @@ export const ContractReadMethods = ({
             contractAddress={deployedContractData.address}
             abiFunction={fn}
             inheritedFrom={inheritedFrom}
+            initialArgs={urlArgs?.argValues[fn.uid]}
           />
           <button
             onClick={() => removeMethod(fn.uid)}

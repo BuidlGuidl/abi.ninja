@@ -9,15 +9,63 @@ type TupleArrayProps = {
   setParentForm: Dispatch<SetStateAction<Record<string, any>>>;
   parentStateObjectKey: string;
   parentForm: Record<string, any> | undefined;
+  initialValue?: string;
 };
 
-export const TupleArray = ({ abiTupleParameter, setParentForm, parentStateObjectKey }: TupleArrayProps) => {
-  const [form, setForm] = useState<Record<string, any>>(() => getInitalTupleArrayFormState(abiTupleParameter));
-  const [additionalInputs, setAdditionalInputs] = useState<Array<typeof abiTupleParameter.components>>([
-    abiTupleParameter.components,
-  ]);
-
+export const TupleArray = ({
+  abiTupleParameter,
+  setParentForm,
+  parentStateObjectKey,
+  initialValue,
+}: TupleArrayProps) => {
   const depth = (abiTupleParameter.type.match(/\[\]/g) || []).length;
+  const [initialState] = useState(() => {
+    const defaultState = {
+      form: getInitalTupleArrayFormState(abiTupleParameter),
+      rows: [abiTupleParameter.components],
+    };
+    if (!initialValue) return defaultState;
+
+    try {
+      const parsedValue = JSON.parse(initialValue);
+      if (!Array.isArray(parsedValue)) throw new Error("Expected a JSON array");
+
+      // cap seeded rows so a hostile link can't render an unbounded number of inputs
+      const MAX_SEEDED_ROWS = 100;
+      const rowValues = parsedValue.slice(0, MAX_SEEDED_ROWS);
+      if (parsedValue.length > MAX_SEEDED_ROWS) {
+        console.warn(`Tuple array value has ${parsedValue.length} rows, seeding only the first ${MAX_SEEDED_ROWS}`);
+      }
+
+      const form: Record<string, any> = {};
+      rowValues.forEach((rowValue, rowIndex) => {
+        const values = depth > 1 ? [rowValue] : Object.values(rowValue);
+        abiTupleParameter.components.forEach((component, componentIndex) => {
+          const key = getFunctionInputKey(
+            `${rowIndex}_${abiTupleParameter.name || "tuple"}`,
+            component,
+            componentIndex,
+          );
+          // named components match by key only (a partial object must not shift later values);
+          // positional lookup covers unnamed components and depth>1 virtual wrappers
+          const value = depth <= 1 && component.name && rowValue ? rowValue[component.name] : values[componentIndex];
+          form[key] = value === undefined ? "" : typeof value === "string" ? value : JSON.stringify(value);
+        });
+      });
+
+      return {
+        form,
+        rows: rowValues.map(() => abiTupleParameter.components),
+      };
+    } catch (error) {
+      console.warn("Unable to parse initial tuple array value:", initialValue, error);
+      return defaultState;
+    }
+  });
+  const [form, setForm] = useState<Record<string, any>>(initialState.form);
+  const [additionalInputs, setAdditionalInputs] = useState<Array<typeof abiTupleParameter.components>>(
+    initialState.rows,
+  );
 
   useEffect(() => {
     // Extract and group fields based on index prefix
@@ -116,7 +164,14 @@ export const TupleArray = ({ abiTupleParameter, setParentForm, parentStateObject
                     index,
                   );
                   return (
-                    <ContractInput setForm={setForm} form={form} key={key} stateObjectKey={key} paramType={param} />
+                    <ContractInput
+                      setForm={setForm}
+                      form={form}
+                      key={key}
+                      stateObjectKey={key}
+                      paramType={param}
+                      initialValue={typeof form[key] === "string" ? form[key] : undefined}
+                    />
                   );
                 })}
               </div>
