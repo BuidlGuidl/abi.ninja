@@ -53,7 +53,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
   const [localContractAbi, setLocalContractAbi] = useState<string>("");
   const [isUseLocalAbi, setIsUseLocalAbi] = useState(false);
   const [localContractData, setLocalContractData] = useState<ContractData | null>(null);
-  const [decompiledAbi, setDecompiledAbi] = useState<Abi | null>(null);
 
   const { chainId, setImplementationAddress, contractAbi, chains, addChain, setTargetNetwork } = useGlobalState(
     state => ({
@@ -81,12 +80,17 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
     disabled: contractAbi.length > 0,
   });
 
-  const { abi: heimdallAbi, isLoading: isHeimdallFetching } = useHeimdall({
+  const {
+    abi: heimdallAbi,
+    isLoading: isHeimdallFetching,
+    refetch: refetchHeimdall,
+  } = useHeimdall({
     contractAddress: contractAddress as Address,
     rpcUrl: getAlchemyHttpUrl(parseInt(network))
       ? getAlchemyHttpUrl(parseInt(network))
       : publicClient?.chain.rpcUrls.default.http[0],
-    disabled: network === "31337" || !contractAddress,
+    // Skip when an ABI is already in the store (e.g. arriving from the home-page decompile flow).
+    disabled: network === "31337" || !contractAddress || contractAbi.length > 0,
   });
 
   const effectiveContractData =
@@ -96,8 +100,6 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       ? localContractData
       : fetchedContractData
       ? { abi: fetchedContractData.abi, address: contractAddress }
-      : decompiledAbi
-      ? { abi: decompiledAbi, address: contractAddress }
       : heimdallAbi
       ? { abi: heimdallAbi as Abi, address: contractAddress }
       : null;
@@ -116,6 +118,16 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       setImplementationAddress(implementationAddress);
     }
   }, [network, implementationAddress, chains, setTargetNetwork, setImplementationAddress]);
+
+  // The decompile happens automatically when the ABI fetch fails, so tell the user
+  // the ABI they are looking at is decompiled (synthetic names, guessed types, no events).
+  useEffect(() => {
+    if (fetchError && heimdallAbi) {
+      notification.info(
+        "This contract is not verified. Showing a decompiled ABI (beta) — names and types are best guesses.",
+      );
+    }
+  }, [fetchError, heimdallAbi]);
 
   const handleUserProvidedAbi = () => {
     try {
@@ -153,7 +165,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
       <div className="bg-base-100 h-screen flex flex-col">
         <MiniHeader />
         <div className="flex flex-col gap-y-6 lg:gap-y-8 flex-grow h-full overflow-hidden">
-          {(isLoading || (error && isHeimdallFetching)) && !isUseLocalAbi ? (
+          {isLoading && !isUseLocalAbi ? (
             <div className="flex justify-center h-full mt-14">
               <span className="loading loading-spinner text-primary h-14 w-14"></span>
             </div>
@@ -205,9 +217,13 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                     </form>
                     <div className="flex flex-col justify-between mt-4">
                       <h3 className="font-bold text-xl">Decompile Contract (beta)</h3>
+                      <p className="mt-0 mb-1">
+                        Decompilation starts automatically — if it failed, you can retry it here.
+                      </p>
                       <button
                         className="btn btn-primary mt-2 w-32"
-                        onClick={() => setDecompiledAbi(heimdallAbi as Abi)}
+                        onClick={() => refetchHeimdall()}
+                        disabled={isHeimdallFetching}
                       >
                         {isHeimdallFetching ? (
                           <div className="flex items-center gap-2">
@@ -215,7 +231,7 @@ const ContractDetailPage = ({ addressFromUrl, chainIdFromUrl }: ServerSideProps)
                             <span>Decompiling...</span>
                           </div>
                         ) : (
-                          "Decompile"
+                          "Retry decompile"
                         )}
                       </button>
                     </div>
