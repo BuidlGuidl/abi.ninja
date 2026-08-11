@@ -32,7 +32,8 @@ Cypress.Commands.add("selectNetwork", (networkName: string) => {
 
 Cypress.Commands.add("interactWithMethod", (methodName: string, inputValue: string) => {
   cy.contains(methodName).click();
-  cy.get('input[placeholder="address"]').type(inputValue);
+  // inputs are named `<method>_<param>_<type>`; placeholders show type examples since #198
+  cy.get(`input[name^="${methodName}_"]`).first().type(inputValue);
   cy.get("button").contains("Read 📡").click();
   cy.get("body").should("contain", "Result:");
 });
