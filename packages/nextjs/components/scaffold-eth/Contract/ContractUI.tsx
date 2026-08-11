@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
-import { ParsedUrlArgs, parseUrlArgs } from "./utilsUrlArgs";
+import { ParsedUrlArgs, buildShareQuery, parseUrlArgs } from "./utilsUrlArgs";
 import { AbiFunction } from "abitype";
 import { Abi, Address as AddressType } from "viem";
 import { useContractRead } from "wagmi";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { MiniFooter } from "~~/components/MiniFooter";
 import { Address, Balance, MethodSelector } from "~~/components/scaffold-eth";
 import { useNetworkColor } from "~~/hooks/scaffold-eth";
@@ -116,6 +116,18 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
     unmatched: [],
   });
   const unmatchedArgsNotifiedRef = useRef(false);
+
+  const handleCopyLink = async () => {
+    try {
+      const query = buildShareQuery(abi, useGlobalState.getState().formSnapshots);
+      const url = `${window.location.origin}/${initialContractData.address}/${network}?${query}`;
+      await navigator.clipboard.writeText(url);
+      notification.success("Link copied");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      notification.error("Failed to copy link");
+    }
+  };
 
   const handleMethodSelect = (uid: string) => {
     const methodToAdd = readMethodsWithInputsAndWriteMethods.find(method => method.uid === uid);
@@ -228,23 +240,21 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
 
             <div className="laptop:col-span-5 flex flex-col mt-10">
               <div className="bg-base-200 shadow-xl rounded-2xl px-6 mb-6 space-y-1 py-4">
-                <div className="flex">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-bold pb-2">Contract Overview</span>
-                    <div className="flex pb-1">
-                      <span className="font-medium text-base mr-4"> {displayContractName} </span>
-                      <Address address={initialContractData.address} />
-                    </div>
-                    {implementationAddress && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
-                        <Address address={implementationAddress} />
-                      </div>
-                    )}
+                <div className="flex flex-col gap-1">
+                  <span className="font-bold pb-2">Contract Overview</span>
+                  <div className="flex pb-1">
+                    <span className="font-medium text-base mr-4"> {displayContractName} </span>
+                    <Address address={initialContractData.address} />
+                  </div>
+                  {implementationAddress && (
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold">Balance:</span>
-                      <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
+                      <span className="font-medium text-base mr-4 text-green-600">Implementation Address</span>
+                      <Address address={implementationAddress} />
                     </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold">Balance:</span>
+                    <Balance address={initialContractData.address} className="h-1.5 min-h-[0.375rem] px-0" />
                   </div>
                 </div>
                 {mainNetwork && (
@@ -289,6 +299,18 @@ export const ContractUI = ({ className = "", initialContractData }: ContractUIPr
           </div>
         </div>
       </div>
+      {/* floating share button, stacked above the theme switch */}
+      {abi.length > 0 && (
+        <div className="tooltip tooltip-left fixed bottom-14 right-6 z-50" data-tip="Copy link with values">
+          <button
+            className="btn btn-primary btn-sm shadow-lg"
+            onClick={handleCopyLink}
+            aria-label="Copy link with values"
+          >
+            <ShareIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,12 @@
 import type { AugmentedAbiFunction } from "./ContractUI";
+import { getFunctionInputKey } from "./utilsContract";
+
+export type ContractFormSnapshot = {
+  form: Record<string, any>;
+  txValue?: string;
+};
+
+export type ContractFormSnapshotRegistry = Record<string, ContractFormSnapshot>;
 
 export type ParsedUrlArgs = {
   argValues: Record<string, Record<number, string>>;
@@ -66,4 +74,30 @@ export const parseUrlArgs = (search: string, methods: AugmentedAbiFunction[]): P
   });
 
   return { argValues, txValues, impliedUids: [...impliedUids], unmatched };
+};
+
+export const buildShareQuery = (
+  selectedMethods: AugmentedAbiFunction[],
+  snapshot: ContractFormSnapshotRegistry,
+): string => {
+  const searchParams = new URLSearchParams();
+  searchParams.set("methods", selectedMethods.map(method => method.uid).join(","));
+
+  selectedMethods.forEach(method => {
+    const methodSnapshot = snapshot[method.uid];
+    if (!methodSnapshot) return;
+
+    method.inputs.forEach((input, inputIndex) => {
+      const key = getFunctionInputKey(method.name, input, inputIndex);
+      const value = methodSnapshot.form[key];
+      if (value === undefined || value === "") return;
+      searchParams.set(`args.${method.uid}.${inputIndex}`, String(value));
+    });
+
+    if (method.stateMutability === "payable" && methodSnapshot.txValue) {
+      searchParams.set(`args.${method.uid}.value`, methodSnapshot.txValue);
+    }
+  });
+
+  return searchParams.toString();
 };

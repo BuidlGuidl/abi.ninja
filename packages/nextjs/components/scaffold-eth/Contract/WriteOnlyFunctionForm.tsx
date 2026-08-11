@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Abi, AbiFunction } from "abitype";
+import { Abi } from "abitype";
 import { Address, TransactionReceipt, encodeFunctionData } from "viem";
 import { useAccount, useConfig, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
@@ -21,7 +22,7 @@ import { simulateContractWriteAndNotifyError } from "~~/utils/scaffold-eth/contr
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
-  abiFunction: AbiFunction;
+  abiFunction: AugmentedAbiFunction;
   onChange: () => void;
   contractAddress: Address;
   inheritedFrom?: string;
@@ -39,6 +40,8 @@ export const WriteOnlyFunctionForm = ({
   initialTxValue,
 }: WriteOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
+  const setFormSnapshot = useGlobalState(state => state.setFormSnapshot);
+  const removeFormSnapshot = useGlobalState(state => state.removeFormSnapshot);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [txValue, setTxValue] = useState<string>(() => initialTxValue ?? "");
   const { chain } = useAccount();
@@ -81,6 +84,14 @@ export const WriteOnlyFunctionForm = ({
   useEffect(() => {
     setDisplayedTxResult(txResult);
   }, [txResult]);
+
+  useEffect(() => {
+    setFormSnapshot(abiFunction.uid, { form, txValue });
+  }, [abiFunction.uid, form, txValue, setFormSnapshot]);
+
+  useEffect(() => {
+    return () => removeFormSnapshot(abiFunction.uid);
+  }, [abiFunction.uid, removeFormSnapshot]);
 
   // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
   const transformedFunction = transformAbiFunction(abiFunction);

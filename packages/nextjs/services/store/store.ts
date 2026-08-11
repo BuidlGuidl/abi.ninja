@@ -3,6 +3,10 @@ import { Abi, Address, Chain } from "viem";
 import { mainnet } from "viem/chains";
 import { Config, createConfig } from "wagmi";
 import create from "zustand";
+import type {
+  ContractFormSnapshot,
+  ContractFormSnapshotRegistry,
+} from "~~/components/scaffold-eth/Contract/utilsUrlArgs";
 import { baseWagmiConfig, createWagmiClient, enabledChains } from "~~/services/web3/baseWagmiConfig";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
@@ -22,6 +26,9 @@ type GlobalState = {
   setAbiContractAddress: (newAbiContractAddress: Address | "") => void;
   implementationAddress: Address | "";
   setImplementationAddress: (newImplementationAddress: Address | "") => void;
+  formSnapshots: ContractFormSnapshotRegistry;
+  setFormSnapshot: (uid: string, snapshot: ContractFormSnapshot) => void;
+  removeFormSnapshot: (uid: string) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -63,4 +70,13 @@ export const useGlobalState = create<GlobalState>(set => ({
   setAbiContractAddress: (newAddress: Address | ""): void => set({ abiContractAddress: newAddress }),
   implementationAddress: "",
   setImplementationAddress: (newAddress: Address | ""): void => set({ implementationAddress: newAddress }),
+  formSnapshots: {},
+  setFormSnapshot: (uid: string, snapshot: ContractFormSnapshot): void =>
+    set(state => ({ formSnapshots: { ...state.formSnapshots, [uid]: snapshot } })),
+  removeFormSnapshot: (uid: string): void =>
+    set(state => {
+      const remaining = { ...state.formSnapshots };
+      delete remaining[uid];
+      return { formSnapshots: remaining };
+    }),
 }));

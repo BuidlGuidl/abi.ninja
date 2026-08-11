@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { AugmentedAbiFunction } from "./ContractUI";
 import { InheritanceTooltip } from "./InheritanceTooltip";
-import { Abi, AbiFunction } from "abitype";
+import { Abi } from "abitype";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
 import {
@@ -18,7 +19,7 @@ import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type ReadOnlyFunctionFormProps = {
   contractAddress: Address;
-  abiFunction: AbiFunction;
+  abiFunction: AugmentedAbiFunction;
   inheritedFrom?: string;
   abi: Abi;
   initialArgs?: Record<number, string>;
@@ -32,6 +33,8 @@ export const ReadOnlyFunctionForm = ({
   initialArgs,
 }: ReadOnlyFunctionFormProps) => {
   const mainChainId = useGlobalState(state => state.targetNetwork.id);
+  const setFormSnapshot = useGlobalState(state => state.setFormSnapshot);
+  const removeFormSnapshot = useGlobalState(state => state.removeFormSnapshot);
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction, initialArgs));
   const [result, setResult] = useState<unknown>();
   const autoReadTriggeredRef = useRef(false);
@@ -54,6 +57,14 @@ export const ReadOnlyFunctionForm = ({
       notification.error(parsedError);
     }
   }, [error]);
+
+  useEffect(() => {
+    setFormSnapshot(abiFunction.uid, { form });
+  }, [abiFunction.uid, form, setFormSnapshot]);
+
+  useEffect(() => {
+    return () => removeFormSnapshot(abiFunction.uid);
+  }, [abiFunction.uid, removeFormSnapshot]);
 
   const handleRead = useCallback(async () => {
     const { data } = await refetch();
